@@ -17,7 +17,7 @@ void Read()
         if (split.Length < 2) continue;
         String user = split[0].Replace(",", "");
         String message = split[1];
-        DateTimeOffset time = DateTimeOffset.FromUnixTimeSeconds(int.Parse(split[2].Replace(",", ""))).LocalDateTime;
+        DateTimeOffset time = DateTimeOffset.FromUnixTimeSeconds(long.Parse(split[2].Replace(",", ""))).LocalDateTime;
         String date = "" + time.DateTime;
         Console.WriteLine(user+" @ "+date+": "+message);
     }
