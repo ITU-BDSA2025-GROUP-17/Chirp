@@ -18,8 +18,8 @@ void Read()
         String user = split[0].Replace(",", "");
         String message = split[1];
         DateTimeOffset time = DateTimeOffset.FromUnixTimeSeconds(int.Parse(split[2].Replace(",", ""))).LocalDateTime;
-        String date = "" + time;
-        Console.WriteLine(user+" @ "+date.Remove(date.Length-7)+": "+message);
+        String date = "" + time.DateTime;
+        Console.WriteLine(user+" @ "+date+": "+message);
     }
 }
 
