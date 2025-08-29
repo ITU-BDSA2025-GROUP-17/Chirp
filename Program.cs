@@ -1,3 +1,2 @@
-﻿using System;
-
-Console.WriteLine("Test");
+﻿foreach (var arg in args)
+    Console.WriteLine(arg);
