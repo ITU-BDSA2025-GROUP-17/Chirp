@@ -60,16 +60,11 @@ class Program
 
             foreach (Cheep cheep in savedChirps)
             {
-                Console.WriteLine(cheep.Author + " @ " + ": " + cheep.Message);
                 chirps.Add(cheep);
             }
             chirps.Add(new(username, message, unixTime));
         }
-
-        foreach (var cheep in chirps)
-        {
-            Console.WriteLine(cheep.Author + " @ " + cheep.Timestamp + ": " + cheep.Message);
-        }
+        
         using (var writer = new StreamWriter(path))
         using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
         {
