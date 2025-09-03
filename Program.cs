@@ -1,31 +1,67 @@
-﻿if (args.Length == 0) return;
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices.Marshalling;
+using CsvHelper;
 
-if (args[0] == "read") {
-    Read();
-}else if (args[0] == "cheep")
+class Program
 {
-    if (args.Length < 2) return;
-    Cheep(args[1]);
-}
+    static void Main(string[] args)
+    {
+        String filePath = "C:\\Users\\2000b\\Documents\\Chirp\\bin\\chirp_cli_db.csv";
+        if (args.Length == 0)
+        {
+            Console.WriteLine("No arguments given. Exiting...");
+            return; // stop Main here
+        }
 
-void Read() 
-{
-    List<String> cheeps = new(File.ReadAllLines("chirp_cli_db.csv"));
+        if (args[0] == "read")
+        {
+            read(filePath);
+            return; // skip the rest of Main
+        }
+        
+        if (args[0] == "cheep")
+        {
+            cheep(filePath, args[1]);
+        }
 
-    foreach (String currentCheep in cheeps) {
-        String[]  split = currentCheep.Split('\"');
-        if (split.Length < 2) continue;
-        String user = split[0].Replace(",", "");
-        String message = split[1];
-        DateTimeOffset time = DateTimeOffset.FromUnixTimeSeconds(long.Parse(split[2].Replace(",", ""))).LocalDateTime;
-        String date = "" + time.DateTime;
-        Console.WriteLine(user+" @ "+date+": "+message);
     }
+
+    static void read(string path)
+    {
+        using (var reader = new StreamReader(path))
+        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        {
+            var chirps = csv.GetRecords<Cheep>();
+            
+            foreach (Cheep cheep in chirps)
+            {
+                DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).DateTime;
+
+                Console.WriteLine(cheep.Author + " @ " + dateTime + ": " + cheep.Message);
+            }
+
+        }
+    }
+
+    static void cheep(string path, string message)
+    {   
+        string username = Environment.UserName;
+        long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        string timestampString = unixTime.ToString();
+        string newLine = username+','+'"'+message+'"'+','+timestampString;
+        
+        File.AppendAllText(path, newLine + Environment.NewLine);
+    }
+    
 }
 
-void Cheep(String message)
+
+public class Cheep
 {
-    String name = Environment.UserName;
-    long time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();  
-    File.AppendAllText("chirp_cli_db.csv","\n"+ name + ",\"" + message + "\"," + time);
+    public string Author { get; set; }
+    public string Message { get; set; }
+    public long Timestamp { get; set; }
 }
