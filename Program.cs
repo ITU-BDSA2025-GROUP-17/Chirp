@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
+using Chirp.CLI;
 using CsvHelper;
+using DocoptNet;
 using SimpleDB;
 
 class Program
@@ -7,34 +9,44 @@ class Program
     public static CSVDatabase<Cheep> db = new SimpleDB.CSVDatabase<Cheep>();
     static void Main(string[] args)
     {
-        if (args.Length == 0)
-        {
-            Console.WriteLine("No arguments given. Exiting...");
-            return; // stop Main here
-        }
+        const string usage = @"Chirp CLI version.
 
-        if (args[0] == "read")
+        Usage:
+          chirp read
+          chirp read <limit>
+          chirp cheep <message>
+          chirp (-h | --help)
+          chirp --version
+
+        Options:
+          -h --help     Show this screen.
+          --version     Show version.
+        ";
+
+        var arguments = new Docopt().Apply(usage, args, version: "1.0", exit: true)!;
+
+        if (arguments["read"].IsTrue)
         {
-            read(int.Parse(args[1]));
-            return; // skip the rest of Main
-        }
-        
-        if (args[0] == "cheep")
+            if (arguments["<limit>"].IsInt)
+            {
+                read(arguments["<limit>"].AsInt);
+            }
+            else
+            {
+                read(9999);
+            }
+        } else if (arguments["cheep"].IsTrue)
         {
-            cheep(args[1]);
+            if (arguments["<message>"].IsString)
+            {
+                cheep(arguments["<message>"].ToString());
+            }
         }
     }
 
     static void read(int limit)
     {
-        var chirps = db.Read(limit);
-        
-        foreach (var cheep in chirps)
-        {
-            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).DateTime;
-
-            Console.WriteLine(cheep.Author + " @ " + dateTime + ": " + cheep.Message);
-        }
+        UserInterface.PrintCheeps(db.Read(limit));
     }
 
     static void cheep(string message)
