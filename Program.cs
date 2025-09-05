@@ -1,31 +1,38 @@
-﻿if (args.Length == 0) return;
+﻿using System.Globalization;
+using Chirp.CLI;
+using DocoptNet;
+using simpleDB;
 
-if (args[0] == "read") {
-    Read();
-}else if (args[0] == "cheep")
+CSVDatabase<Cheep> database = new("chirp_cli_db.csv");
+
+const string usage = @"Chirp CLI version.
+
+Usage:
+  chirp read
+  chirp read <limit>
+  chirp cheep <message>
+  chirp (-h | --help)
+  chirp --version
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+";
+
+IDictionary<string, ValueObject> arguments = new Docopt().Apply(usage, args, version: "1.0", exit: true)!;
+
+if (arguments["read"].IsTrue) {
+  if(!arguments["<limit>"].IsInt) UserInterface.PrintCheeps(database.Read());
+  else UserInterface.PrintCheeps(database.Read(arguments["<limit>"].AsInt));
+  
+}else if (arguments["cheep"].IsTrue)
 {
-    if (args.Length < 2) return;
-    Cheep(args[1]);
+    Cheep(arguments["<message>"].ToString());
 }
 
-void Read() 
+void Cheep(string message)
 {
-    List<String> cheeps = new(File.ReadAllLines("chirp_cli_db.csv"));
-
-    foreach (String currentCheep in cheeps) {
-        String[]  split = currentCheep.Split('\"');
-        if (split.Length < 2) continue;
-        String user = split[0].Replace(",", "");
-        String message = split[1];
-        DateTimeOffset time = DateTimeOffset.FromUnixTimeSeconds(long.Parse(split[2].Replace(",", ""))).LocalDateTime;
-        String date = "" + time.DateTime;
-        Console.WriteLine(user+" @ "+date+": "+message);
-    }
-}
-
-void Cheep(String message)
-{
-    String name = Environment.UserName;
-    long time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();  
-    File.AppendAllText("chirp_cli_db.csv","\n"+ name + ",\"" + message + "\"," + time);
+    string name = Environment.UserName;
+    long time = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    database.Store(new Cheep(name, message, time));
 }
