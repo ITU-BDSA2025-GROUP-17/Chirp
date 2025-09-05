@@ -12,6 +12,41 @@ public class Program
     public static void Main(string[] args)
     {
         
+        const string usage = 
+            @"Welcome to chirp
+
+Usage:
+  chirp read
+  chirp cheep <message>
+  chirp (-h | --help)
+  chirp --version";
+
+        // Parse args med Docopt
+        var arguments = new DocoptNet.Docopt().Apply(usage, args, version: "1.0", exit: true);
+
+        // POST en cheep
+        if (arguments.TryGetValue("cheep", out var cheepVal) && cheepVal.IsTrue)
+        {
+            var message = arguments.TryGetValue("<message>", out var msgVal) ? msgVal.ToString() : "";
+            var cheep = new Cheep(Environment.UserName, message, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            cheep_list.Store(cheep);
+        }
+        // READ cheeps
+        else if (arguments.TryGetValue("read", out var readVal) && readVal.IsTrue)
+        {
+            UserInterface.PrintCheeps(cheep_list.Read().ToList());
+        }
+        else
+        {
+            // Ingen match = vis usage
+            Console.WriteLine(usage);
+        }
+        
+        
+        
+        
+        
+        /*
         
         const string usage = "@Welcome to chirp\n" +
                              "\n Usage:" +
@@ -23,7 +58,6 @@ public class Program
         
         var arguments = new DocoptNet.Docopt().Apply(usage, args, version: "1.0", exit: true);
         
-        if (arguments[""].IsTrue) return;
         
         if (arguments["cheep"].IsTrue)
         {
@@ -37,7 +71,7 @@ public class Program
         
         
 
-        
+        */
     }
 }
 
