@@ -6,7 +6,7 @@ using simpleDB;
 
 class Program
 {
-    public static CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("chirp_cli_db.csv");
+    public static CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("../../data/chirp_cli_db.csv");
     static void Main(string[] args)
     {
         const string usage = @"Chirp CLI version.
