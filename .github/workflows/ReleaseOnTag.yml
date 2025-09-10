@@ -1,0 +1,29 @@
+name: Release on Tag
+
+on: 
+  push: 
+    tags:
+      - 'v*'
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Print tag
+      run: echo "Tag pushed:$GITHUB_REF_NAME"
+
+    - name: Publish for Windows
+      run: dotnet publish -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true -o publish/win-x64
+
+    - name: Publish for MacOS
+      run: dotnet publish -c Release -r osx-x64 --self-contained false /p:PublishSingleFile=true -o publish/osx-x64
+
+    - name: Publish for Linux
+      run: dotnet publish -c Release -r linux-x64 --self-contained false /p:PublishSingleFile=true -o publish/linux-x64
