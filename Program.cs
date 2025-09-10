@@ -2,11 +2,11 @@
 using Chirp.CLI;
 using CsvHelper;
 using DocoptNet;
-using SimpleDB;
+using simpleDB;
 
 class Program
 {
-    public static CSVDatabase<Cheep> db = new SimpleDB.CSVDatabase<Cheep>();
+    public static CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("chirp_cli_db.csv");
     static void Main(string[] args)
     {
         const string usage = @"Chirp CLI version.
@@ -33,7 +33,7 @@ class Program
             }
             else
             {
-                read(9999);
+                read();
             }
         } else if (arguments["cheep"].IsTrue)
         {
@@ -44,7 +44,7 @@ class Program
         }
     }
 
-    static void read(int limit)
+    static void read(int? limit = null)
     {
         UserInterface.PrintCheeps(db.Read(limit));
     }

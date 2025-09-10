@@ -6,7 +6,7 @@ public static class UserInterface
     {
         foreach (var cheep in chirps)
         {
-            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).DateTime;
+            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(cheep.Timestamp).DateTime.ToLocalTime();
 
             Console.WriteLine(cheep.Author + " @ " + dateTime + ": " + cheep.Message);
         }
