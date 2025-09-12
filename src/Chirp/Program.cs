@@ -1,13 +1,13 @@
-﻿using System.Globalization;
-using Chirp.CLI;
-using CsvHelper;
+﻿namespace Chirp.CLI;
+
+using System.Globalization;
 using DocoptNet;
 using simpleDB;
 
-class Program
+public class Program
 {
     public static CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("../../data/chirp_cli_db.csv");
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
         const string usage = @"Chirp CLI version.
 
@@ -44,7 +44,7 @@ class Program
         }
     }
 
-    static void read(int? limit = null)
+    public static void read(int? limit = null)
     {
         UserInterface.PrintCheeps(db.Read(limit));
     }
@@ -58,4 +58,3 @@ class Program
     }
     
 }
-public record Cheep(string Author, string Message, long Timestamp);

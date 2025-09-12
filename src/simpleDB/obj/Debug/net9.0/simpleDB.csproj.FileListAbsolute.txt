@@ -24,3 +24,16 @@ C:\Users\2000b\Documents\ChirpProject\Chirp\src\simpleDB\obj\Debug\net9.0\simple
 C:\Users\2000b\Documents\ChirpProject\Chirp\src\simpleDB\obj\Debug\net9.0\refint\simpleDB.dll
 C:\Users\2000b\Documents\ChirpProject\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.pdb
 C:\Users\2000b\Documents\ChirpProject\Chirp\src\simpleDB\obj\Debug\net9.0\ref\simpleDB.dll
+C:\Users\peter\Documents\Chirp\src\simpleDB\bin\Debug\net9.0\simpleDB.deps.json
+C:\Users\peter\Documents\Chirp\src\simpleDB\bin\Debug\net9.0\simpleDB.dll
+C:\Users\peter\Documents\Chirp\src\simpleDB\bin\Debug\net9.0\simpleDB.pdb
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.csproj.AssemblyReference.cache
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.AssemblyInfoInputs.cache
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.AssemblyInfo.cs
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.csproj.CoreCompileInputs.cache
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.sourcelink.json
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.dll
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\refint\simpleDB.dll
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\simpleDB.pdb
+C:\Users\peter\Documents\Chirp\src\simpleDB\obj\Debug\net9.0\ref\simpleDB.dll

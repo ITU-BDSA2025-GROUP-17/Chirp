@@ -18,6 +18,7 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
         {
             var result = csvReader.GetRecords<T>().ToList();
             if (limit == null) {  return result; }
+            if(limit > result.Count) { limit = result.Count;  }
             result.RemoveRange(0, result.Count - (int)limit);
             return result;
         }

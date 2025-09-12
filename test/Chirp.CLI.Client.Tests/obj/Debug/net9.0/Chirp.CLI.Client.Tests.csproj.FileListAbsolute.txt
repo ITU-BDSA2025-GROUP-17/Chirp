@@ -1,0 +1,8 @@
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_Chirp.CLI.Client.Tests
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\bin\Debug\net9.0\CoverletSourceRootsMapping_Chirp.CLI.Client.Tests
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.csproj.AssemblyReference.cache
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.AssemblyInfoInputs.cache
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.AssemblyInfo.cs
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.csproj.CoreCompileInputs.cache
+C:\Users\peter\Documents\Chirp\test\Chirp.CLI.Client.Tests\obj\Debug\net9.0\Chirp.CLI.Client.Tests.sourcelink.json

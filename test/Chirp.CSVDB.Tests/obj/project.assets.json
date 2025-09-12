@@ -8,6 +8,34 @@
           "build/netstandard2.0/coverlet.collector.targets": {}
         }
       },
+      "CsvHelper/33.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/CsvHelper.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/CsvHelper.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "docopt.net/0.8.1": {
+        "type": "package",
+        "dependencies": {
+          "System.ValueTuple": "4.5.0"
+        },
+        "compile": {
+          "lib/netstandard2.1/DocoptNet.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/DocoptNet.dll": {}
+        },
+        "build": {
+          "build/netstandard2.0/_._": {}
+        }
+      },
       "Microsoft.CodeCoverage/17.12.0": {
         "type": "package",
         "compile": {
@@ -316,6 +344,15 @@
           }
         }
       },
+      "System.ValueTuple/4.5.0": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.0/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/_._": {}
+        }
+      },
       "xunit/2.9.2": {
         "type": "package",
         "dependencies": {
@@ -411,6 +448,34 @@
         "build": {
           "build/net6.0/xunit.runner.visualstudio.props": {}
         }
+      },
+      "Chirp.CLI/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "CsvHelper": "33.1.0",
+          "docopt.net": "0.8.1",
+          "simpleDB": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Chirp.CLI.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Chirp.CLI.dll": {}
+        }
+      },
+      "simpleDB/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "CsvHelper": "33.1.0"
+        },
+        "compile": {
+          "bin/placeholder/simpleDB.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/simpleDB.dll": {}
+        }
       }
     }
   },
@@ -483,6 +548,49 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.2.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "CsvHelper/33.1.0": {
+      "sha512": "kqfTOZGrn7NarNeXgjh86JcpTHUoeQDMB8t9NVa/ZtlSYiV1rxfRnQ49WaJsob4AiGrbK0XDzpyKkBwai4F8eg==",
+      "type": "package",
+      "path": "csvhelper/33.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "csvhelper.33.1.0.nupkg.sha512",
+        "csvhelper.nuspec",
+        "lib/net462/CsvHelper.dll",
+        "lib/net462/CsvHelper.xml",
+        "lib/net47/CsvHelper.dll",
+        "lib/net47/CsvHelper.xml",
+        "lib/net48/CsvHelper.dll",
+        "lib/net48/CsvHelper.xml",
+        "lib/net8.0/CsvHelper.dll",
+        "lib/net8.0/CsvHelper.xml",
+        "lib/net9.0/CsvHelper.dll",
+        "lib/net9.0/CsvHelper.xml",
+        "lib/netstandard2.0/CsvHelper.dll",
+        "lib/netstandard2.0/CsvHelper.xml",
+        "lib/netstandard2.1/CsvHelper.dll",
+        "lib/netstandard2.1/CsvHelper.xml"
+      ]
+    },
+    "docopt.net/0.8.1": {
+      "sha512": "gCamJ95tJsmQVWYTPnOwZu43vTAIko0S6sW8sjC/LcIpfhxfcg9bwc/DvUQn6HHJizViV6NJj7sgDcmcud4cfA==",
+      "type": "package",
+      "path": "docopt.net/0.8.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "PackageIcon.png",
+        "analyzers/dotnet/cs/DocoptNet.dll",
+        "build/netstandard2.0/docopt.net.targets",
+        "docopt.net.0.8.1.nupkg.sha512",
+        "docopt.net.nuspec",
+        "lib/netstandard1.5/DocoptNet.dll",
+        "lib/netstandard2.0/DocoptNet.dll",
+        "lib/netstandard2.1/DocoptNet.dll"
       ]
     },
     "Microsoft.CodeCoverage/17.12.0": {
@@ -789,6 +897,50 @@
         "version.txt"
       ]
     },
+    "System.ValueTuple/4.5.0": {
+      "sha512": "okurQJO6NRE/apDIP23ajJ0hpiNmJ+f0BwOlB/cSqTLQlw5upkf+5+96+iG2Jw40G1fCVCyPz/FhIABUjMR+RQ==",
+      "type": "package",
+      "path": "system.valuetuple/4.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net461/System.ValueTuple.dll",
+        "lib/net461/System.ValueTuple.xml",
+        "lib/net47/System.ValueTuple.dll",
+        "lib/net47/System.ValueTuple.xml",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard1.0/System.ValueTuple.dll",
+        "lib/netstandard1.0/System.ValueTuple.xml",
+        "lib/netstandard2.0/_._",
+        "lib/portable-net40+sl4+win8+wp8/System.ValueTuple.dll",
+        "lib/portable-net40+sl4+win8+wp8/System.ValueTuple.xml",
+        "lib/uap10.0.16299/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net461/System.ValueTuple.dll",
+        "ref/net47/System.ValueTuple.dll",
+        "ref/netcoreapp2.0/_._",
+        "ref/netstandard2.0/_._",
+        "ref/portable-net40+sl4+win8+wp8/System.ValueTuple.dll",
+        "ref/uap10.0.16299/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "system.valuetuple.4.5.0.nupkg.sha512",
+        "system.valuetuple.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
     "xunit/2.9.2": {
       "sha512": "7LhFS2N9Z6Xgg8aE5lY95cneYivRMfRI8v+4PATa4S64D5Z/Plkg0qa8dTRHSiGRgVZ/CL2gEfJDE5AUhOX+2Q==",
       "type": "package",
@@ -932,10 +1084,21 @@
         "xunit.runner.visualstudio.2.8.2.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "Chirp.CLI/1.0.0": {
+      "type": "project",
+      "path": "../../src/Chirp/Chirp.CLI.csproj",
+      "msbuildProject": "../../src/Chirp/Chirp.CLI.csproj"
+    },
+    "simpleDB/1.0.0": {
+      "type": "project",
+      "path": "../../src/simpleDB/simpleDB.csproj",
+      "msbuildProject": "../../src/simpleDB/simpleDB.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
+      "Chirp.CLI >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 17.12.0",
       "coverlet.collector >= 6.0.2",
       "xunit >= 2.9.2",
@@ -943,19 +1106,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\2000b\\.nuget\\packages\\": {}
+    "C:\\Users\\peter\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\2000b\\Documents\\ChirpProject\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
       "projectName": "Chirp.CSVDB.Tests",
-      "projectPath": "C:\\Users\\2000b\\Documents\\ChirpProject\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
-      "packagesPath": "C:\\Users\\2000b\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\2000b\\Documents\\ChirpProject\\Chirp\\test\\Chirp.CSVDB.Tests\\obj\\",
+      "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
+      "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\2000b\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -966,7 +1129,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+              "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

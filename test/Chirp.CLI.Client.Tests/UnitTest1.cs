@@ -1,9 +1,11 @@
 ﻿namespace Chirp.CLI.Client.Tests;
 
+using Chirp.CLI;
+
 public class UnitTest1
 {
     [Fact]
-    public void Test1()
+    public void T()
     {
 
     }
@@ -14,7 +16,7 @@ public class UnitTest1
         // Arrange
         var args = new string[] { "read", "10" };
         // Act
-        var result = Program.Main(args);
+        Program.Main(args);
         // Assert
         Assert.Equal(0, result);
     }
