@@ -1130,8 +1130,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
-              "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
+            "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+              "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
             }
           }
         }

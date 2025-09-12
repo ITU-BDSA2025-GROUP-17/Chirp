@@ -4,14 +4,14 @@
     "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+    "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
+        "projectUniqueName": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
         "projectName": "Chirp.CLI",
-        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
+        "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
         "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\obj\\",
+        "outputPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
-                "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
+              "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+                "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
               }
             }
           }
@@ -77,14 +77,14 @@
         }
       }
     },
-    "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+    "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
+        "projectUniqueName": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
         "projectName": "simpleDB",
-        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
+        "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
         "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\obj\\",
+        "outputPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -164,8 +164,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
-                "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
+              "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+                "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
               }
             }
           }
