@@ -180,8 +180,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
-              "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
+            "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+              "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
             }
           }
         }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChirpWebDB")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4777f831b65b7b32d3b413a907a9ebc830997cd8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8579b7ae293d1548d7dfb3b2d4ce3c0c16073ff6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChirpWebDB")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChirpWebDB")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
