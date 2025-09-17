@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {}
+    "C:\\Users\\peter\\Documents\\Chirp\\src\\ChirpWebDB\\ChirpWebDB.csproj": {}
   },
   "projects": {
-    "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+    "C:\\Users\\peter\\Documents\\Chirp\\src\\ChirpWebDB\\ChirpWebDB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
-        "projectName": "Chirp.CLI",
-        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
+        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\src\\ChirpWebDB\\ChirpWebDB.csproj",
+        "projectName": "ChirpWebDB",
+        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\ChirpWebDB\\ChirpWebDB.csproj",
         "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\obj\\",
+        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\ChirpWebDB\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
-                "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
+              "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+                "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
               }
             }
           }
@@ -51,10 +51,6 @@
             "CsvHelper": {
               "target": "Package",
               "version": "[33.1.0, )"
-            },
-            "docopt.net": {
-              "target": "Package",
-              "version": "[0.8.1, )"
             }
           },
           "imports": [
@@ -69,6 +65,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
@@ -77,14 +76,14 @@
         }
       }
     },
-    "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+    "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
+        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
         "projectName": "simpleDB",
-        "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
+        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
         "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\obj\\",
+        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
