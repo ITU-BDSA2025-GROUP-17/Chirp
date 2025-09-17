@@ -9,6 +9,11 @@ app.MapGet("/cheeps", () =>
     return db.Read();
 });
 
+app.MapGet("/cheeps/{amount}", (int amount) =>
+{
+    return db.Read(amount);
+});
+
 app.MapPost("/cheep", (Cheep cheep) =>
 {
     db.Store(cheep);
