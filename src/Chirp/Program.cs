@@ -1,13 +1,14 @@
-﻿using System.Globalization;
-using Chirp.CLI;
-using CsvHelper;
-using DocoptNet;
-using simpleDB;
+﻿namespace Chirp.CLI;
 
-class Program
+using DocoptNet;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+
+public class Program
 {
-    public static CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("../../data/chirp_cli_db.csv");
-    static void Main(string[] args)
+    public static HttpClient client = new HttpClient();
+    public static async Task Main(string[] args)
     {
         const string usage = @"Chirp CLI version.
 
@@ -25,37 +26,46 @@ class Program
 
         var arguments = new Docopt().Apply(usage, args, version: "1.0", exit: true)!;
 
+        client.BaseAddress = new Uri("https://bdsagroup17chirpwebdb.azurewebsites.net");
         if (arguments["read"].IsTrue)
         {
             if (arguments["<limit>"].IsInt)
             {
-                read(arguments["<limit>"].AsInt);
+                await Read(arguments["<limit>"].AsInt);
             }
             else
             {
-                read();
+                await Read();
             }
-        } else if (arguments["cheep"].IsTrue)
+        }
+        else if (arguments["cheep"].IsTrue)
         {
             if (arguments["<message>"].IsString)
             {
-                cheep(arguments["<message>"].ToString());
+                await Cheep(arguments["<message>"].ToString());
             }
         }
     }
 
-    static void read(int? limit = null)
+    public static async Task Read(int? limit = null)
     {
-        UserInterface.PrintCheeps(db.Read(limit));
+        
+        var cheeps = limit == null ?
+            await client.GetFromJsonAsync<List<Cheep>>("cheeps") :
+            await client.GetFromJsonAsync<List<Cheep>>("cheeps/"+limit);
+        if (cheeps == null)
+        {
+            Console.WriteLine("Failed to fetch cheeps");
+            return;
+        }
+        UserInterface.PrintCheeps(cheeps);
     }
 
-    static void cheep(string message)
-    {   
+    static async Task Cheep(string message)
+    {
         string username = Environment.UserName;
         long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        
-        db.Store(new Cheep(username, message, unixTime));
+        await client.PostAsJsonAsync("cheep", new Cheep(username, message, unixTime));
     }
     
 }
-public record Cheep(string Author, string Message, long Timestamp);

@@ -5,7 +5,7 @@ namespace simpleDB;
 
 public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 {
-    String filepath;
+    string filepath;
     public CSVDatabase(string filepath)
     {
         this.filepath = filepath;
@@ -26,14 +26,18 @@ public sealed class CSVDatabase<T> : IDatabaseRepository<T>
 
     public void Store(T record)
     {
-        List<T> records = Read().ToList();
-        records.Add(record);
-
-        using (StreamWriter writer = new StreamWriter(filepath))
-        using (CsvWriter csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture))
+        using (var stream = new StreamWriter(filepath, append: true))
+        using (var csvWriter = new CsvWriter(stream, CultureInfo.InvariantCulture))
         {
-            csvWriter.WriteRecords(records);
-            writer.Flush();
+            if (!File.Exists(filepath))
+            {
+                csvWriter.WriteHeader<T>();
+                csvWriter.NextRecord();
+            }
+
+            csvWriter.WriteRecord(record);
+            csvWriter.NextRecord();
+            stream.Flush();
         }
     }
 }
