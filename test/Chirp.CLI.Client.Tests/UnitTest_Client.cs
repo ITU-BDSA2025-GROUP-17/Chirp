@@ -1,4 +1,7 @@
 ﻿namespace Chirp.CLI.Client.Tests;
+// this class tests all Chirp.CLI.client 
+
+
 
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -18,4 +21,8 @@ public class UnitTest1
         Assert.Equal("ropf",cheeps[0].Author);
         Assert.Equal(1690891760,cheeps[0].Timestamp);
     }
+
+
+
+
 }
