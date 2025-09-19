@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj": {}
+    "/Users/dittelobosabroe/Desktop/Chirp/test/Chirp.CSVDB.Tests/Chirp.CSVDB.Tests.csproj": {}
   },
   "projects": {
-    "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
+    "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/Chirp.CLI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
+        "projectUniqueName": "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/Chirp.CLI.csproj",
         "projectName": "Chirp.CLI",
-        "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj",
-        "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\obj\\",
+        "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/Chirp.CLI.csproj",
+        "packagesPath": "/Users/dittelobosabroe/.nuget/packages/",
+        "outputPath": "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/dittelobosabroe/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -26,8 +26,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
-                "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj"
+              "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj": {
+                "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj"
               }
             }
           }
@@ -73,21 +73,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj": {
+    "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
+        "projectUniqueName": "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj",
         "projectName": "simpleDB",
-        "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\simpleDB.csproj",
-        "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\simpleDB\\obj\\",
+        "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj",
+        "packagesPath": "/Users/dittelobosabroe/.nuget/packages/",
+        "outputPath": "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/dittelobosabroe/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -138,21 +138,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj": {
+    "/Users/dittelobosabroe/Desktop/Chirp/test/Chirp.CSVDB.Tests/Chirp.CSVDB.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
+        "projectUniqueName": "/Users/dittelobosabroe/Desktop/Chirp/test/Chirp.CSVDB.Tests/Chirp.CSVDB.Tests.csproj",
         "projectName": "Chirp.CSVDB.Tests",
-        "projectPath": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\Chirp.CSVDB.Tests.csproj",
-        "packagesPath": "C:\\Users\\peter\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\peter\\Documents\\Chirp\\test\\Chirp.CSVDB.Tests\\obj\\",
+        "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/test/Chirp.CSVDB.Tests/Chirp.CSVDB.Tests.csproj",
+        "packagesPath": "/Users/dittelobosabroe/.nuget/packages/",
+        "outputPath": "/Users/dittelobosabroe/Desktop/Chirp/test/Chirp.CSVDB.Tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\peter\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/dittelobosabroe/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -164,8 +164,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj": {
-                "projectPath": "c:\\Users\\peter\\Documents\\Chirp\\src\\Chirp\\Chirp.CLI.csproj"
+              "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/Chirp.CLI.csproj": {
+                "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/src/Chirp/Chirp.CLI.csproj"
+              },
+              "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj": {
+                "projectPath": "/Users/dittelobosabroe/Desktop/Chirp/src/simpleDB/simpleDB.csproj"
               }
             }
           }
@@ -219,7 +222,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

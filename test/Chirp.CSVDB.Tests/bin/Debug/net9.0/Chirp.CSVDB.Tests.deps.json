@@ -11,6 +11,7 @@
           "Chirp.CLI": "1.0.0",
           "Microsoft.NET.Test.Sdk": "17.12.0",
           "coverlet.collector": "6.0.2",
+          "simpleDB": "1.0.0",
           "xunit": "2.9.2",
           "xunit.runner.visualstudio": "2.8.2"
         },
@@ -319,7 +320,7 @@
         "runtime": {
           "lib/netstandard2.0/xunit.abstractions.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.0.0.0"
+            "fileVersion": "0.0.0.0"
           }
         }
       },

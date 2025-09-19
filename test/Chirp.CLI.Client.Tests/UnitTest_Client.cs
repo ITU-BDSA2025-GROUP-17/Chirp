@@ -1,4 +1,7 @@
 ﻿namespace Chirp.CLI.Client.Tests;
+// this class tests all Chirp.CLI.client 
+
+
 
 using Chirp.CLI;
 using simpleDB;
@@ -18,4 +21,8 @@ public class UnitTest1
         // Assert
         Assert.Equal("ropf @ 01-08-2023 14:09:20: Hello, BDSA students!\nadho @ 02-08-2023 14:19:38: Welcome to the course!\nadho @ 02-08-2023 14:37:38: I hope you had a good summer.\nropf @ 02-08-2023 15:04:47: Cheeping cheeps on Chirp :)\n", result);
     }
+
+
+
+
 }
