@@ -26,7 +26,7 @@ public class Program
 
         var arguments = new Docopt().Apply(usage, args, version: "1.0", exit: true)!;
 
-        client.BaseAddress = new Uri("http://localhost:5241");
+        client.BaseAddress = new Uri("https://bdsagroup17chirpwebdb.azurewebsites.net");
         if (arguments["read"].IsTrue)
         {
             if (arguments["<limit>"].IsInt)
@@ -62,7 +62,7 @@ public class Program
     }
 
     static async Task Cheep(string message)
-    {   
+    {
         string username = Environment.UserName;
         long unixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         await client.PostAsJsonAsync("cheep", new Cheep(username, message, unixTime));
