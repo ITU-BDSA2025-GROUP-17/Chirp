@@ -3,23 +3,23 @@
 
 
 
-using Chirp.CLI;
-using simpleDB;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 public class UnitTest1
 {
-
     [Fact]
-    public void TestReadTenCheeps()
+    public async Task TestReadFirstCheep() 
     {
-        // Arrange
-        var args = new string[] { "read", "10" };
-        // Act
-        CSVDatabase<Cheep> db = new CSVDatabase<Cheep>("../../../test_read_db.csv");
-        List<Cheep> db_result = db.Read(10).ToList();
-        string result = UserInterface.FormatCheeps(db_result);
-        // Assert
-        Assert.Equal("ropf @ 01-08-2023 14:09:20: Hello, BDSA students!\nadho @ 02-08-2023 14:19:38: Welcome to the course!\nadho @ 02-08-2023 14:37:38: I hope you had a good summer.\nropf @ 02-08-2023 15:04:47: Cheeping cheeps on Chirp :)\n", result);
+        HttpClient client = new HttpClient();
+        
+        client.BaseAddress = new Uri("http://localhost:5241");
+        var cheeps = await client.GetFromJsonAsync<List<Cheep>>("cheeps/");
+        
+        Assert.Equal("Hello, BDSA students!",cheeps[0].Message);
+        Assert.Equal("ropf",cheeps[0].Author);
+        Assert.Equal(1690891760,cheeps[0].Timestamp);
     }
 
 
