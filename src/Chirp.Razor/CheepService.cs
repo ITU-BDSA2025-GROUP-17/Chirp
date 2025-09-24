@@ -1,3 +1,5 @@
+using Microsoft.Data.Sqlite;
+
 public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public interface ICheepService
@@ -8,22 +10,37 @@ public interface ICheepService
 
 public class CheepService : ICheepService
 {
-    // These would normally be loaded from a database for example
-    private static readonly List<CheepViewModel> _cheeps = new()
-        {
-            new CheepViewModel("Helge", "Hello, BDSA students!", UnixTimeStampToDateTimeString(1690892208)),
-            new CheepViewModel("Adrian", "Hej, velkommen til kurset.", UnixTimeStampToDateTimeString(1690895308)),
-        };
 
     public List<CheepViewModel> GetCheeps()
     {
-        return _cheeps;
+        using var connection = new SqliteConnection("Data Source=cheeps.db");
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT user.username, message.text, message.pub_date FROM message INNER JOIN user ON message.author_id = user.user_id";
+        using var reader = command.ExecuteReader();
+        var cheeps = new List<CheepViewModel>();
+        while (reader.Read())
+        {
+            cheeps.Add(new CheepViewModel(reader.GetString(0), reader.GetString(1), UnixTimeStampToDateTimeString(reader.GetDouble(2))));
+        }
+        return cheeps;
     }
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
     {
-        // filter by the provided author name
-        return _cheeps.Where(x => x.Author == author).ToList();
+        
+        using var connection = new SqliteConnection($"Data Source=cheeps.db");
+        
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT user.username, message.text, message.pub_date FROM message INNER JOIN user ON message.author_id = user.user_id WHERE user.username = @author";
+        using var reader = command.ExecuteReader();
+        var cheeps = new List<CheepViewModel>();
+        while (reader.Read())
+        {
+            cheeps.Add(new CheepViewModel(reader.GetString(0), reader.GetString(1), UnixTimeStampToDateTimeString(reader.GetDouble(2))));
+        }
+        return cheeps;
     }
 
     private static string UnixTimeStampToDateTimeString(double unixTimeStamp)
