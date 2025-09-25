@@ -13,7 +13,12 @@ public class CheepService : ICheepService
 
     public List<CheepViewModel> GetCheeps()
     {
-        using var connection = new SqliteConnection("Data Source=cheeps.db");
+        var dbPath = Environment.GetEnvironmentVariable("CHIRPDBPATH")
+                     ?? Path.Combine(Path.GetTempPath(), "chirp.db");
+
+        using var connection = new SqliteConnection($"Data Source={dbPath}");
+        //Console.WriteLine($"Using database at: {dbPath}");
+        
         connection.Open();
         using var command = connection.CreateCommand();
         command.CommandText = "SELECT user.username, message.text, message.pub_date FROM message INNER JOIN user ON message.author_id = user.user_id";
@@ -28,8 +33,9 @@ public class CheepService : ICheepService
 
     public List<CheepViewModel> GetCheepsFromAuthor(string author)
     {
-        
-        using var connection = new SqliteConnection($"Data Source=cheeps.db");
+        var dbPath = Environment.GetEnvironmentVariable("CHIRPDBPATH")
+                     ?? Path.Combine(Path.GetTempPath(), "chirp.db");
+        using var connection = new SqliteConnection($"Data Source={dbPath}");
         
         connection.Open();
         using var command = connection.CreateCommand();
