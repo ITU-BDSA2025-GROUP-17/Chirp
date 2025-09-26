@@ -4,6 +4,13 @@
     ViewData["Title"] = "Chirp!";
     Layout = "Shared/_Layout";
     var routeName = HttpContext.GetRouteValue("author");
+    int currentPage = 1;
+    var pageQuery = Model.HttpContext.Request.Query["page"];
+    if (!string.IsNullOrEmpty(pageQuery))
+    {
+        int.TryParse(pageQuery, out currentPage);
+        if (currentPage < 1) currentPage = 1; 
+    }
 }
 
 <div>
@@ -25,6 +32,16 @@
                 </li>
             }
         </ul>
+        <div class="pagination">
+            @if (currentPage > 1)
+            {
+                <a href="/?page=@(currentPage - 1)">Prev</a>
+            }
+
+            <span>Page @currentPage</span>
+
+            <a href="/?page=@(currentPage + 1)">Next</a>
+        </div>
     }
     else
     {
