@@ -1,12 +1,11 @@
 using Chirp.Razor.wwwroot;
-using Microsoft.Data.Sqlite;
 
 public record CheepViewModel(string Author, string Message, string Timestamp);
 
 public interface ICheepService
 {
-    public List<CheepViewModel> GetCheeps();
-    public List<CheepViewModel> GetCheepsFromAuthor(string author);
+    public List<CheepViewModel> GetCheeps(int page);
+    public List<CheepViewModel> GetCheepsFromAuthor(string author, int page);
 }
 
 public class CheepService : ICheepService
@@ -14,17 +13,19 @@ public class CheepService : ICheepService
     IDBFacade<CheepViewModel> _dbFacade;
     public CheepService()
     {
-        var dbPath = Environment.GetEnvironmentVariable("CHIRPDBPATH");
-        _dbFacade = new DBFacade(dbPath);
+        var dbPath = Environment.GetEnvironmentVariable("CHIRPDBPATH")
+                     ?? Path.Combine(Path.GetTempPath(), "chirp.db");
+
+        _dbFacade = new CheepDBFacade(dbPath);
     }
-    public List<CheepViewModel> GetCheeps()
+    public List<CheepViewModel> GetCheeps(int page)
     {
-        return _dbFacade.Read(0, 32);
+        return _dbFacade.Read((page - 1) * 32, 32);
     }
 
-    public List<CheepViewModel> GetCheepsFromAuthor(string author)
+    public List<CheepViewModel> GetCheepsFromAuthor(string author, int page)
     {
-        return _dbFacade.ReadByName(author);
+        return _dbFacade.ReadByName(author, (page - 1) * 32, 32);
         
         
         
