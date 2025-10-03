@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="cheeps.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
