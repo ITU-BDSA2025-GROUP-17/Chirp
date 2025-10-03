@@ -1,19 +1,53 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Chirp.Razor.wwwroot;
 
 public class CheepRepository : ICheepRepository
 {
-    public Task CreateCheep(CheepDTO cheep)
+    //access the database
+    private readonly CheepDBContext _dbContext;
+    public CheepRepository(CheepDBContext context)
     {
-        throw new NotImplementedException();
+        _dbContext = context;
+        DbInitializer.SeedDatabase(_dbContext);
+    }
+    public async Task CreateCheep(CheepDTO cheep)
+    {
+        Cheep newCheep = new()
+        {
+            AuthorId = cheep.Author.AuthorId,
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            Author = cheep.Author
+        };
+        var queryResult = await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
+
+        await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
-    public Task<List<CheepDTO>> ReadCheeps(string user)
+    public async Task<List<CheepDTO>> ReadCheeps(string user)
     {
-        throw new NotImplementedException();
+        // Define the query - with our setup, EF Core translates this to an SQLite query in the background
+        var query = from message in _dbContext.Messages
+            where message.Author.Name == user
+            select new CheepDTO( message.Author, message.Text, message.TimeStamp, message.CheepId );
+        
+        // Execute the query and store the results
+        var result = await query.ToListAsync();
+        return result;
     }
 
-    public Task UpdateCheep(CheepDTO cheep)
+    public async Task UpdateCheep(CheepDTO cheep)
     {
-        throw new NotImplementedException();
+        var query = from message in _dbContext.Messages
+            where message.CheepId == cheep.CheepId
+            select message;
+
+        var result = await query.ToListAsync();
+        if (result.Count < 1)
+        {
+            result[0].Text = cheep.Text;
+            _dbContext.SaveChanges();
+        }
     }
 }
