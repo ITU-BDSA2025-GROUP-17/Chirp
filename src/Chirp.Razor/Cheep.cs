@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Cheep
 {
     [Column("message_id")]   
-    public long messageId { set; get; }
-    public Author author { set; get; }
-    public string text { set; get; }
+    public long CheepId { set; get; }
+    public Author Author { set; get; }
+    public string Text { set; get; }
     [Column("pub_date")]  
-    public long pubDate { set; get; }
+    public long PubDate { set; get; }
 
     [ForeignKey("authorId")]
     [Column("author_id")]
-    public long authorId { set; get; }
+    public long AuthorId { set; get; }
 }
