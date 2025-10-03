@@ -16,13 +16,14 @@ public class UserTimelineModel : PageModel
 
     public async Task<ActionResult> OnGet(string author)
     {
-        /*string? page = HttpContext.Request.Query["page"];
-        int page_num = 1;
+        string? page = HttpContext.Request.Query["page"];
+        int pageNum = 1;
         if (page != null)
         {
-            page_num = int.Parse(page);
-        }*/
-        Cheeps = await _repository.ReadCheeps(author);
+            pageNum = int.Parse(page);
+        }
+
+        Cheeps = await _repository.ReadCheeps(author, (pageNum - 1) * 32, 32);
         return Page();
     }
 }

@@ -16,15 +16,14 @@ public class PublicModel : PageModel
 
     public async Task<ActionResult> OnGet()
     {
-        /*string? page = HttpContext.Request.Query["page"];
-        int page_num = 1;
+        string? page = HttpContext.Request.Query["page"];
+        int pageNum = 1;
         if (page != null)
         {
-            page_num = int.Parse(page);
+            pageNum = int.Parse(page);
         }
 
-        Cheeps = _service.GetCheeps(page_num);*/
-        Cheeps = await _repository.ReadCheeps(null);
+        Cheeps = await _repository.ReadCheeps(null, (pageNum-1)*32, 32);
         return Page();
     }
 }
