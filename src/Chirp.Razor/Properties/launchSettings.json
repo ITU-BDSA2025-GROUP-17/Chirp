@@ -12,11 +12,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5273",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "CHIRPDBPATH": "../../data/cheeps.db"
-      }
+      "applicationUrl": "http://localhost:5273"
     },
     "https": {
       "commandName": "Project",
