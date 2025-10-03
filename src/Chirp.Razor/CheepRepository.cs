@@ -25,11 +25,11 @@ public class CheepRepository : ICheepRepository
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
-    public async Task<List<CheepDTO>> ReadCheeps(string user)
+    public async Task<List<CheepDTO>> ReadCheeps(string? user)
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from message in _dbContext.Messages
-            where message.Author.Name == user
+            where message.Author.Name == user || user == null
             select new CheepDTO( message.Author, message.Text, message.TimeStamp, message.CheepId );
         
         // Execute the query and store the results
