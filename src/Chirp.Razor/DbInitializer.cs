@@ -1,3 +1,5 @@
+namespace Chirp.Razor.wwwroot;
+
 using System;
 
 public static class DbInitializer

@@ -1,4 +1,4 @@
-
+namespace Chirp.Razor.wwwroot;
 
 using System.ComponentModel.DataAnnotations.Schema;
 

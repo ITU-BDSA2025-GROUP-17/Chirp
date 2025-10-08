@@ -9,7 +9,6 @@ public class CheepRepository : ICheepRepository
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
-        DbInitializer.SeedDatabase(_dbContext);
     }
     public async Task CreateCheep(CheepDTO cheep)
     {
@@ -29,8 +28,10 @@ public class CheepRepository : ICheepRepository
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from message in _dbContext.Messages
-            where message.Author.Name == user || user == null
-            select new CheepDTO(message.Author, message.Text, message.TimeStamp, message.CheepId);
+                    where message.Author.Name == user || user == null
+                    orderby message.TimeStamp descending
+                    select new CheepDTO(message.Author, message.Text, message.TimeStamp, message.CheepId)
+            ;
         
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
