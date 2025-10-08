@@ -9,7 +9,6 @@ public class CheepRepository : ICheepRepository
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
-        DbInitializer.SeedDatabase(_dbContext);
     }
     public async Task CreateCheep(CheepDTO cheep)
     {
