@@ -3,15 +3,7 @@
 @{
     ViewData["Title"] = "Chirp!";
     Layout = "Shared/_Layout";
-    int currentPage = 1;
-    var pageQuery = Model.HttpContext.Request.Query["page"];
-    if (!string.IsNullOrEmpty(pageQuery))
-    {
-        int.TryParse(pageQuery, out currentPage);
-        if (currentPage < 1) currentPage = 1; 
-    }
 }
-
 
 <div>
     <h2> Public Timeline </h2>
@@ -22,7 +14,7 @@
             @foreach (var cheep in Model.Cheeps)
             {
                 <li>
-                    <p>
+                    <p> 
                         <strong>
                             <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
                         </strong>
@@ -32,17 +24,6 @@
                 </li>
             }
         </ul>
-        <div class="pagination">
-            @if (currentPage > 1)
-            {
-                <a href="/?page=@(currentPage - 1)">Prev</a>
-            }
-
-            <span>Page @currentPage</span>
-
-            <a href="/?page=@(currentPage + 1)">Next</a>
-        </div>
-
     }
     else
     {
