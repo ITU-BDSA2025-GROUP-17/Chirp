@@ -20,8 +20,7 @@ public class CheepRepository : ICheepRepository
             TimeStamp = cheep.TimeStamp,
             Author = cheep.Author
         };
-        var queryResult = await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
-
+        await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
@@ -31,8 +30,12 @@ public class CheepRepository : ICheepRepository
         var query = from message in _dbContext.Messages
                     where message.Author.Name == user || user == null
                     orderby message.TimeStamp descending
-                    select new CheepDTO(message.Author, message.Text, message.TimeStamp, message.CheepId)
-            ;
+                    select new CheepDTO{
+                            Author = message.Author, 
+                            Text = message.Text, 
+                            TimeStamp = message.TimeStamp, 
+                            CheepId = message.CheepId
+                    };
         
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
@@ -51,5 +54,45 @@ public class CheepRepository : ICheepRepository
             result[0].Text = cheep.Text;
             _dbContext.SaveChanges();
         }
+    }
+
+    public async Task<AuthorDTO?> GetAuthorByName(string authorName)
+    {
+        var query = from author in _dbContext.Users
+            where author.Name == authorName
+            select new AuthorDTO{
+                Name = author.Name,
+                Email = author.Email,
+                Messages = author.Messages
+            };
+        
+        var result = await query.FirstOrDefaultAsync();
+        return result;
+    }
+
+    public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
+    {
+        var query = from author in _dbContext.Users
+            where author.Email == authorEmail
+            select new AuthorDTO{
+                Name = author.Name,
+                Email = author.Email,
+                Messages = author.Messages
+            };
+        
+        var result = await query.FirstOrDefaultAsync();
+        return result;
+    }
+
+    public async Task CreateAuthor(AuthorDTO author)
+    {
+        var newAuthor = new Author()
+        {
+            Name = author.Name,
+            Email = author.Email,
+            Messages = author.Messages
+        };
+        await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
+        await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 }

@@ -12,4 +12,13 @@ public class CheepDBContext : DbContext
     {
         
     }
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<Author>(entity => {
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => e.Name).IsUnique();
+        });
+    }
+    
+    
 }
