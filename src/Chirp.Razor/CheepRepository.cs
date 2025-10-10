@@ -83,13 +83,12 @@ public class CheepRepository : ICheepRepository
         return result;
     }
 
-    public async Task CreateAuthor(AuthorDTO author)
+    public async Task CreateAuthor(string authorName, string authorEmail)
     {
         var newAuthor = new Author()
         {
-            Name = author.Name,
-            Email = author.Email,
-            Messages = author.Messages
+            Name = authorName,
+            Email = authorEmail,
         };
         await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database

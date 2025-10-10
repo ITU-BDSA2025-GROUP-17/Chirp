@@ -7,7 +7,7 @@ public interface ICheepRepository
     Task UpdateCheep(CheepDTO cheep);
     Task<AuthorDTO?> GetAuthorByName(string authorName);
     Task<AuthorDTO?> GetAuthorByEmail(string authorEmail);
-    Task CreateAuthor(AuthorDTO author);
+    Task CreateAuthor(string authorName,string authorEmail);
     
     
 }
