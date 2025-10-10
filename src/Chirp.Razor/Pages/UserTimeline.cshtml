@@ -35,12 +35,11 @@
         <div class="pagination">
             @if (currentPage > 1)
             {
-                <a href="/?page=@(currentPage - 1)">Prev</a>
+                <a href="/@routeName?page=@(currentPage - 1)">Prev</a>
             }
-
             <span>Page @currentPage</span>
-
-            <a href="/?page=@(currentPage + 1)">Next</a>
+            
+            <a href="/@routeName?page=@(currentPage + 1)">Next</a>
         </div>
     }
     else
