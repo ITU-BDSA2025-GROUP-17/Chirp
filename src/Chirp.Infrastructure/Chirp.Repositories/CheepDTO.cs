@@ -1,8 +1,9 @@
-namespace Chirp.Razor.wwwroot;
+namespace Chirp.Repositories;
+using Core;
 
 public class CheepDTO
 {
-    public Author Author;
+    public AuthorDTO Author;
     public string Text;
     public DateTime TimeStamp;
     public long CheepId;

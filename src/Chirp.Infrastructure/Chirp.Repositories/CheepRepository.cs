@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+namespace Chirp.Repositories;
 
-namespace Chirp.Razor.wwwroot;
+using Core;
 
 public class CheepRepository : ICheepRepository
 {
@@ -12,12 +13,13 @@ public class CheepRepository : ICheepRepository
     }
     public async Task CreateCheep(CheepDTO cheep)
     {
+        var author = await GetAuthorByName(Cheep.Author.Name);
         Cheep newCheep = new()
         {
-            AuthorId = cheep.Author.AuthorId,
+            AuthorId = author.AuthorId,
             Text = cheep.Text,
             TimeStamp = cheep.TimeStamp,
-            Author = cheep.Author
+            Author = author
         };
         await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
