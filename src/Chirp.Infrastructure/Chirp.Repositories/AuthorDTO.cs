@@ -1,9 +1,9 @@
 ﻿namespace Chirp.Repositories;
-using Core;
 
 public class AuthorDTO
 {
-    public string Name;
-    public string Email;
-    public ICollection<CheepDTO> Messages;
+    public required string Name;
+    public required string Email;
+    public long? AuthorId;
+    public ICollection<CheepDTO>? Messages;
 }

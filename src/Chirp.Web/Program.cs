@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Load database connection via configuration
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
 
 // Add services to the container.
 builder.Services.AddRazorPages();

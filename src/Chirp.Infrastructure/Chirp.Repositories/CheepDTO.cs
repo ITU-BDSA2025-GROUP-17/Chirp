@@ -1,10 +1,9 @@
 namespace Chirp.Repositories;
-using Core;
 
 public class CheepDTO
 {
-    public AuthorDTO Author;
-    public string Text;
-    public DateTime TimeStamp;
-    public long CheepId;
+    public required AuthorDTO Author;
+    public required string Text;
+    public required DateTime TimeStamp;
+    public long? CheepId;
 }

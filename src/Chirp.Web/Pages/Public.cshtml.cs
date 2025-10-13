@@ -1,13 +1,13 @@
-﻿using Chirp.Razor.wwwroot;
+﻿namespace Chirp.Web.Pages;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
-namespace Chirp.Razor.Pages;
+using Repositories;
 
 public class PublicModel : PageModel
 {
     private readonly ICheepRepository _repository;
-    public List<CheepDTO> Cheeps { get; set; }
+    public required List<CheepDTO> Cheeps { get; set; }
 
     public PublicModel(ICheepRepository repository)
     {
