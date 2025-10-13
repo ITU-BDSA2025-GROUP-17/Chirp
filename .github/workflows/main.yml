@@ -18,8 +18,9 @@ jobs:
       with:
         dotnet-version: 9.0.x
     - name: Restore dependencies
-      run: dotnet restore src/Chirp.Razor/Chirp.Razor.csproj
+      run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
     - name: Build
-      run: dotnet build src/Chirp.Razor/Chirp.Razor.csproj --no-restore
+      run: dotnet build src/Chirp.Web/Chirp.Web.csproj --no-restore
     - name: Test
-      run: dotnet test src/Chirp.Razor/Chirp.Razor.csproj --no-build --verbosity normal
+      run: dotnet test src/Chirp.Web/Chirp.Web.csproj --no-build --verbosity normal
+      run: dotnet test test/Chirp.DB.Tests --no-build --verbosity normal

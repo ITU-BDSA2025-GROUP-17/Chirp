@@ -4,11 +4,15 @@ using Xunit.Sdk;
 
 namespace Chirp.DB.Tests;
 
-using Chirp.Razor.wwwroot;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+
+using Chirp.Core;
+using Chirp.Repositories;
+//using Services;
+using Chirp.Web;
 
 public class CheepRepositoryTests
 {
@@ -113,11 +117,18 @@ public class CheepRepositoryTests
         if(_db == null) throw new NullReferenceException("_db is null");
         
         var testAuthor = RandomTestUser();
+        var testAuthorDto = new AuthorDTO {
+            AuthorId = 1,
+            Name = testAuthor.Name,
+            Email = testAuthor.Email
+        };
+        _db.Users.AddRange(new List<Author> { testAuthor });
+        await _db.SaveChangesAsync();
         for(var i = 0; i < 1000; i++) {
             var testCheep = RandomTestCheep(testAuthor, 150, i);
             var testCheepDto = new CheepDTO {
                 Text = testCheep.Text,  
-                Author = testAuthor,  
+                Author = testAuthorDto,  
                 TimeStamp = testCheep.TimeStamp
             };
 
@@ -172,6 +183,7 @@ public class CheepRepositoryTests
             
             catch (DbUpdateException e)
             {
+                _ = e;
                 // Expected, as usernames will sometimes overlap
                 // When this happens, the unique requirement of Author.Name is violated
                 continue;

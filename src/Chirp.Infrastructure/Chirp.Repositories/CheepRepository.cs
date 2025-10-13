@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 namespace Chirp.Repositories;
 
+using System.Collections.ObjectModel;
 using Core;
 
 public class CheepRepository : ICheepRepository
@@ -66,44 +67,52 @@ public class CheepRepository : ICheepRepository
     {
         var query = from author in _dbContext.Users
             where author.Name == authorName
-            select new AuthorDTO{
-                Name = author.Name,
-                Email = author.Email,
-                Messages = author.Messages.Select(m => new CheepDTO {
-                    CheepId = m.CheepId,
-                    Text = m.Text,
-                    TimeStamp = m.TimeStamp,
-                    Author = new AuthorDTO {
-                        Name = author.Name,
-                        Email = author.Email
-                    }
-                }).ToList()
-            };
-        
+            select author
+        ;
+
         var result = await query.FirstOrDefaultAsync();
-        return result;
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.Name,
+            Email = result.Email,
+            Messages = result.Messages.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.Name,
+                    Email = result.Email
+                }
+            }).ToList()
+        };
     }
 
     public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
     {
         var query = from author in _dbContext.Users
             where author.Email == authorEmail
-            select new AuthorDTO {
-                Name = author.Name,
-                Email = author.Email,
-                Messages = author.Messages.Select(m => new CheepDTO {
-                    CheepId = m.CheepId,
-                    Text = m.Text,
-                    TimeStamp = m.TimeStamp,
-                    Author = new AuthorDTO {
-                        Name = author.Name,
-                        Email = author.Email
-                    }
-                }).ToList()
-            };
-        
+            select author
+        ;
+
         var result = await query.FirstOrDefaultAsync();
-        return result;
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.Name,
+            Email = result.Email,
+            Messages = result.Messages.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.Name,
+                    Email = result.Email
+                }
+            }).ToList()
+        };
     }
 
     public async Task CreateAuthor(string authorName, string authorEmail)
