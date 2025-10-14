@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+namespace Chirp.Repositories;
 
-namespace Chirp.Razor.wwwroot;
+using System.Collections.ObjectModel;
+using Core;
 
 public class CheepRepository : ICheepRepository
 {
@@ -10,14 +12,16 @@ public class CheepRepository : ICheepRepository
     {
         _dbContext = context;
     }
+
     public async Task CreateCheep(CheepDTO cheep)
     {
+        if (cheep.Author == null) throw new NullReferenceException("Author is null");
+        if (cheep.Author.AuthorId == null) throw new NullReferenceException("AuthorId is null");
         Cheep newCheep = new()
         {
-            AuthorId = cheep.Author.AuthorId,
+            AuthorId = (long)cheep.Author.AuthorId,
             Text = cheep.Text,
-            TimeStamp = cheep.TimeStamp,
-            Author = cheep.Author
+            TimeStamp = cheep.TimeStamp
         };
         await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
@@ -30,10 +34,14 @@ public class CheepRepository : ICheepRepository
                     where message.Author.Name == user || user == null
                     orderby message.TimeStamp descending
                     select new CheepDTO{
-                            Author = message.Author, 
                             Text = message.Text, 
                             TimeStamp = message.TimeStamp, 
-                            CheepId = message.CheepId
+                            CheepId = message.CheepId,
+                            Author = new() {
+                                AuthorId = message.Author.AuthorId,
+                                Name = message.Author.Name,
+                                Email = message.Author.Email
+                            }
                     };
         
         // Execute the query and store the results
@@ -59,28 +67,52 @@ public class CheepRepository : ICheepRepository
     {
         var query = from author in _dbContext.Users
             where author.Name == authorName
-            select new AuthorDTO{
-                Name = author.Name,
-                Email = author.Email,
-                Messages = author.Messages
-            };
-        
+            select author
+        ;
+
         var result = await query.FirstOrDefaultAsync();
-        return result;
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.Name,
+            Email = result.Email,
+            Messages = result.Messages.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.Name,
+                    Email = result.Email
+                }
+            }).ToList()
+        };
     }
 
     public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
     {
         var query = from author in _dbContext.Users
             where author.Email == authorEmail
-            select new AuthorDTO{
-                Name = author.Name,
-                Email = author.Email,
-                Messages = author.Messages
-            };
-        
+            select author
+        ;
+
         var result = await query.FirstOrDefaultAsync();
-        return result;
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.Name,
+            Email = result.Email,
+            Messages = result.Messages.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.Name,
+                    Email = result.Email
+                }
+            }).ToList()
+        };
     }
 
     public async Task CreateAuthor(string authorName, string authorEmail)

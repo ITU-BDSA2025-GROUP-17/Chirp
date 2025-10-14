@@ -1,4 +1,5 @@
-namespace Chirp.Razor.wwwroot;
+namespace Chirp.Repositories;
+using Core;
 
 public interface ICheepRepository
 {
