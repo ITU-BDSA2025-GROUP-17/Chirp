@@ -31,7 +31,7 @@ public class CheepRepository : ICheepRepository
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from message in _dbContext.Messages
-                    where message.Author.Name == user || user == null
+                    where message.Author.UserName == user || user == null
                     orderby message.TimeStamp descending
                     select new CheepDTO{
                             Text = message.Text, 
@@ -39,7 +39,7 @@ public class CheepRepository : ICheepRepository
                             CheepId = message.CheepId,
                             Author = new() {
                                 AuthorId = message.Author.AuthorId,
-                                Name = message.Author.Name,
+                                Name = message.Author.UserName,
                                 Email = message.Author.Email
                             }
                     };
@@ -66,7 +66,7 @@ public class CheepRepository : ICheepRepository
     public async Task<AuthorDTO?> GetAuthorByName(string authorName)
     {
         var query = from author in _dbContext.Users
-            where author.Name == authorName
+            where author.UserName == authorName
             select author
         ;
 
@@ -75,14 +75,14 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.Name,
+            Name = result.UserName,
             Email = result.Email,
             Messages = result.Messages.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.Name,
+                    Name = result.UserName,
                     Email = result.Email
                 }
             }).ToList()
@@ -101,14 +101,14 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.Name,
+            Name = result.UserName,
             Email = result.Email,
             Messages = result.Messages.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.Name,
+                    Name = result.UserName,
                     Email = result.Email
                 }
             }).ToList()
@@ -119,7 +119,7 @@ public class CheepRepository : ICheepRepository
     {
         var newAuthor = new Author()
         {
-            Name = authorName,
+            UserName = authorName,
             Email = authorEmail,
         };
         await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!

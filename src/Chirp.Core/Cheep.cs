@@ -9,13 +9,13 @@ public class Cheep
     public long CheepId { set; get; }
     
     [StringLength(160)]
-    public string Text { set; get; }
+    public required string Text { set; get; }
     [Column("time_stamp")]  
     public DateTime TimeStamp { set; get; }
 
-    [ForeignKey("authorId")]
+    [ForeignKey("AuthorId")]
     [Column("author_id")]
     public long AuthorId { set; get; }
     
-    public Author Author { set; get; }
+    public Author? Author { set; get; }
 }
