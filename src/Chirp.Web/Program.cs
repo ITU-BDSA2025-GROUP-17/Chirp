@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Chirp.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,9 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Load database connection via configuration
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
-
-builder.Services.AddIdentityCore<Author>(options => options.SignIn.RequireConfirmedAccount = true)
-.AddEntityFrameworkStores<CheepDBContext>();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+// Identity type for site
+builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<CheepDBContext>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -31,6 +31,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
