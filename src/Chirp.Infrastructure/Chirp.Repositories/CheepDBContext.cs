@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 public class CheepDBContext : IdentityDbContext<Author, IdentityRole<int>, int>
 {
-    public DbSet<Cheep> Messages { get; set; }
+    public DbSet<Cheep> Cheeps { get; set; }
     
     //public DbSet<Author> Authors { get; set; }
 
