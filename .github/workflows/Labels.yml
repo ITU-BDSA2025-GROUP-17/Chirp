@@ -9,3 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+    steps:
+      - name: Do nothing
+        run: echo "No labels added"
