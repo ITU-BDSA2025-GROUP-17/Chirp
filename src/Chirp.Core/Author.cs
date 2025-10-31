@@ -1,13 +1,10 @@
 namespace Chirp.Core;
 
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
-public class Author
+public class Author : IdentityUser<int>
 {
-    public long AuthorId { set; get; }
-    public string Name { set; get; }
-    public string Email { set; get; }
-    public ICollection<Cheep> Messages { set; get; }
-    
-    
+    public long AuthorId { get; set; }
+    public ICollection<Cheep>? Cheeps { get; set; }
 }

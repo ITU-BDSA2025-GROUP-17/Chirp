@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 namespace Chirp.Repositories;
 
-using System.Collections.ObjectModel;
 using Core;
 
 public class CheepRepository : ICheepRepository
@@ -11,6 +10,7 @@ public class CheepRepository : ICheepRepository
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
+
     }
 
     public async Task CreateCheep(CheepDTO cheep)
@@ -23,15 +23,15 @@ public class CheepRepository : ICheepRepository
             Text = cheep.Text,
             TimeStamp = cheep.TimeStamp
         };
-        await _dbContext.Messages.AddAsync(newCheep); // does not write to the database!
+        await _dbContext.Cheeps.AddAsync(newCheep); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
     public async Task<List<CheepDTO>> ReadCheeps(string? user, int offset, int count)
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
-        var query = from message in _dbContext.Messages
-                    where message.Author.Name == user || user == null
+        var query = from message in _dbContext.Cheeps
+                    where message.Author.UserName == user || user == null
                     orderby message.TimeStamp descending
                     select new CheepDTO{
                             Text = message.Text, 
@@ -39,7 +39,7 @@ public class CheepRepository : ICheepRepository
                             CheepId = message.CheepId,
                             Author = new() {
                                 AuthorId = message.Author.AuthorId,
-                                Name = message.Author.Name,
+                                Name = message.Author.UserName,
                                 Email = message.Author.Email
                             }
                     };
@@ -51,7 +51,7 @@ public class CheepRepository : ICheepRepository
 
     public async Task UpdateCheep(CheepDTO cheep)
     {
-        var query = from message in _dbContext.Messages
+        var query = from message in _dbContext.Cheeps
             where message.CheepId == cheep.CheepId
             select message;
 
@@ -66,7 +66,7 @@ public class CheepRepository : ICheepRepository
     public async Task<AuthorDTO?> GetAuthorByName(string authorName)
     {
         var query = from author in _dbContext.Users
-            where author.Name == authorName
+            where author.UserName == authorName
             select author
         ;
 
@@ -75,14 +75,14 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.Name,
+            Name = result.UserName,
             Email = result.Email,
-            Messages = result.Messages.Select(m => new CheepDTO {
+            Messages = result.Cheeps.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.Name,
+                    Name = result.UserName,
                     Email = result.Email
                 }
             }).ToList()
@@ -101,14 +101,14 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.Name,
+            Name = result.UserName,
             Email = result.Email,
-            Messages = result.Messages.Select(m => new CheepDTO {
+            Messages = result.Cheeps.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.Name,
+                    Name = result.UserName,
                     Email = result.Email
                 }
             }).ToList()
@@ -119,7 +119,7 @@ public class CheepRepository : ICheepRepository
     {
         var newAuthor = new Author()
         {
-            Name = authorName,
+            UserName = authorName,
             Email = authorEmail,
         };
         await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
