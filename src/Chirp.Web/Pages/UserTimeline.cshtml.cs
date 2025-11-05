@@ -8,6 +8,8 @@ public class UserTimelineModel : PageModel
 {
     private readonly ICheepRepository _repository;
     public required List<CheepDTO> Cheeps { get; set; }
+    
+    public string Text;
 
     public UserTimelineModel(ICheepRepository repository)
     {

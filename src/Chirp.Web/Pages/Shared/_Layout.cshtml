@@ -10,13 +10,13 @@
     <h1><a href="../../../"><img src="/images/icon1.png" alt="Icon1" /></a>Chirp!</h1>
 
     <div class=body>
-            @RenderBody()
+        @RenderBody()
     </div>
     <div class=footer>
         Chirp &mdash; An ASP.NET Application
     </div>
 </div>
-
+<partial name="_LoginPartial" />
 </body>
 @await RenderSectionAsync("Scripts", required: false)
 </html>

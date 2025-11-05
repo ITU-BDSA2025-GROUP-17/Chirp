@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Repositories;
 using Chirp.Core;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireCon
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 // For Github OAuth
 builder.Services.AddSession();
@@ -36,7 +38,6 @@ if (app.Environment.IsProduction())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
