@@ -31,16 +31,16 @@ public class CheepRepository : ICheepRepository
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from message in _dbContext.Cheeps
-                    where message.Author!.UserName == user || user == null
+                    where message.Author.UserName == user || user == null
                     orderby message.TimeStamp descending
                     select new CheepDTO{
                             Text = message.Text, 
                             TimeStamp = message.TimeStamp, 
                             CheepId = message.CheepId,
                             Author = new() {
-                                AuthorId = message.Author!.AuthorId,
-                                Name = message.Author.UserName!,
-                                Email = message.Author.Email!
+                                AuthorId = message.Author.AuthorId,
+                                Name = message.Author.UserName,
+                                Email = message.Author.Email
                             }
                     };
         
@@ -61,5 +61,68 @@ public class CheepRepository : ICheepRepository
             result[0].Text = cheep.Text;
             _dbContext.SaveChanges();
         }
+    } 
+
+    public async Task<AuthorDTO?> GetAuthorByName(string authorName)
+    {
+        var query = from author in _dbContext.Users
+                .Include(a => a.Cheeps)
+            where author.UserName == authorName
+            select author;
+
+        var result = await query.FirstOrDefaultAsync();
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.UserName,
+            Email = result.Email,
+            Messages = result.Cheeps.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.UserName,
+                    Email = result.Email
+                }
+            }).ToList() 
+        };
+    }
+
+    public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
+    {
+        var query = from author in _dbContext.Users
+            where author.Email == authorEmail
+            select author
+        ;
+
+        var result = await query.FirstOrDefaultAsync();
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        
+        return new AuthorDTO
+        {
+            Name = result.UserName,
+            Email = result.Email,
+            Messages = result.Cheeps.Select(m => new CheepDTO {
+                CheepId = m.CheepId,
+                Text = m.Text,
+                TimeStamp = m.TimeStamp,
+                Author = new AuthorDTO {
+                    Name = result.UserName,
+                    Email = result.Email
+                }
+            }).ToList()
+        };
+    }
+
+    public async Task CreateAuthor(string authorName, string authorEmail)
+    {
+        var newAuthor = new Author()
+        {
+            UserName = authorName,
+            Email = authorEmail,
+        };
+        await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
+        await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 }
