@@ -38,22 +38,25 @@
 
 
 <div>
-    <h2> Public Timeline </h2>
-    <div class="cheepbox">
-        <h3>What's on your mind @(User.Identity.Name)?</h3>
-        <form method="post" asp-controller="Home" asp-action="Post">
-            <input style="float: left" type="text" asp-for="Text">
-            <input type="submit" value="Share">
-        </form>
-    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h2> Public Timeline </h2>
+        <div class="cheepbox">
+            <h3>What's on your mind @(User.Identity.Name)?</h3>
+            <form method="post" asp-controller="Home" asp-action="Post">
+                <input style="float: left" type="text" asp-for="Text">
+                <input type="submit" value="Share">
+            </form>
+        </div>
+    }
 
-    @if (Model.Cheeps.Any())
+@if (Model.Cheeps.Any())
     {
         <ul id="messagelist" class="cheeps">
             @foreach (var cheep in Model.Cheeps)
             {
                 <li>
-                    <p> 
+                    <p>
                         <strong>
                             <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
                         </strong>
@@ -69,7 +72,7 @@
                 <a href="/?page=@(currentPage - 1)">Prev</a>
             }
             <span>Page @currentPage</span>
-            
+
             <a href="/?page=@(currentPage + 1)">Next</a>
         </div>
     }

@@ -10,8 +10,8 @@ using Repositories;
 
 public class PublicModel : PageModel
 {
-    private readonly IAuthorRepository _AuthorRepository;
-    private readonly ICheepRepository _CheepRepository;
+    private readonly IAuthorRepository _authorRepository;
+    private readonly ICheepRepository _cheepRepository;
     public required List<CheepDTO> Cheeps { get; set; }
     
     [BindProperty]
@@ -19,8 +19,8 @@ public class PublicModel : PageModel
 
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
-        _CheepRepository = cheepRepository;
-        _AuthorRepository = authorRepository;
+        _cheepRepository = cheepRepository;
+        _authorRepository = authorRepository;
     }
 
     public async Task<ActionResult> OnGet()
@@ -32,7 +32,7 @@ public class PublicModel : PageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _CheepRepository.ReadCheeps(null, (pageNum-1)*32, 32);
+        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum-1)*32, 32);
         return Page();
     }
     
@@ -53,7 +53,7 @@ public class PublicModel : PageModel
         Console.WriteLine(Text);
         var user = User.Identity?.Name;
         Console.WriteLine(user);
-        var author = await _AuthorRepository.GetAuthorByName(user);
+        var author = await _authorRepository.GetAuthorByName(user);
 
         var cheep = new CheepDTO
         {
@@ -61,8 +61,8 @@ public class PublicModel : PageModel
             Text = Text,
             TimeStamp = DateTime.Now
         };
-        await _CheepRepository.CreateCheep(cheep);
-        Cheeps = await _CheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
+        await _cheepRepository.CreateCheep(cheep);
+        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
         
         
         return RedirectToPage("Public");

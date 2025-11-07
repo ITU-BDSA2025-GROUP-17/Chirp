@@ -18,13 +18,7 @@ public class CheepRepository : ICheepRepository
         if (cheep.Author.AuthorId == null) throw new NullReferenceException("AuthorId is null");
         Cheep newCheep = new()
         {
-            Author = new Author()
-            {
-                Id = (int)cheep.Author.AuthorId,
-                UserName = cheep.Author.Name,
-                Email = cheep.Author.Email,
-                
-            },
+            Author = await _dbContext.Users.FindAsync(cheep.Author.AuthorId),
             Text = cheep.Text,
             TimeStamp = cheep.TimeStamp
         };

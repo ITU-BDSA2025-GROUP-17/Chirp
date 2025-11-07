@@ -15,9 +15,9 @@ public class AuthorRepository : IAuthorRepository
     public async Task<AuthorDTO?> GetAuthorByName(string authorName)
     {
         var query = from author in _dbContext.Users
+                .Include(a => a.Cheeps)
             where author.UserName == authorName
-            select author
-        ;
+            select author;
 
         var result = await query.FirstOrDefaultAsync();
         if (result == null) throw new NullReferenceException("resulting author is null");
@@ -25,6 +25,7 @@ public class AuthorRepository : IAuthorRepository
         return new AuthorDTO
         {
             Name = result.UserName!,
+            AuthorId = result.Id,
             Email = result.Email!,
             Messages = result.Cheeps!.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
@@ -32,6 +33,7 @@ public class AuthorRepository : IAuthorRepository
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
                     Name = result.UserName!,
+                    AuthorId = result.Id,
                     Email = result.Email!
                 }
             }).ToList()
