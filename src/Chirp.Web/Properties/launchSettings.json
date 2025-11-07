@@ -12,13 +12,25 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7273/"
+      "applicationUrl": "http://localhost:7273/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:7273/;http://localhost:7272",
+      "applicationUrl": "https://localhost:7273/;http://localhost:7272",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "testing": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:7273/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
