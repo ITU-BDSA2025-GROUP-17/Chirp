@@ -12,10 +12,6 @@ public class Cheep
     public required string Text { set; get; }
     [Column("time_stamp")]  
     public DateTime TimeStamp { set; get; }
-
-    [ForeignKey("AuthorId")]
-    [Column("author_id")]
-    public long AuthorId { set; get; }
     
     public Author? Author { set; get; }
 }

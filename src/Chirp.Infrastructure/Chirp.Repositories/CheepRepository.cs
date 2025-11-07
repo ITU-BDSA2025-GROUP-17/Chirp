@@ -10,7 +10,6 @@ public class CheepRepository : ICheepRepository
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
-
     }
 
     public async Task CreateCheep(CheepDTO cheep)
@@ -19,7 +18,13 @@ public class CheepRepository : ICheepRepository
         if (cheep.Author.AuthorId == null) throw new NullReferenceException("AuthorId is null");
         Cheep newCheep = new()
         {
-            AuthorId = (long)cheep.Author.AuthorId,
+            Author = new Author()
+            {
+                Id = (int)cheep.Author.AuthorId,
+                UserName = cheep.Author.Name,
+                Email = cheep.Author.Email,
+                
+            },
             Text = cheep.Text,
             TimeStamp = cheep.TimeStamp
         };
@@ -31,16 +36,16 @@ public class CheepRepository : ICheepRepository
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from message in _dbContext.Cheeps
-                    where message.Author.UserName == user || user == null
+                    where message.Author!.UserName == user || user == null
                     orderby message.TimeStamp descending
                     select new CheepDTO{
                             Text = message.Text, 
                             TimeStamp = message.TimeStamp, 
                             CheepId = message.CheepId,
                             Author = new() {
-                                AuthorId = message.Author.AuthorId,
-                                Name = message.Author.UserName,
-                                Email = message.Author.Email
+                                AuthorId = message.Author!.Id,
+                                Name = message.Author.UserName!,
+                                Email = message.Author.Email!
                             }
                     };
         
@@ -75,15 +80,15 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.UserName,
-            Email = result.Email,
-            Messages = result.Cheeps.Select(m => new CheepDTO {
+            Name = result.UserName!,
+            Email = result.Email!,
+            Messages = result.Cheeps!.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.UserName,
-                    Email = result.Email
+                    Name = result.UserName!,
+                    Email = result.Email!
                 }
             }).ToList() 
         };
@@ -101,15 +106,15 @@ public class CheepRepository : ICheepRepository
         
         return new AuthorDTO
         {
-            Name = result.UserName,
-            Email = result.Email,
-            Messages = result.Cheeps.Select(m => new CheepDTO {
+            Name = result.UserName!,
+            Email = result.Email!,
+            Messages = result.Cheeps!.Select(m => new CheepDTO {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
                 Author = new AuthorDTO {
-                    Name = result.UserName,
-                    Email = result.Email
+                    Name = result.UserName!,
+                    Email = result.Email!
                 }
             }).ToList()
         };

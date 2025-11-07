@@ -5,6 +5,5 @@ using System.Collections.Generic;
 
 public class Author : IdentityUser<int>
 {
-    public long AuthorId { get; set; }
     public ICollection<Cheep>? Cheeps { get; set; }
 }
