@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-namespace Chirp.Web.Pages;
+﻿namespace Chirp.Web.Pages;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -36,7 +32,7 @@ public class PublicModel : PageModel
         return Page();
     }
     
-    public async Task<ActionResult> OnPostAsync(string Text)
+    public async Task<ActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
@@ -53,12 +49,12 @@ public class PublicModel : PageModel
         Console.WriteLine(Text);
         var user = User.Identity?.Name;
         Console.WriteLine(user);
-        var author = await _authorRepository.GetAuthorByName(user);
+        var author = await _authorRepository.GetAuthorByName(user!);
 
         var cheep = new CheepDTO
         {
-            Author = author,
-            Text = Text,
+            Author = author!,
+            Text = Text!,
             TimeStamp = DateTime.Now
         };
         await _cheepRepository.CreateCheep(cheep);

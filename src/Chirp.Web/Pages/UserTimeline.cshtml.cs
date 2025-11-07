@@ -10,7 +10,8 @@ public class UserTimelineModel : PageModel
     private readonly ICheepRepository _cheepRepository;
     public required List<CheepDTO> Cheeps { get; set; }
     
-    public string Text;
+    [BindProperty]
+    public string? Text  { get; set; }
 
     public UserTimelineModel(ICheepRepository cheepRepository,IAuthorRepository authorRepository)
     {
@@ -31,7 +32,7 @@ public class UserTimelineModel : PageModel
         return Page();
     }
     
-    public async Task<ActionResult> OnPostAsync(string Text)
+    public async Task<ActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
@@ -48,12 +49,12 @@ public class UserTimelineModel : PageModel
         Console.WriteLine(Text);
         var user = User.Identity?.Name;
         Console.WriteLine(user);
-        var author = await _authorRepository.GetAuthorByName(user);
+        var author = await _authorRepository.GetAuthorByName(user!);
 
         var cheep = new CheepDTO
         {
-            Author = author,
-            Text = Text,
+            Author = author!,
+            Text = Text!,
             TimeStamp = DateTime.Now
         };
         await _cheepRepository.CreateCheep(cheep);

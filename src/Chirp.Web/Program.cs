@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Repositories;
 using Chirp.Core;
-using Microsoft.AspNetCore.Identity;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Load database connection via configuration
