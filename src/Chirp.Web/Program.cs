@@ -21,6 +21,25 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
+
+// CORS polic y
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowChirp", policy =>
+    {
+        policy.WithOrigins("https://bdsagroup17chirpremotedb-dhg0b9fpaya0afa0.swedencentral-01.azurewebsites.net")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // for OAuth
+    });
+});
+
+// Conf SameSite cookie behavior (protect against CSRF)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
 // For Github OAuth
 builder.Services.AddSession();
 
@@ -41,12 +60,12 @@ if (app.Environment.IsProduction())
     app.UseHsts();
 }
 
+//middleware
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseCors("AllowChirp");
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
-
 app.Run();
