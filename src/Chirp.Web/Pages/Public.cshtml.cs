@@ -12,7 +12,7 @@ public class PublicModel : PageModel
     
     [BindProperty]
     public string? Text  { get; set; }
-
+    
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
         _cheepRepository = cheepRepository;
