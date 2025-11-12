@@ -58,16 +58,16 @@
                             <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
                             
                                 
-                                @if (User.Identity.IsAuthenticated && User.Identity.Name != cheep.Author.Name)
+                                @if (User.Identity.IsAuthenticated)
                                 {
                                     var isFollowing = await Model.IsFollowingAsync(User.Identity.Name! ,cheep.Author.Name);
-                                    if (isFollowing)
+                                    if (isFollowing && User.Identity.Name != cheep.Author.Name)
                                     {
                                         <form method="post" asp-page-handler="Unfollow" asp-route-author="@cheep.Author.Name" style="display:inline;">
                                             <button type="submit" class="btn btn-link p-0">unfollow</button>
                                         </form>
                                     }
-                                    else
+                                    else if (User.Identity.Name != cheep.Author.Name)
                                     {
                                         <form method="post" asp-page-handler="Follow" asp-route-author="@cheep.Author.Name" style="display:inline;">
                                             <button type="submit" class="btn btn-link p-0">follow</button>
