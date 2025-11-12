@@ -76,4 +76,90 @@ public class AuthorRepository : IAuthorRepository
         await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
+
+    public async Task Follow(AuthorDTO userAuthor, AuthorDTO followAuthor)
+    {
+        if(userAuthor== null) throw new NullReferenceException("userAuthor is null");
+        if(followAuthor == null) throw new NullReferenceException("followAuthor is null");
+        
+        if (userAuthor.AuthorId == followAuthor.AuthorId) throw new InvalidOperationException("userAuthor cannot follow them self");
+        if (userAuthor.Following == null)
+        {
+            userAuthor.Following = new List<AuthorDTO>();
+        }
+        
+        // find userAuthor
+        var userQuery = from author in _dbContext.Users
+                .Include(a => a.Following)
+            where author.Id == userAuthor.AuthorId
+                select author;
+        
+        var user = await userQuery.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+
+        
+        // find followAuthor
+        var followQuery = from author in _dbContext.Users
+                .Include(a => a.Following)
+            where author.Id == followAuthor.AuthorId
+            select author;
+        
+        var follower = await followQuery.FirstOrDefaultAsync();
+        if (follower == null) throw new NullReferenceException("resulting author is null");
+
+        if (user.Following == null)
+        {
+            user.Following = new List<Author>();
+        }
+        
+        userAuthor.Following.Add(followAuthor);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    // Is user following followAUt
+    public async Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor)
+    {
+        var userFollowings =  await GetFollowing(userAuthor);
+        foreach (var user in userFollowings)
+        {
+            if (user.AuthorId == followAuthor.AuthorId) return true;
+        }
+
+        return false;
+
+    }
+
+    // returns an empty list of authordtos if the user does not follow anyone / or list is null
+    public async Task<List<AuthorDTO>> GetFollowing(AuthorDTO userAuthor)
+    {
+        var query = from author in _dbContext.Users
+            .Include(a => a.Following)
+            where author.Id == userAuthor.AuthorId
+                select author;
+        
+        var result = await query.FirstOrDefaultAsync();
+        
+        if (result == null) throw new NullReferenceException("resulting author is null");
+        if (userAuthor.Following == null || userAuthor.Following.Count == 0)
+        {
+            return new List<AuthorDTO>();
+        }
+        
+        // return en liste af dto's
+        var followings = new List<AuthorDTO>();
+        foreach (var follow in result.Following!)
+        {
+            followings.Add(
+                new AuthorDTO{
+                    Name = follow.UserName!,
+                    Email = follow.Email!,
+                    AuthorId = follow.Id
+                    }
+            );
+        }
+
+        return followings;
+
+    }
+    
 }
