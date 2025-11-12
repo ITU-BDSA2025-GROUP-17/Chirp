@@ -63,5 +63,21 @@ public class PublicModel : PageModel
         
         return RedirectToPage("Public");
     }
+
+    // Curr follows target....
+    public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
+    {
+        // get curr DTO
+        var currentUser = await _authorRepository.GetAuthorByName(currentUserName);
+        
+        // get auth DTO
+        var  targetUser = await _authorRepository.GetAuthorByName(targetUserName);
+        if(targetUser == currentUser) throw new Exception("You cannot follow this yourself!");
+        if (targetUser == null || currentUser == null) throw new Exception("null :("); 
+        var result = await _authorRepository.IsFollowing(currentUser, targetUser);
+        
+        return result;
+
+    }
     
 }
