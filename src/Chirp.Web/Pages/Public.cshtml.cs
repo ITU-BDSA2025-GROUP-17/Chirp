@@ -9,10 +9,12 @@ public class PublicModel : PageModel
     private readonly IAuthorRepository _authorRepository;
     private readonly ICheepRepository _cheepRepository;
     public required List<CheepDTO> Cheeps { get; set; }
-    
+
     [BindProperty]
-    public string? Text  { get; set; }
-    
+    public string? Text { get; set; }
+    [BindProperty]
+    public string? Follow { get; set; }
+
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
         _cheepRepository = cheepRepository;
@@ -28,23 +30,17 @@ public class PublicModel : PageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum-1)*32, 32);
+        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
         return Page();
     }
-    
+
     public async Task<ActionResult> OnPostCheepAsync()
     {
         if (!ModelState.IsValid)
         {
             return Page();
         }
-        string? page = HttpContext.Request.Query["page"];
-        int pageNum = 1;
-        if (page != null)
-        {
-            pageNum = int.Parse(page);
-        }
-        
+
         var user = User.Identity?.Name;
         Console.WriteLine(user);
         var author = await _authorRepository.GetAuthorByName(user!);
@@ -56,9 +52,26 @@ public class PublicModel : PageModel
             TimeStamp = DateTime.Now
         };
         await _cheepRepository.CreateCheep(cheep);
-        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
-        
+
         return RedirectToPage("Public");
+    }
+
+    public async Task<ActionResult> OnPostFollowAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var user = User.Identity?.Name;
+        var author = await _authorRepository.GetAuthorByName(user!);
+
+
+        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        await _authorRepository.Follow(author!, followAuthor!);
+
+
+        return RedirectToPage("Public");
+
     }
 
     // Curr follows target....
@@ -66,17 +79,17 @@ public class PublicModel : PageModel
     {
         // get curr DTO
         var currentUser = await _authorRepository.GetAuthorByName(currentUserName);
-        
+
         // get auth DTO
-        var  targetUser = await _authorRepository.GetAuthorByName(targetUserName);
-        if(targetUser == currentUser) throw new Exception("You cannot follow this yourself!");
-        if (targetUser == null || currentUser == null) throw new Exception("null :("); 
+        var targetUser = await _authorRepository.GetAuthorByName(targetUserName);
+        if (targetUser == currentUser) throw new Exception("You cannot follow this yourself!");
+        if (targetUser == null || currentUser == null) throw new Exception("null :(");
         var result = await _authorRepository.IsFollowing(currentUser, targetUser);
-        
+
         return result;
 
     }
 
-   
-    
+
+
 }
