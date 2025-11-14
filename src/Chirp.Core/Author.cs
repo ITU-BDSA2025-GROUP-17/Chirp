@@ -6,5 +6,6 @@ using System.Collections.Generic;
 public class Author : IdentityUser<int>
 {
     public ICollection<Cheep>? Cheeps { get; set; }
-    public ICollection<Author>? Following { get; set; }
+    public ICollection<Follow>? Following { get; set; }
+
 }
