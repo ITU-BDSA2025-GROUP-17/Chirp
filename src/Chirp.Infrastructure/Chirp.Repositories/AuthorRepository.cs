@@ -16,22 +16,24 @@ public class AuthorRepository : IAuthorRepository
     {
         var query = from author in _dbContext.Users
                 .Include(a => a.Cheeps)
-            where author.UserName == authorName
-            select author;
+                    where author.UserName == authorName
+                    select author;
 
         var result = await query.FirstOrDefaultAsync();
         if (result == null) throw new NullReferenceException("resulting author is null");
-        
+
         return new AuthorDTO
         {
             Name = result.UserName!,
             AuthorId = result.Id,
             Email = result.Email!,
-            Messages = result.Cheeps!.Select(m => new CheepDTO {
+            Messages = result.Cheeps!.Select(m => new CheepDTO
+            {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
-                Author = new AuthorDTO {
+                Author = new AuthorDTO
+                {
                     Name = result.UserName!,
                     AuthorId = result.Id,
                     Email = result.Email!
@@ -43,22 +45,24 @@ public class AuthorRepository : IAuthorRepository
     public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
     {
         var query = from author in _dbContext.Users
-            where author.Email == authorEmail
-            select author
+                    where author.Email == authorEmail
+                    select author
         ;
 
         var result = await query.FirstOrDefaultAsync();
         if (result == null) throw new NullReferenceException("resulting author is null");
-        
+
         return new AuthorDTO
         {
             Name = result.UserName!,
             Email = result.Email!,
-            Messages = result.Cheeps!.Select(m => new CheepDTO {
+            Messages = result.Cheeps!.Select(m => new CheepDTO
+            {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
-                Author = new AuthorDTO {
+                Author = new AuthorDTO
+                {
                     Name = result.UserName!,
                     Email = result.Email!
                 }
@@ -79,47 +83,55 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task Follow(AuthorDTO userAuthor, AuthorDTO followAuthor)
     {
-        if(userAuthor== null) throw new NullReferenceException("userAuthor is null");
-        if(followAuthor == null) throw new NullReferenceException("followAuthor is null");
-        
+        if (userAuthor == null) throw new NullReferenceException("userAuthor is null");
+        if (followAuthor == null) throw new NullReferenceException("followAuthor is null");
+
         if (userAuthor.AuthorId == followAuthor.AuthorId) throw new InvalidOperationException("userAuthor cannot follow them self");
         if (userAuthor.Following == null)
         {
             userAuthor.Following = new List<AuthorDTO>();
         }
-        
+
         // find userAuthor
         var userQuery = from author in _dbContext.Users
                 .Include(a => a.Following)
-            where author.Id == userAuthor.AuthorId
-                select author;
-        
+                        where author.Id == userAuthor.AuthorId
+                        select author;
+
         var user = await userQuery.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
 
-        
+
         // find followAuthor
         var followQuery = from author in _dbContext.Users
                 .Include(a => a.Following)
-            where author.Id == followAuthor.AuthorId
-            select author;
-        
-        var follower = await followQuery.FirstOrDefaultAsync();
-        if (follower == null) throw new NullReferenceException("resulting author is null");
+                          where author.Id == followAuthor.AuthorId
+                          select author;
+
+        var following = await followQuery.FirstOrDefaultAsync();
+        if (following == null) throw new NullReferenceException("resulting author is null");
 
         if (user.Following == null)
         {
-            user.Following = new List<Author>();
+            user.Following = new List<Follow>();
         }
-        
-        userAuthor.Following.Add(followAuthor);
+
+        user.Following.Add(
+            new Follow()
+            {
+                FollowerId = user.Id,
+                Follower = user,
+                FollowingId = following.Id,
+                Following = following,
+            }
+        );
         await _dbContext.SaveChangesAsync();
     }
 
     // Is user following followAUt
     public async Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor)
     {
-        var userFollowings =  await GetFollowing(userAuthor);
+        var userFollowings = await GetFollowing(userAuthor);
         foreach (var user in userFollowings)
         {
             if (user.AuthorId == followAuthor.AuthorId) return true;
@@ -134,32 +146,34 @@ public class AuthorRepository : IAuthorRepository
     {
         var query = from author in _dbContext.Users
             .Include(a => a.Following)
-            where author.Id == userAuthor.AuthorId
-                select author;
-        
+                .ThenInclude(f => f.Following)
+                    where author.Id == userAuthor.AuthorId
+                    select author;
+
         var result = await query.FirstOrDefaultAsync();
-        
+
         if (result == null) throw new NullReferenceException("resulting author is null");
-        if (userAuthor.Following == null || userAuthor.Following.Count == 0)
+        if (result.Following == null || result.Following.Count == 0)
         {
             return new List<AuthorDTO>();
         }
-        
+
         // return en liste af dto's
         var followings = new List<AuthorDTO>();
         foreach (var follow in result.Following!)
         {
             followings.Add(
-                new AuthorDTO{
-                    Name = follow.UserName!,
-                    Email = follow.Email!,
-                    AuthorId = follow.Id
-                    }
+                new AuthorDTO
+                {
+                    Name = follow.Following!.UserName!,
+                    Email = follow.Following!.Email!,
+                    AuthorId = follow.Following!.Id
+                }
             );
         }
 
         return followings;
 
     }
-    
+
 }
