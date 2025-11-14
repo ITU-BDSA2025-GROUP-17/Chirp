@@ -3,6 +3,7 @@ using System;
 using Chirp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chirp.Web.Migrations
 {
     [DbContext(typeof(CheepDBContext))]
-    partial class CheepDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251114101208_followingCorrectedTable")]
+    partial class followingCorrectedTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -24,6 +27,9 @@ namespace Chirp.Web.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -72,6 +78,8 @@ namespace Chirp.Web.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -116,12 +124,7 @@ namespace Chirp.Web.Migrations
                     b.Property<int>("FollowingId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("FollowerId", "FollowingId");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("FollowingId");
 
@@ -258,6 +261,13 @@ namespace Chirp.Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Chirp.Core.Author", b =>
+                {
+                    b.HasOne("Chirp.Core.Author", null)
+                        .WithMany("Following")
+                        .HasForeignKey("AuthorId");
+                });
+
             modelBuilder.Entity("Chirp.Core.Cheep", b =>
                 {
                     b.HasOne("Chirp.Core.Author", "Author")
@@ -269,10 +279,6 @@ namespace Chirp.Web.Migrations
 
             modelBuilder.Entity("Chirp.Core.Follow", b =>
                 {
-                    b.HasOne("Chirp.Core.Author", null)
-                        .WithMany("Following")
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("Chirp.Core.Author", "Follower")
                         .WithMany()
                         .HasForeignKey("FollowerId")
