@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Repositories;
 using Chirp.Core;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Load database connection via configuration
@@ -8,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 // Identity type for site
 builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<CheepDBContext>();
@@ -47,9 +50,24 @@ builder.Services.AddAuthentication()
         o.ClientId = builder.Configuration["authentication.github.clientId"]!;
         o.ClientSecret = builder.Configuration["authentication.github.clientSecret"]!;
         o.CallbackPath = "/signin-github";
+        o.Scope.Add("user:email");
+        o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+        o.ClaimActions.MapJsonKey("urn:github:login", "login");
+
     });
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<CheepDBContext>();
+
+    // Optional: for Identity users if you want to seed roles/users
+    var userManager = services.GetRequiredService<UserManager<Author>>();
+
+    DbInitializer.SeedDatabase(dbContext);
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsProduction())
