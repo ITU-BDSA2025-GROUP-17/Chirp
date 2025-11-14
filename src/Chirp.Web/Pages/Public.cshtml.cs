@@ -32,7 +32,7 @@ public class PublicModel : PageModel
         return Page();
     }
     
-    public async Task<ActionResult> OnPostAsync()
+    public async Task<ActionResult> OnPostCheepAsync()
     {
         if (!ModelState.IsValid)
         {
@@ -45,8 +45,6 @@ public class PublicModel : PageModel
             pageNum = int.Parse(page);
         }
         
-        this.Text = Text;
-        Console.WriteLine(Text);
         var user = User.Identity?.Name;
         Console.WriteLine(user);
         var author = await _authorRepository.GetAuthorByName(user!);
@@ -59,7 +57,6 @@ public class PublicModel : PageModel
         };
         await _cheepRepository.CreateCheep(cheep);
         Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
-        
         
         return RedirectToPage("Public");
     }
@@ -79,5 +76,7 @@ public class PublicModel : PageModel
         return result;
 
     }
+
+   
     
 }

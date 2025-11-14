@@ -40,7 +40,7 @@
         <h2> Public Timeline </h2>
         <div class="cheepbox">
             <h3>What's on your mind @(User.Identity.Name)?</h3>
-            <form method="post">
+            <form method="post" asp-page-handler="Cheep">
                 <input style="float: left" type="text" asp-for="Text">
                 <input type="submit" value="Share">
             </form>
@@ -56,24 +56,21 @@
                     <p>
                         <strong>
                             <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
-                            
-                                
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     var isFollowing = await Model.IsFollowingAsync(User.Identity.Name! ,cheep.Author.Name);
                                     if (isFollowing && User.Identity.Name != cheep.Author.Name)
                                     {
                                         <form method="post" asp-page-handler="Unfollow" asp-route-author="@cheep.Author.Name" style="display:inline;">
-                                            <button type="submit" class="btn btn-link p-0">unfollow</button>
+                                            <button type="submit" class="btn btn-link p-0" onclick="location.href='/?page=@(currentPage)'">unfollow</button>
                                         </form>
                                     }
                                     else if (User.Identity.Name != cheep.Author.Name)
                                     {
                                         <form method="post" asp-page-handler="Follow" asp-route-author="@cheep.Author.Name" style="display:inline;">
-                                            <button type="submit" class="btn btn-link p-0">follow</button>
+                                            <button type="submit" class="btn btn-link p-0"  onclick="location.href='/?page=@(currentPage)'">follow</button>
                                         </form>
                                     }
-                                    
                                 }
                         </strong>
                         @cheep.Text
