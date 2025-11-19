@@ -144,6 +144,7 @@ public class AuthorRepository : IAuthorRepository
     // returns an empty list of authordtos if the user does not follow anyone / or list is null
     public async Task<List<AuthorDTO>> GetFollowing(AuthorDTO userAuthor)
     {
+        
         var query = from author in _dbContext.Users
             .Include(a => a.Following)
                 .ThenInclude(f => f.Following)
