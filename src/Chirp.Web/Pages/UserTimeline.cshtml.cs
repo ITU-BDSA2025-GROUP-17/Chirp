@@ -28,25 +28,18 @@ public class UserTimelineModel : PageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _cheepRepository.ReadCheeps(author, (pageNum - 1) * 32, 32);
+        Cheeps = await _cheepRepository.ReadCheepsFromFollowers(author, (pageNum - 1) * 32, 32);
+        
         return Page();
     }
     
-    public async Task<ActionResult> OnPostAsync()
+    public async Task<ActionResult> OnPostCheepAsync()
     {
         if (!ModelState.IsValid)
         {
             return Page();
         }
-        string? page = HttpContext.Request.Query["page"];
-        int pageNum = 1;
-        if (page != null)
-        {
-            pageNum = int.Parse(page);
-        }
-        
-        this.Text = Text;
-        Console.WriteLine(Text);
+
         var user = User.Identity?.Name;
         Console.WriteLine(user);
         var author = await _authorRepository.GetAuthorByName(user!);
@@ -58,8 +51,6 @@ public class UserTimelineModel : PageModel
             TimeStamp = DateTime.Now
         };
         await _cheepRepository.CreateCheep(cheep);
-        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
-        
         
         return RedirectToPage("UserTimeline");
     }
