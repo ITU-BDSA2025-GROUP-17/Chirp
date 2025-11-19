@@ -4,13 +4,29 @@ using Chirp.Core;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 var builder = WebApplication.CreateBuilder(args);
 
 // Load database connection via configuration
 
-string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    var connection = new SqliteConnection("Data Source=:memory:");
+    connection.Open();
+
+    builder.Services.AddSingleton(connection);
+
+    builder.Services.AddDbContext<CheepDBContext>((sp, options) =>
+    {
+        var conn = sp.GetRequiredService<SqliteConnection>();
+        options.UseSqlite(conn);
+    });
+} else
+{
+    string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
+}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity type for site
@@ -44,17 +60,23 @@ builder.Services.ConfigureApplicationCookie(options =>
 // For Github OAuth
 builder.Services.AddSession();
 
-builder.Services.AddAuthentication()
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddAuthentication().AddCookie();
+} else
+{
+    builder.Services.AddAuthentication()
     .AddGitHub(o =>
     {
-        o.ClientId = builder.Configuration["authentication.github.clientId"]!;
-        o.ClientSecret = builder.Configuration["authentication.github.clientSecret"]!;
+        o.ClientId = builder.Configuration["authentication:github:clientId"]!;
+        o.ClientSecret = builder.Configuration["authentication:github:clientSecret"]!;
         o.CallbackPath = "/signin-github";
         o.Scope.Add("user:email");
         o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
         o.ClaimActions.MapJsonKey("urn:github:login", "login");
 
     });
+}
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -64,6 +86,11 @@ using (var scope = app.Services.CreateScope())
 
     // Optional: for Identity users if you want to seed roles/users
     var userManager = services.GetRequiredService<UserManager<Author>>();
+
+    if (builder.Environment.IsEnvironment("Testing"))
+        dbContext.Database.EnsureCreated();      
+    else
+        dbContext.Database.Migrate();
 
     DbInitializer.SeedDatabase(dbContext);
 }
