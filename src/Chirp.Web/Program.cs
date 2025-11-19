@@ -22,13 +22,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
-
 // CORS polic y
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!;
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowChirp", policy =>
     {
-        policy.WithOrigins("https://bdsagroup17chirpremotedb-dhg0b9fpaya0afa0.swedencentral-01.azurewebsites.net")
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials(); // for OAuth
@@ -47,8 +48,8 @@ builder.Services.AddSession();
 builder.Services.AddAuthentication()
     .AddGitHub(o =>
     {
-        o.ClientId = builder.Configuration["authentication.github.clientId"]!;
-        o.ClientSecret = builder.Configuration["authentication.github.clientSecret"]!;
+        o.ClientId = builder.Configuration["authentication:github:clientId"]!;
+        o.ClientSecret = builder.Configuration["authentication:github:clientSecret"]!;
         o.CallbackPath = "/signin-github";
         o.Scope.Add("user:email");
         o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
