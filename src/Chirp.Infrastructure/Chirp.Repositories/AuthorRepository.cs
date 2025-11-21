@@ -86,11 +86,7 @@ public class AuthorRepository : IAuthorRepository
         if (userAuthor == null) throw new NullReferenceException("userAuthor is null");
         if (followAuthor == null) throw new NullReferenceException("followAuthor is null");
 
-        if (userAuthor.AuthorId == followAuthor.AuthorId) throw new InvalidOperationException("userAuthor cannot follow them self");
-        if (userAuthor.Following == null)
-        {
-            userAuthor.Following = new List<AuthorDTO>();
-        }
+        if (userAuthor.AuthorId == followAuthor.AuthorId) throw new InvalidOperationException("userAuthor cannot follow themself");
 
         // find userAuthor
         var userQuery = from author in _dbContext.Users
@@ -101,16 +97,6 @@ public class AuthorRepository : IAuthorRepository
         var user = await userQuery.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
 
-
-        // find followAuthor
-        var followQuery = from author in _dbContext.Users
-                .Include(a => a.Following)
-                          where author.Id == followAuthor.AuthorId
-                          select author;
-
-        var following = await followQuery.FirstOrDefaultAsync();
-        if (following == null) throw new NullReferenceException("resulting author is null");
-
         if (user.Following == null)
         {
             user.Following = new List<Follow>();
@@ -119,12 +105,12 @@ public class AuthorRepository : IAuthorRepository
         user.Following.Add(
             new Follow()
             {
-                FollowerId = user.Id,
                 Follower = user,
-                FollowingId = following.Id,
-                Following = following,
+                FollowerId = user.Id,
+                FollowingId = followAuthor.AuthorId
             }
         );
+
         await _dbContext.SaveChangesAsync();
     }
 
@@ -146,7 +132,7 @@ public class AuthorRepository : IAuthorRepository
     {
         
         var query = from author in _dbContext.Users
-            .Include(a => a.Following)
+            .Include(a => a.Following)!
                 .ThenInclude(f => f.Following)
                     where author.Id == userAuthor.AuthorId
                     select author;
