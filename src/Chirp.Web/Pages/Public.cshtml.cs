@@ -74,6 +74,22 @@ public class PublicModel : PageModel
 
     }
 
+    public async Task<ActionResult> OnPostUnfollowAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        var user = User.Identity?.Name;
+        var author = await _authorRepository.GetAuthorByName(user!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        await _authorRepository.UnFollow(author!, followAuthor!);
+
+
+        return RedirectToPage("Public");
+    }
+
     // Curr follows target....
     public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
     {
@@ -89,6 +105,8 @@ public class PublicModel : PageModel
         return result;
 
     }
+
+
 
 
 

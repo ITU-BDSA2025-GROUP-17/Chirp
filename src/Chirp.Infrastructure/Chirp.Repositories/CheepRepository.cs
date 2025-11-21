@@ -34,17 +34,19 @@ public class CheepRepository : ICheepRepository
         var query = from message in _dbContext.Cheeps
                     where message.Author!.UserName == user || user == null
                     orderby message.TimeStamp descending
-                    select new CheepDTO{
-                            Text = message.Text, 
-                            TimeStamp = message.TimeStamp, 
-                            CheepId = message.CheepId,
-                            Author = new() {
-                                AuthorId = message.Author!.Id,
-                                Name = message.Author.UserName!,
-                                Email = message.Author.Email!
-                            }
+                    select new CheepDTO
+                    {
+                        Text = message.Text,
+                        TimeStamp = message.TimeStamp,
+                        CheepId = message.CheepId,
+                        Author = new()
+                        {
+                            AuthorId = message.Author!.Id,
+                            Name = message.Author.UserName!,
+                            Email = message.Author.Email!
+                        }
                     };
-        
+
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
         return result;
@@ -53,8 +55,8 @@ public class CheepRepository : ICheepRepository
     public async Task UpdateCheep(CheepDTO cheep)
     {
         var query = from message in _dbContext.Cheeps
-            where message.CheepId == cheep.CheepId
-            select message;
+                    where message.CheepId == cheep.CheepId
+                    select message;
 
         var result = await query.ToListAsync();
         if (result.Count < 1)
@@ -62,53 +64,57 @@ public class CheepRepository : ICheepRepository
             result[0].Text = cheep.Text;
             _dbContext.SaveChanges();
         }
-    } 
+    }
 
     public async Task<AuthorDTO?> GetAuthorByName(string authorName)
     {
         var query = from author in _dbContext.Users
                 .Include(a => a.Cheeps)
-            where author.UserName == authorName
-            select author;
+                    where author.UserName == authorName
+                    select author;
 
         var result = await query.FirstOrDefaultAsync();
         if (result == null) throw new NullReferenceException("resulting author is null");
-        
+
         return new AuthorDTO
         {
             Name = result.UserName!,
             Email = result.Email!,
-            Messages = result.Cheeps!.Select(m => new CheepDTO {
+            Messages = result.Cheeps!.Select(m => new CheepDTO
+            {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
-                Author = new AuthorDTO {
+                Author = new AuthorDTO
+                {
                     Name = result.UserName!,
                     Email = result.Email!
                 }
-            }).ToList() 
+            }).ToList()
         };
     }
 
     public async Task<AuthorDTO?> GetAuthorByEmail(string authorEmail)
     {
         var query = from author in _dbContext.Users
-            where author.Email == authorEmail
-            select author
+                    where author.Email == authorEmail
+                    select author
         ;
 
         var result = await query.FirstOrDefaultAsync();
         if (result == null) throw new NullReferenceException("resulting author is null");
-        
+
         return new AuthorDTO
         {
             Name = result.UserName!,
             Email = result.Email!,
-            Messages = result.Cheeps!.Select(m => new CheepDTO {
+            Messages = result.Cheeps!.Select(m => new CheepDTO
+            {
                 CheepId = m.CheepId,
                 Text = m.Text,
                 TimeStamp = m.TimeStamp,
-                Author = new AuthorDTO {
+                Author = new AuthorDTO
+                {
                     Name = result.UserName!,
                     Email = result.Email!
                 }
@@ -139,24 +145,26 @@ public class CheepRepository : ICheepRepository
         {
             users.Add(follow.Name);
         }
-        
+
         var query = from message in _dbContext.Cheeps
-            where users == null || users.Contains(message.Author!.UserName) || user == null
-            orderby message.TimeStamp descending
-            select new CheepDTO{
-                Text = message.Text, 
-                TimeStamp = message.TimeStamp, 
-                CheepId = message.CheepId,
-                Author = new() {
-                    AuthorId = message.Author!.Id,
-                    Name = message.Author.UserName!,
-                    Email = message.Author.Email!
-                }
-            };
-        
+                    where users == null || users.Contains(message.Author!.UserName) || user == null
+                    orderby message.TimeStamp descending
+                    select new CheepDTO
+                    {
+                        Text = message.Text,
+                        TimeStamp = message.TimeStamp,
+                        CheepId = message.CheepId,
+                        Author = new()
+                        {
+                            AuthorId = message.Author!.Id,
+                            Name = message.Author.UserName!,
+                            Email = message.Author.Email!
+                        }
+                    };
+
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
         return result;
     }
-    
+
 }

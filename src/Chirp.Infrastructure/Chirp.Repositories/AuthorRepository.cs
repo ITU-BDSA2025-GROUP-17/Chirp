@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 namespace Chirp.Repositories;
 
+using System.Net.Security;
 using Core;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.VisualBasic;
 
 public class AuthorRepository : IAuthorRepository
 {
@@ -128,6 +131,39 @@ public class AuthorRepository : IAuthorRepository
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task UnFollow(AuthorDTO userAuthor, AuthorDTO unfollowAuthor)
+    {
+        if (userAuthor == null) throw new NullReferenceException("userAuthor is null");
+        if (unfollowAuthor == null) throw new NullReferenceException("UnFollowAuthor is null");
+
+        // find userAuthor
+        var userQuery = from author in _dbContext.Users
+                .Include(a => a.Following)
+                        where author.Id == userAuthor.AuthorId
+                        select author;
+
+        var user = await userQuery.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+
+
+        // find unfollowAuthor
+        var unfollowQuery = from author in _dbContext.Users
+                .Include(a => a.Following)
+                            where author.Id == unfollowAuthor.AuthorId
+                            select author;
+
+        var unfollowing = await unfollowQuery.FirstOrDefaultAsync();
+        if (unfollowing == null) throw new NullReferenceException("resulting author is null");
+
+        var followToRemove = user.Following!.FirstOrDefault(f => f.FollowingId == unfollowing.Id);
+        if (followToRemove != null)
+        {
+            _dbContext.Remove(followToRemove);
+            await _dbContext.SaveChangesAsync();
+        }
+
+    }
+
     // Is user following followAUt
     public async Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor)
     {
@@ -144,7 +180,7 @@ public class AuthorRepository : IAuthorRepository
     // returns an empty list of authordtos if the user does not follow anyone / or list is null
     public async Task<List<AuthorDTO>> GetFollowing(AuthorDTO userAuthor)
     {
-        
+
         var query = from author in _dbContext.Users
             .Include(a => a.Following)
                 .ThenInclude(f => f.Following)
