@@ -50,14 +50,33 @@ public class Tests : PageTest
     [Test]
     public async Task ReadCheep()
     {
-        IResponse? response = await Page.GotoAsync("http://localhost:7273/");
-        var headers = await response!.HeadersArrayAsync();
-        foreach (var h in headers)
-        {
-            Console.WriteLine(h.ToJson());
-        }
+        await Page.GotoAsync("http://localhost:7273/");
+        var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
 
-        Console.WriteLine(await response!.TextAsync());
+        /* For test-testing
+        foreach (var cheep in cheeps)
+        {
+            Console.WriteLine(cheep);
+        }*/
+
+        Assert.That(cheeps.Count, Is.GreaterThan(0));
+
+        // ***First Cheep on page 1***
+        // Author
+        Assert.That(cheeps[0], Contains.Substring("Jacqualine Gilcoine"));
+
+
+        // Text
+        Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
+        
+        // ***Last Cheep on page 1***
+        // i = 31 because there should be 32 cheeps per page
+        // Author
+        Assert.That(cheeps[31], Contains.Substring("Jacqualine Gilcoine"));
+
+
+        // Text
+        Assert.That(cheeps[31], Contains.Substring("With back to my friend, patience!"));
     }
 
     [OneTimeTearDown]

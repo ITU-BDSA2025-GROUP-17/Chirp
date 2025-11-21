@@ -7,9 +7,11 @@ public class CheepRepository : ICheepRepository
 {
     //access the database
     private readonly CheepDBContext _dbContext;
+    private readonly IAuthorRepository _authorRepository;
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
+        _authorRepository = new AuthorRepository(_dbContext);
     }
 
     public async Task CreateCheep(CheepDTO cheep)
@@ -124,7 +126,37 @@ public class CheepRepository : ICheepRepository
         await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
-    
-    
+
+
+    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(string? user, int offset, int count)
+    {
+        var author = await _authorRepository.GetAuthorByName(user);
+        var following = await _authorRepository.GetFollowing(author);
+
+        var users = new List<string>();
+        users.Add(user);
+        foreach (var follow in following)
+        {
+            users.Add(follow.Name);
+        }
+        
+        var query = from message in _dbContext.Cheeps
+            where users == null || users.Contains(message.Author!.UserName) || user == null
+            orderby message.TimeStamp descending
+            select new CheepDTO{
+                Text = message.Text, 
+                TimeStamp = message.TimeStamp, 
+                CheepId = message.CheepId,
+                Author = new() {
+                    AuthorId = message.Author!.Id,
+                    Name = message.Author.UserName!,
+                    Email = message.Author.Email!
+                }
+            };
+        
+        // Execute the query and store the results
+        var result = await query.Skip(offset).Take(count).ToListAsync();
+        return result;
+    }
     
 }
