@@ -17,7 +17,6 @@ public class CheepRepository : ICheepRepository
     public async Task CreateCheep(CheepDTO cheep)
     {
         if (cheep.Author == null) throw new NullReferenceException("Author is null");
-        if (cheep.Author.AuthorId == null) throw new NullReferenceException("AuthorId is null");
         Cheep newCheep = new()
         {
             Author = await _dbContext.Users.FindAsync(cheep.Author.AuthorId),
@@ -134,20 +133,21 @@ public class CheepRepository : ICheepRepository
     }
 
 
-    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(string? user, int offset, int count)
+    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(string user, int offset, int count)
     {
-        var author = await _authorRepository.GetAuthorByName(user);
+        var author = await _authorRepository.GetAuthorByName(user!);
+        if (author == null) { throw new Exception("Author " + user + " not found!"); }
         var following = await _authorRepository.GetFollowing(author);
 
-        var users = new List<string>();
-        users.Add(user);
+        var users = new List<string> { user };
         foreach (var follow in following)
         {
             users.Add(follow.Name);
         }
 
         var query = from message in _dbContext.Cheeps
-                    where users == null || users.Contains(message.Author!.UserName) || user == null
+
+                    where users.Contains(message.Author!.UserName!)
                     orderby message.TimeStamp descending
                     select new CheepDTO
                     {
@@ -161,6 +161,7 @@ public class CheepRepository : ICheepRepository
                             Email = message.Author.Email!
                         }
                     };
+
 
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
