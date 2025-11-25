@@ -12,6 +12,9 @@ public class UserTimelineModel : PageModel
     
     [BindProperty]
     public string? Text  { get; set; }
+    
+    [BindProperty]
+    public string? Follow { get; set; }
 
     public UserTimelineModel(ICheepRepository cheepRepository,IAuthorRepository authorRepository)
     {
@@ -53,5 +56,36 @@ public class UserTimelineModel : PageModel
         await _cheepRepository.CreateCheep(cheep);
         
         return RedirectToPage("UserTimeline");
+    }
+    
+    public async Task<ActionResult> OnPostUnfollowAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+   
+        var user = User.Identity?.Name;
+        var author = await _authorRepository.GetAuthorByName(user!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        await _authorRepository.UnFollow(author!, followAuthor!);
+
+
+        return RedirectToPage("UserTimeline");
+    }
+    
+    public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
+    {
+        // get curr DTO
+        var currentUser = await _authorRepository.GetAuthorByName(currentUserName);
+
+        // get auth DTO
+        var targetUser = await _authorRepository.GetAuthorByName(targetUserName);
+        if (targetUser == currentUser) throw new Exception("You cannot follow this yourself!");
+        if (targetUser == null || currentUser == null) throw new Exception("null :(");
+        var result = await _authorRepository.IsFollowing(currentUser, targetUser);
+
+        return result;
+
     }
 }
