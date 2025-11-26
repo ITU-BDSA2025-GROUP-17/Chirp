@@ -35,20 +35,23 @@
                         <strong>
                             <a href="/@cheep.Author.Name">@cheep.Author.Name</a>
                             @{
-                                var isFollowing = await Model.IsFollowingAsync(User.Identity.Name!, cheep.Author.Name);
-                                if (isFollowing && User.Identity.Name != cheep.Author.Name)
+                                @if (User.Identity!.IsAuthenticated)
                                 {
-                                <form method="post" asp-page-handler="Unfollow" style="display:inline;">
-                                    <button type="submit" class="btn btn-link p-0" name="follow"
-                                            value="@cheep.Author.Name">unfollow</button>
-                                </form>
-                                }
-                                else if (User.Identity.Name != cheep.Author.Name)
-                                {
-                                <form method="post" asp-page-handler="Follow" style="display:inline;">
-                                    <button type="submit" class="btn btn-link p-0" name="follow"
-                                            value="@cheep.Author.Name">follow</button>
-                                </form>
+                                    var isFollowing = await Model.IsFollowingAsync(User.Identity.Name!, cheep.Author.Name);
+                                    if (isFollowing && User.Identity.Name != cheep.Author.Name)
+                                    {
+                                    <form method="post" asp-page-handler="Unfollow" style="display:inline;">
+                                        <button type="submit" class="btn btn-link p-0" name="follow"
+                                                value="@cheep.Author.Name">unfollow</button>
+                                    </form>
+                                    }
+                                    else if (User.Identity.Name != cheep.Author.Name)
+                                    {
+                                    <form method="post" asp-page-handler="Follow" style="display:inline;">
+                                        <button type="submit" class="btn btn-link p-0" name="follow"
+                                                value="@cheep.Author.Name">follow</button>
+                                    </form>
+                                    }
                                 }
                             }
                         </strong>
