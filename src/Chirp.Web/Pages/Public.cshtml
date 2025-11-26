@@ -12,31 +12,15 @@
     }
 }
 
-<div class=navigation>
-    @if (User.Identity!.IsAuthenticated)
-    {
-        <div>
-            <a href="/@(User.Identity.Name)">my timeline</a> |
-            <a href="/">public timeline</a> |
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
-                asp-route-returnUrl="@Url.Page("/Index", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
-        </div>
-    }
-    else
-    {
-        <div>
-            <a href="/">public timeline</a> |
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a> |
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </div>
-    }
+<div>
+    <form method="post" asp-page-handler="Search">
+        <input style="float: left" type="text" asp-for="SearchText">
+        <input type="submit" value="Search">
+    </form>
 </div>
 
-
 <div>
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity!.IsAuthenticated)
     {
         <h2> Public Timeline </h2>
         <div class="cheepbox">
@@ -63,7 +47,7 @@
                                 if (isFollowing && User.Identity.Name != cheep.Author.Name)
                                 {
                                     <form method="post" asp-page-handler="Unfollow" style="display:inline;">
-                                        <button type="submit" class="btn btn-link p-0" name="unfollow"
+                                        <button type="submit" class="btn btn-link p-0" name="follow"
                                             value="@cheep.Author.Name">unfollow</button>
                                     </form>
                                 }
@@ -85,15 +69,21 @@
         <div class="pagination">
             @if (currentPage > 1)
             {
-                <a href="/?page=@(currentPage - 1)">Prev</a>
+                <a href="/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
             }
             <span>Page @currentPage</span>
 
-            <a href="/?page=@(currentPage + 1)">Next</a>
+            <a href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
         </div>
     }
     else
     {
         <em>There are no cheeps so far.</em>
+        <br/>
+        @if (currentPage > 1)
+        {
+            <a href="/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
+        }
+        <span>Page @currentPage</span>
     }
 </div>

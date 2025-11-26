@@ -13,6 +13,8 @@ public class PublicModel : PageModel
     [BindProperty]
     public string? Text { get; set; }
     [BindProperty]
+    public string? SearchText { get; set; }
+    [BindProperty]
     public string? Follow { get; set; }
 
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
@@ -30,7 +32,14 @@ public class PublicModel : PageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
+        string? search = HttpContext.Request.Query["search"];
+        if (search != null)
+        {
+            Cheeps = await _cheepRepository.ReadCheepsWithSearch(null, search, (pageNum - 1) * 32, 32);
+        } else
+        {
+            Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
+        }
         return Page();
     }
 
@@ -42,7 +51,6 @@ public class PublicModel : PageModel
         }
 
         var user = User.Identity?.Name;
-        Console.WriteLine(user);
         var author = await _authorRepository.GetAuthorByName(user!);
 
         var cheep = new CheepDTO
@@ -74,6 +82,22 @@ public class PublicModel : PageModel
 
     }
 
+    public async Task<ActionResult> OnPostUnfollowAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+
+        var user = User.Identity?.Name;
+        var author = await _authorRepository.GetAuthorByName(user!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        await _authorRepository.UnFollow(author!, followAuthor!);
+
+
+        return RedirectToPage("Public");
+    }
+
     // Curr follows target....
     public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
     {
@@ -90,6 +114,15 @@ public class PublicModel : PageModel
 
     }
 
+    public ActionResult OnPostSearch()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
 
+        
 
+        return RedirectToPage("Public", new { search = SearchText });
+    }
 }
