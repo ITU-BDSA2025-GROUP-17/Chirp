@@ -88,7 +88,6 @@ public class Tests : PageTest
 
         await Page.FillAsync("#SearchText", "Starbuck");
         await Page.ClickAsync("input[type=submit]");
-        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         Assert.That(Page.Url, Does.Contain("search=Starbuck"));
         var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
@@ -104,13 +103,13 @@ public class Tests : PageTest
         await Page.GotoAsync(_url);
 
         await Page.ClickAsync("text=Next");
-        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        
         var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
         Assert.That(cheeps[0], Contains.Substring("In the morning of the wind, some few splintered planks, of what present avail to him."));
         Assert.That(cheeps[31], Contains.Substring("He walked slowly back the lid."));
 
         await Page.ClickAsync("text=Prev");
-        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        
         cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
         Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
         Assert.That(cheeps[31], Contains.Substring("With back to my friend, patience!"));
@@ -122,7 +121,7 @@ public class Tests : PageTest
         await Page.GotoAsync(_url);
 
         await Page.ClickAsync("text=Jacqualine Gilcoine");
-        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        
         var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
         // since Jacqualine has more than 32 Cheeps index 0 and 31 can still be used to check
         Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
@@ -130,11 +129,90 @@ public class Tests : PageTest
 
         // Next page of Jacqualine's Cheeps
         await Page.ClickAsync("text=Next");
-        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        
         cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
         Assert.That(cheeps[0], Contains.Substring("What a relief it was the place examined."));
         Assert.That(cheeps[31], Contains.Substring("At eleven there was movement in the teeth that he was in its niches."));
     }
+
+    public record UserInfo(string Username, string Email);
+    // Used to setup the test that require a user to be logged in
+    public async Task<UserInfo> UserTestInit()
+    {
+        await Page.GotoAsync(_url);
+
+        var username = "test_user_" + Guid.NewGuid().ToString();
+        var email = username+"@tester.dk";
+        
+        // Registration
+        await Page.ClickAsync("text=Register");
+
+        await Page.FillAsync("#Input_Username", username);
+        await Page.FillAsync("#Input_Email", email);
+        await Page.FillAsync("#Input_Password", "Secure1!");
+        await Page.FillAsync("#Input_ConfirmPassword", "Secure1!");
+        await Page.ClickAsync("#registerSubmit");
+        
+        await Page.ClickAsync("#confirm-link");
+
+        // Login
+        await Page.ClickAsync("text=Login");
+        
+        await Page.FillAsync("#Input_Username", username);
+        await Page.FillAsync("#Input_Password", "Secure1!");
+        await Page.ClickAsync("#login-submit");
+        
+        await Page.ClickAsync("text=public timeline");
+
+        return new UserInfo(username, email);
+    }
+    
+    [Test] // We won't be testing OAuth registration through Playwright
+    public async Task RegisterLoginLogoutUser()
+    {   
+        var user = await UserTestInit();
+        
+        await Page.ClickAsync("text=my timeline");
+
+        Assert.That(Page.Url, Is.EqualTo(_url+user.Username));
+        Assert.That(await Page.IsVisibleAsync("text=Logout"));
+
+        await Page.ClickAsync("text=Logout");
+
+        Assert.That(await Page.IsVisibleAsync("text=Register"));
+    }
+
+    [Test]
+    public async Task FollowUnfollowUser()
+    {
+        await UserTestInit();
+
+        await Page.ClickAsync("text=public timeline");
+        await Page.WaitForLoadStateAsync();
+
+        // Follow
+        await Page.ClickAsync("button[name='follow'][value='Jacqualine Gilcoine']");
+
+        Assert.That(await Page.IsVisibleAsync("button[name='unfollow'][value='Jacqualine Gilcoine']"));
+
+        // Check feed changed
+        await Page.ClickAsync("text=my timeline");
+        await Page.WaitForLoadStateAsync();
+        Assert.That(!await Page.IsVisibleAsync("text=There are no cheeps so far."));
+
+        await Page.ClickAsync("text=public timeline");
+        await Page.WaitForLoadStateAsync();
+        
+        // Unfollow
+        await Page.ClickAsync("button[name='unfollow'][value='Jacqualine Gilcoine']");
+        Assert.That(await Page.IsVisibleAsync("button[name='follow'][value='Jacqualine Gilcoine']"));
+        
+        // Check feed empty again
+        await Page.ClickAsync("text=my timeline");
+        await Page.WaitForLoadStateAsync();
+        Assert.That(await Page.IsVisibleAsync("text=There are no cheeps so far."));
+    }
+
 
     [OneTimeTearDown]
     public void Cleanup()

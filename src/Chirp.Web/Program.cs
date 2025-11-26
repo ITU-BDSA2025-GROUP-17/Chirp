@@ -30,7 +30,10 @@ if (builder.Environment.IsEnvironment("Testing"))
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity type for site
-builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<Author>(options => {
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.AllowedUserNameCharacters += " ";
+})
     .AddEntityFrameworkStores<CheepDBContext>();
 
 // Add services to the container.

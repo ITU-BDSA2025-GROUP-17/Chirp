@@ -16,6 +16,9 @@ public class UserTimelineModel : PageModel
     [BindProperty]
     public string? Follow { get; set; }
 
+    [BindProperty]
+    public string? Unfollow { get; set; }
+
     public UserTimelineModel(ICheepRepository cheepRepository,IAuthorRepository authorRepository)
     {
         _cheepRepository = cheepRepository;
@@ -67,7 +70,7 @@ public class UserTimelineModel : PageModel
    
         var user = User.Identity?.Name;
         var author = await _authorRepository.GetAuthorByName(user!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
         await _authorRepository.UnFollow(author!, followAuthor!);
 
 
