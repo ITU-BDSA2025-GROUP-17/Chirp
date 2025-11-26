@@ -4,6 +4,7 @@ using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
 using Chirp.Web;
 using NuGet.Protocol;
+using Chirp.Core;
 
 namespace ChirpEndToEndTests;
 
@@ -59,7 +60,7 @@ public class Tests : PageTest
             Console.WriteLine(cheep);
         }*/
 
-        Assert.That(cheeps.Count, Is.GreaterThan(0));
+        Assert.That(cheeps.Count, Is.EqualTo(32));
 
         // ***First Cheep on page 1***
         // Author
@@ -79,8 +80,43 @@ public class Tests : PageTest
         Assert.That(cheeps[31], Contains.Substring("With back to my friend, patience!"));
     }
 
+    [Test]
+    public async Task SearchCheep()
+    {   
+        await Page.GotoAsync("http://localhost:7273/");
+
+        await Page.FillAsync("#SearchText", "Starbuck");
+        await Page.ClickAsync("input[type=submit]");
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+
+        Assert.That(Page.Url, Does.Contain("search=Starbuck"));
+        var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+        foreach(string cheep in cheeps)
+        {
+            Assert.That(cheep, Contains.Substring("Starbuck"));
+        }
+    }
+
+    [Test]
+    public async Task PageChange()
+    {   
+        await Page.GotoAsync("http://localhost:7273/");
+
+        await Page.ClickAsync("text=Next");
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+        Assert.That(cheeps[0], Contains.Substring("In the morning of the wind, some few splintered planks, of what present avail to him."));
+        Assert.That(cheeps[31], Contains.Substring("He walked slowly back the lid."));
+
+        await Page.ClickAsync("text=Prev");
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+        Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
+        Assert.That(cheeps[31], Contains.Substring("With back to my friend, patience!"));
+    }
+
     [OneTimeTearDown]
-    public async Task Cleanup()
+    public void Cleanup()
     {
         _serverProcess.Kill(entireProcessTree: true);
         _serverProcess.Dispose();
