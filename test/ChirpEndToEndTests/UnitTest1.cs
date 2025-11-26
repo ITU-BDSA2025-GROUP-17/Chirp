@@ -13,6 +13,7 @@ namespace ChirpEndToEndTests;
 public class Tests : PageTest
 {
     private Process _serverProcess;
+    private string _url = "http://localhost:7273/";
 
     [OneTimeSetUp]
     public async Task Init()
@@ -51,7 +52,7 @@ public class Tests : PageTest
     [Test]
     public async Task ReadCheep()
     {
-        await Page.GotoAsync("http://localhost:7273/");
+        await Page.GotoAsync(_url);
         var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
 
         /* For test-testing
@@ -83,7 +84,7 @@ public class Tests : PageTest
     [Test]
     public async Task SearchCheep()
     {   
-        await Page.GotoAsync("http://localhost:7273/");
+        await Page.GotoAsync(_url);
 
         await Page.FillAsync("#SearchText", "Starbuck");
         await Page.ClickAsync("input[type=submit]");
@@ -100,7 +101,7 @@ public class Tests : PageTest
     [Test]
     public async Task PageChange()
     {   
-        await Page.GotoAsync("http://localhost:7273/");
+        await Page.GotoAsync(_url);
 
         await Page.ClickAsync("text=Next");
         await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
@@ -113,6 +114,26 @@ public class Tests : PageTest
         cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
         Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
         Assert.That(cheeps[31], Contains.Substring("With back to my friend, patience!"));
+    }
+
+    [Test]
+    public async Task ViewUserTimeline()
+    {   
+        await Page.GotoAsync(_url);
+
+        await Page.ClickAsync("text=Jacqualine Gilcoine");
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+        // since Jacqualine has more than 32 Cheeps index 0 and 31 can still be used to check
+        Assert.That(cheeps[0], Contains.Substring("Starbuck now is what we hear the worst."));
+        Assert.That(cheeps[31], Contains.Substring("Now, amid the cloud-scud."));
+
+        // Next page of Jacqualine's Cheeps
+        await Page.ClickAsync("text=Next");
+        await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+        cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+        Assert.That(cheeps[0], Contains.Substring("What a relief it was the place examined."));
+        Assert.That(cheeps[31], Contains.Substring("At eleven there was movement in the teeth that he was in its niches."));
     }
 
     [OneTimeTearDown]
