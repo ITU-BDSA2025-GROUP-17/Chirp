@@ -51,6 +51,34 @@ public class CheepRepository : ICheepRepository
         return result;
     }
 
+    public async Task<List<CheepDTO>> ReadCheepsWithSearch(string? user,string? search, int offset, int count)
+    {
+        if(search == null)
+        {
+            search = "";
+        }
+        // Define the query - with our setup, EF Core translates this to an SQLite query in the background
+        var query = from message in _dbContext.Cheeps
+                    where (message.Author!.UserName == user || user == null) && message.Text.Contains(search)
+                    orderby message.TimeStamp descending
+                    select new CheepDTO
+                    {
+                        Text = message.Text,
+                        TimeStamp = message.TimeStamp,
+                        CheepId = message.CheepId,
+                        Author = new()
+                        {
+                            AuthorId = message.Author!.Id,
+                            Name = message.Author.UserName!,
+                            Email = message.Author.Email!
+                        }
+                    };
+
+        // Execute the query and store the results
+        var result = await query.Skip(offset).Take(count).ToListAsync();
+        return result;
+    }
+
     public async Task UpdateCheep(CheepDTO cheep)
     {
         var query = from message in _dbContext.Cheeps
