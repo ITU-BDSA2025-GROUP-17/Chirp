@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 namespace Chirp.Repositories;
 
+using System.Runtime.CompilerServices;
 using Core;
 
 public class CheepRepository : ICheepRepository
@@ -47,13 +48,12 @@ public class CheepRepository : ICheepRepository
                     };
 
         // Execute the query and store the results
-        var result = await query.Skip(offset).Take(count).ToListAsync();
-        return result;
+        return await query.Skip(offset).Take(count).ToListAsync();
     }
 
-    public async Task<List<CheepDTO>> ReadCheepsWithSearch(string? user,string? search, int offset, int count)
+    public async Task<List<CheepDTO>> ReadCheepsWithSearch(string? user, string? search, int offset, int count)
     {
-        if(search == null)
+        if (search == null)
         {
             search = "";
         }
@@ -194,6 +194,22 @@ public class CheepRepository : ICheepRepository
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
         return result;
+    }
+
+    public async Task DeleteCheeps(string user)
+    {
+
+        var cheeps =
+        from Cheepo in _dbContext.Cheeps
+        where Cheepo.Author!.Id == _authorRepository.GetAuthorByName(user).Id
+        select Cheepo;
+
+        foreach (var cheep in cheeps)
+        {
+            _dbContext.Cheeps.Remove(cheep);
+        }
+
+        await _dbContext.SaveChangesAsync();
     }
 
 }

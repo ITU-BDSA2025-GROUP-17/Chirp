@@ -109,7 +109,6 @@ public class AuthorRepository : IAuthorRepository
             new Follow()
             {
                 Follower = user,
-                FollowerId = user.Id,
                 FollowingId = followAuthor.AuthorId
             }
         );
@@ -197,6 +196,46 @@ public class AuthorRepository : IAuthorRepository
 
         return followings;
 
+    }
+
+
+    public async Task DeleteAuthor(AuthorDTO userAuthor)
+    {
+        if (userAuthor == null) throw new NullReferenceException("userAuthor is null");
+
+        // find userAuthor
+        var userQuery = from author in _dbContext.Users
+                .Include(a => a.Following)
+                        where author.Id == userAuthor.AuthorId
+                        select author;
+
+        var user = await userQuery.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+
+        //delete all cheeps from userAuthor
+        ICheepRepository cheepRepository = new CheepRepository(_dbContext);
+        await cheepRepository.DeleteCheeps(userAuthor.Name);
+
+        // 2. Delete all follow relationships where userAuthor follows others (FollowerId = user.Id)                        
+        if (user.Following != null && user.Following.Any())
+        {
+            _dbContext.Follows.RemoveRange(user.Following);
+        }
+
+        // 3. Delete all follow relationships where others follow userAuthor (FollowingId = user.Id)
+        var followersOfUser = await _dbContext.Follows
+            .Where(f => f.FollowingId == user.Id)
+            .ToListAsync();
+
+        if (followersOfUser.Any())
+        {
+            _dbContext.Follows.RemoveRange(followersOfUser);
+        }
+
+        // 4. Delete the author
+        _dbContext.Users.Remove(user);
+
+        await _dbContext.SaveChangesAsync();
     }
 
 }
