@@ -196,18 +196,16 @@ public class CheepRepository : ICheepRepository
         return result;
     }
 
-    public async Task DeleteCheeps(string user)
+    public async Task DeleteCheeps(string userName)
     {
-
-        var cheeps =
-        from Cheepo in _dbContext.Cheeps
-        where Cheepo.Author!.Id == _authorRepository.GetAuthorByName(user).Id
-        select Cheepo;
-
-        foreach (var cheep in cheeps)
-        {
-            _dbContext.Cheeps.Remove(cheep);
-        }
+        var query = from author in _dbContext.Users
+            .Include(a => a.Cheeps)
+            where author.UserName == userName
+            select author;
+        
+        var user = await query.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+        _dbContext.Cheeps.RemoveRange(user.Cheeps!);
 
         await _dbContext.SaveChangesAsync();
     }

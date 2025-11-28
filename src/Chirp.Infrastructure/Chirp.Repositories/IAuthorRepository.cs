@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Chirp.Repositories;
 
 using Core;
@@ -11,7 +13,6 @@ public interface IAuthorRepository
     Task UnFollow(AuthorDTO userAuthor, AuthorDTO unfollowAuthor);
     Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor);
     Task<List<AuthorDTO>> GetFollowing(AuthorDTO userAuthor);
-
-
+    Task<IdentityResult> DeleteAuthor(AuthorDTO userAuthor);
 
 }
