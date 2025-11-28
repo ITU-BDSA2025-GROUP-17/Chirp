@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Chirp.Repositories;
 
 namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -17,15 +18,17 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<Author> _userManager;
         private readonly SignInManager<Author> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly ICheepRepository _cheepRepository;
 
-        public DeletePersonalDataModel(
-            UserManager<Author> userManager,
-            SignInManager<Author> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+        public DeletePersonalDataModel(UserManager<Author> userManager, SignInManager<Author> signInManager,
+            ILogger<DeletePersonalDataModel> logger, IAuthorRepository authorRepository, ICheepRepository cheepRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _authorRepository = authorRepository;
+            _cheepRepository = cheepRepository;
         }
 
         /// <summary>
@@ -86,8 +89,13 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            var result = await _userManager.DeleteAsync(user);
-            var userId = await _userManager.GetUserIdAsync(user);
+            AuthorDTO author = new AuthorDTO { 
+                Name = user.UserName!,
+                Email = user.Email!,
+                AuthorId = user.Id,
+            };
+            
+            var result = await _authorRepository.DeleteAuthor(author);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Unexpected error occurred deleting user.");
@@ -95,7 +103,7 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.SignOutAsync();
 
-            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+            _logger.LogInformation("User with ID '{UserId}' deleted themselves.", user.Id);
 
             return Redirect("~/");
         }

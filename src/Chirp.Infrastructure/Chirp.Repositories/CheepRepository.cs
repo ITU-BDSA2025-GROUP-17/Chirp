@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 namespace Chirp.Repositories;
 
+using System.Runtime.CompilerServices;
 using Core;
 
 public class CheepRepository : ICheepRepository
@@ -47,13 +48,12 @@ public class CheepRepository : ICheepRepository
                     };
 
         // Execute the query and store the results
-        var result = await query.Skip(offset).Take(count).ToListAsync();
-        return result;
+        return await query.Skip(offset).Take(count).ToListAsync();
     }
 
-    public async Task<List<CheepDTO>> ReadCheepsWithSearch(string? user,string? search, int offset, int count)
+    public async Task<List<CheepDTO>> ReadCheepsWithSearch(string? user, string? search, int offset, int count)
     {
-        if(search == null)
+        if (search == null)
         {
             search = "";
         }
@@ -194,6 +194,20 @@ public class CheepRepository : ICheepRepository
         // Execute the query and store the results
         var result = await query.Skip(offset).Take(count).ToListAsync();
         return result;
+    }
+
+    public async Task DeleteCheeps(string userName)
+    {
+        var query = from author in _dbContext.Users
+            .Include(a => a.Cheeps)
+            where author.UserName == userName
+            select author;
+        
+        var user = await query.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+        _dbContext.Cheeps.RemoveRange(user.Cheeps!);
+
+        await _dbContext.SaveChangesAsync();
     }
 
 }
