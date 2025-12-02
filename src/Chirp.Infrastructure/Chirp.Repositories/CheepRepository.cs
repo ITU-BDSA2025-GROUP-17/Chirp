@@ -295,6 +295,18 @@ public class CheepRepository : ICheepRepository
         
         var user = await query.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
+
+        if (user.Cheeps == null) return;
+
+        var cheepIds = user.Cheeps.Select(c => c.CheepId).ToHashSet();
+
+        // Delete all saved entries for these cheeps first
+        var savedCheeps = await _dbContext.SavedCheeps
+            .Where(s => cheepIds.Contains(s.CheepId))
+            .ToListAsync();
+
+        _dbContext.SavedCheeps.RemoveRange(savedCheeps);
+
         _dbContext.Cheeps.RemoveRange(user.Cheeps!);
 
         await _dbContext.SaveChangesAsync();

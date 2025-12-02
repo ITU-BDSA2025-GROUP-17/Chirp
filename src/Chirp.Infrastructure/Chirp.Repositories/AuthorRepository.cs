@@ -215,8 +215,8 @@ public class AuthorRepository : IAuthorRepository
         
         //delete all cheeps from userAuthor
         ICheepRepository cheepRepository = new CheepRepository(_dbContext);
-        await cheepRepository.DeleteCheeps(userAuthor.Name);
         await cheepRepository.DeleteSavedCheeps(userAuthor.Name);
+        await cheepRepository.DeleteCheeps(userAuthor.Name);
         
         // 2. Delete all follow relationships where userAuthor follows others (FollowerId = user.Id)                        
         if (user.Following != null && user.Following.Any())
