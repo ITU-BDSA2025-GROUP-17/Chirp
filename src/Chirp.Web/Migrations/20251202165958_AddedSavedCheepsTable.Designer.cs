@@ -3,6 +3,7 @@ using System;
 using Chirp.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chirp.Web.Migrations
 {
     [DbContext(typeof(CheepDBContext))]
-    partial class CheepDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251202165958_AddedSavedCheepsTable")]
+    partial class AddedSavedCheepsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -130,17 +133,22 @@ namespace Chirp.Web.Migrations
 
             modelBuilder.Entity("Chirp.Core.SavedCheep", b =>
                 {
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("SaverId")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("CheepId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AuthorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT")
                         .HasColumnName("time_stamp");
 
-                    b.HasKey("AuthorId", "CheepId");
+                    b.HasKey("SaverId", "CheepId");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("CheepId");
 
@@ -311,15 +319,19 @@ namespace Chirp.Web.Migrations
 
             modelBuilder.Entity("Chirp.Core.SavedCheep", b =>
                 {
-                    b.HasOne("Chirp.Core.Author", "Saver")
+                    b.HasOne("Chirp.Core.Author", null)
                         .WithMany("SavedCheeps")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("AuthorId");
 
                     b.HasOne("Chirp.Core.Cheep", "Cheep")
                         .WithMany()
                         .HasForeignKey("CheepId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Chirp.Core.Author", "Saver")
+                        .WithMany()
+                        .HasForeignKey("SaverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

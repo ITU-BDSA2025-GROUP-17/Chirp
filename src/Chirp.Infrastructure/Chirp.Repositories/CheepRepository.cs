@@ -28,6 +28,20 @@ public class CheepRepository : ICheepRepository
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
+    public async Task SaveCheep(AuthorDTO user, CheepDTO cheep)
+    {
+        if (cheep.CheepId == null) throw new NullReferenceException("Cheep ID is null!");
+        if (cheep.Author == null) throw new NullReferenceException("Cheep author is null!");
+        SavedCheep newCheep = new()
+        {
+            Saver = await _dbContext.Users.FindAsync(user.AuthorId),
+            CheepId = (long)cheep.CheepId,
+            TimeStamp = DateTime.Now
+        };
+        await _dbContext.SavedCheeps.AddAsync(newCheep); // does not write to the database!
+        await _dbContext.SaveChangesAsync(); // persist the changes in the database
+    }
+
     public async Task<List<CheepDTO>> ReadCheeps(string? user, int offset, int count)
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
@@ -48,6 +62,30 @@ public class CheepRepository : ICheepRepository
                     };
 
         // Execute the query and store the results
+        return await query.Skip(offset).Take(count).ToListAsync();
+    }
+
+    public async Task<List<CheepDTO>> ReadSavedCheeps(string? user, int offset, int count)
+    {
+        // Define the query - with our setup, EF Core translates this to an SQLite query in the background
+        var query = from save in _dbContext.SavedCheeps
+                    join cheep in _dbContext.Cheeps on save.CheepId equals cheep.CheepId
+                    where save.Saver!.Id == cheep.Author!.Id
+                    orderby save.TimeStamp descending
+                    select new CheepDTO
+                    {
+                        Text = cheep.Text,
+                        TimeStamp = cheep.TimeStamp,
+                        CheepId = cheep.CheepId,
+                        Author = new()
+                        {
+                            AuthorId = cheep.Author!.Id,
+                            Name = cheep.Author.UserName!,
+                            Email = cheep.Author.Email!
+                        }
+                    };
+
+        // Execute the query and return the results
         return await query.Skip(offset).Take(count).ToListAsync();
     }
 
