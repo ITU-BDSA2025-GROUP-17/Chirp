@@ -47,7 +47,7 @@
                                 if (isFollowing && User.Identity.Name != cheep.Author.Name)
                                 {
                                     <form method="post" asp-page-handler="Unfollow" style="display:inline;">
-                                        <button type="submit" class="btn btn-link p-0" name="follow"
+                                        <button type="submit" class="btn btn-link p-0" name="unfollow"
                                             value="@cheep.Author.Name">unfollow</button>
                                     </form>
                                 }
@@ -73,7 +73,7 @@
             }
             <span>Page @currentPage</span>
 
-            <a href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
+            <a id="next" href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
         </div>
     }
     else
