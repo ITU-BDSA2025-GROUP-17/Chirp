@@ -2,9 +2,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
-using Chirp.Web;
 using NuGet.Protocol;
-using Chirp.Core;
 
 namespace ChirpEndToEndTests;
 
@@ -14,6 +12,7 @@ public class Tests : PageTest
 {
     private Process _serverProcess;
     private string _url = "http://localhost:7273/";
+    public override BrowserNewContextOptions ContextOptions() => new() { IgnoreHTTPSErrors = true };
 
     [OneTimeSetUp]
     public async Task Init()
@@ -99,7 +98,7 @@ public class Tests : PageTest
 
     [Test]
     public async Task PageChange()
-    {   
+    {
         await Page.GotoAsync(_url);
 
         await Page.ClickAsync("text=Next");
@@ -187,9 +186,6 @@ public class Tests : PageTest
     {
         await UserTestInit();
 
-        await Page.ClickAsync("text=public timeline");
-        await Page.WaitForLoadStateAsync();
-
         // Follow
         await Page.ClickAsync("button[name='follow'][value='Jacqualine Gilcoine']");
 
@@ -213,6 +209,22 @@ public class Tests : PageTest
         Assert.That(await Page.IsVisibleAsync("text=There are no cheeps so far."));
     }
 
+    [NonParallelizable]
+    [Test, Order(100)] // Make sure this test is run after the others
+    public async Task PostCheep()
+    {
+        var user = await UserTestInit();
+
+        await Page.FillAsync("#Text", "Test cheep");
+        await Page.ClickAsync("input[type='submit'][value='Share']");
+
+        var cheeps = await Page.Locator("#messagelist li").AllTextContentsAsync();
+
+        Assert.That(cheeps.Count, Is.EqualTo(32));
+
+        Assert.That(cheeps[0], Contains.Substring(user.Username));
+        Assert.That(cheeps[0], Contains.Substring("Test cheep"));
+    }
 
     [OneTimeTearDown]
     public void Cleanup()
