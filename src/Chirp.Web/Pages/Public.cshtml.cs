@@ -18,6 +18,10 @@ public class PublicModel : PageModel
     public string? Follow { get; set; }
     [BindProperty]
     public string? Unfollow { get; set; }
+    [BindProperty]
+    public long? Save { get; set; }
+    [BindProperty]
+    public long? Unsave { get; set; }
 
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
@@ -100,6 +104,34 @@ public class PublicModel : PageModel
         return RedirectToPage("Public");
     }
 
+    public async Task<ActionResult> OnPostSaveAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        var cheep = await _cheepRepository.GetCheepById((long)Save!);
+
+        await _cheepRepository.SaveCheep(author!, cheep!);
+
+        return RedirectToPage("Public");
+    }
+
+    public async Task<ActionResult> OnPostRemoveSaveAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        var cheep = await _cheepRepository.GetCheepById((long)Unsave!);
+
+        await _cheepRepository.RemoveSavedCheep(author!, cheep!);
+
+        return RedirectToPage("Public");
+    }
+
     // Curr follows target....
     public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
     {
@@ -116,14 +148,20 @@ public class PublicModel : PageModel
 
     }
 
+    public async Task<bool> IsSavedAsync(CheepDTO cheep)
+    {
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        
+        return await _cheepRepository.IsSaved(author!, cheep);
+
+    }
+
     public ActionResult OnPostSearch()
     {
         if (!ModelState.IsValid)
         {
             return Page();
         }
-
-        
 
         return RedirectToPage("Public", new { search = SearchText });
     }

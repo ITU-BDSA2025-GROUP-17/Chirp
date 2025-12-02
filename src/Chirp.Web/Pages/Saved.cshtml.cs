@@ -13,6 +13,11 @@ public class SavedModel : PageModel
     [BindProperty]
     public string? Follow { get; set; }
 
+    [BindProperty]
+    public string? Unfollow { get; set; }
+    [BindProperty]
+    public long? Unsave { get; set; }
+
     public SavedModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
         _cheepRepository = cheepRepository;
@@ -27,6 +32,7 @@ public class SavedModel : PageModel
         {
             pageNum = int.Parse(page);
         }
+        
         if(User.Identity != null) {
             Cheeps = await _cheepRepository.ReadSavedCheeps(User.Identity!.Name, (pageNum - 1) * 32, 32);
         } else
@@ -50,7 +56,7 @@ public class SavedModel : PageModel
         await _authorRepository.Follow(author!, followAuthor!);
 
 
-        return RedirectToPage("Public");
+        return RedirectToPage("Saved");
 
     }
 
@@ -63,11 +69,25 @@ public class SavedModel : PageModel
 
         var user = User.Identity?.Name;
         var author = await _authorRepository.GetAuthorByName(user!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
         await _authorRepository.UnFollow(author!, followAuthor!);
 
 
-        return RedirectToPage("Public");
+        return RedirectToPage("Saved");
+    }
+
+    public async Task<ActionResult> OnPostRemoveSaveAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        var cheep = await _cheepRepository.GetCheepById((long)Unsave!);
+
+        await _cheepRepository.RemoveSavedCheep(author!, cheep!);
+
+        return RedirectToPage("Saved");
     }
 
     // Curr follows target....

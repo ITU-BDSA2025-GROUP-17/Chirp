@@ -58,6 +58,20 @@
                                             value="@cheep.Author.Name">follow</button>
                                     </form>
                                 }
+
+                                var isSaved = await Model.IsSavedAsync(cheep);
+                                if (isSaved) {
+                                    <form method="post" asp-page-handler="RemoveSave" style="display:inline;">
+                                        <button type="submit" class="btn btn-link p-0" name="unsave"
+                                            value="@cheep.CheepId">unsave</button>
+                                    </form>
+                                } else {
+                                    <form method="post" asp-page-handler="Save" style="display:inline;">
+                                        <button type="submit" class="btn btn-link p-0" name="save"
+                                            value="@cheep.CheepId">save</button>
+                                    </form>
+                                }
+                                
                             }
                         </strong>
                         @cheep.Text

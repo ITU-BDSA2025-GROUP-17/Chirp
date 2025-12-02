@@ -18,6 +18,10 @@ public class UserTimelineModel : PageModel
 
     [BindProperty]
     public string? Unfollow { get; set; }
+    [BindProperty]
+    public long? Save { get; set; }
+    [BindProperty]
+    public long? Unsave { get; set; }
 
     public UserTimelineModel(ICheepRepository cheepRepository,IAuthorRepository authorRepository)
     {
@@ -76,6 +80,34 @@ public class UserTimelineModel : PageModel
 
         return RedirectToPage("UserTimeline");
     }
+
+    public async Task<ActionResult> OnPostSaveAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        var cheep = await _cheepRepository.GetCheepById((long)Save!);
+
+        await _cheepRepository.SaveCheep(author!, cheep!);
+
+        return RedirectToPage("UserTimeline");
+    }
+
+    public async Task<ActionResult> OnPostRemoveSaveAsync()
+    {
+        if (!ModelState.IsValid)
+        {
+            return Page();
+        }
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        var cheep = await _cheepRepository.GetCheepById((long)Unsave!);
+
+        await _cheepRepository.RemoveSavedCheep(author!, cheep!);
+
+        return RedirectToPage("UserTimeline");
+    }
     
     public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
     {
@@ -89,6 +121,13 @@ public class UserTimelineModel : PageModel
         var result = await _authorRepository.IsFollowing(currentUser, targetUser);
 
         return result;
+    }
+
+    public async Task<bool> IsSavedAsync(CheepDTO cheep)
+    {
+        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
+        
+        return await _cheepRepository.IsSaved(author!, cheep);
 
     }
 }
