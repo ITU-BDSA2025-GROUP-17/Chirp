@@ -32,7 +32,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:7273/",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Testing"
+        "ASPNETCORE_ENVIRONMENT": "testing"
       }
     },
     "IIS Express": {

@@ -16,6 +16,8 @@ public class PublicModel : PageModel
     public string? SearchText { get; set; }
     [BindProperty]
     public string? Follow { get; set; }
+    [BindProperty]
+    public string? Unfollow { get; set; }
 
     public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
     {
@@ -91,7 +93,7 @@ public class PublicModel : PageModel
 
         var user = User.Identity?.Name;
         var author = await _authorRepository.GetAuthorByName(user!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
+        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
         await _authorRepository.UnFollow(author!, followAuthor!);
 
 
