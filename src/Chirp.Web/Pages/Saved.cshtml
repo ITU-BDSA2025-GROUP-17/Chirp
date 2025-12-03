@@ -60,11 +60,11 @@
         <div class="pagination">
             @if (currentPage > 1)
             {
-                <a href="/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
+                <a href="/Saved/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
             }
             <span>Page @currentPage</span>
 
-            <a href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
+            <a href="/Saved/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
         </div>
     }
     else
@@ -73,7 +73,7 @@
         <br/>
         @if (currentPage > 1)
         {
-            <a href="/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
+            <a href="/Saved/?page=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
         }
         <span>Page @currentPage</span>
     }
