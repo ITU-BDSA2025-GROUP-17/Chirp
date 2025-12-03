@@ -225,30 +225,193 @@ public class CheepRepositoryTests
                 Email = cheep.Author.Email!
             }
         };
-
         Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
-
-
-
         await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
         Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+    }
+
+    [Fact]
+    public async Task DeleteSavedCheepsTest()
+    {
+        SetUpCheepRepositoryTests();
+        if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
+        if (_db == null) throw new NullReferenceException("_db is null");
+
+        //make user
+        var testAuthor = Utility.RandomTestUser(true);
+        var testAuthorDto = new AuthorDTO
+        {
+            AuthorId = testAuthor.Id,
+            Name = testAuthor.UserName!,
+            Email = testAuthor.Email!
+        };
+        // make follow user
+        var testFollow = Utility.RandomTestUser(true);
+        var testFollowAuthDto = new AuthorDTO
+        {
+            AuthorId = testFollow.Id,
+            Name = testFollow.UserName!,
+            Email = testFollow.Email!
+        };
+
+        _db.Users.AddRange(new List<Author> { testAuthor, testFollow });
+        await _db.SaveChangesAsync();
+
+        var cheep = RandomTestCheep(testFollow, 150, 1);
+
+        await _db.Cheeps.AddAsync(cheep);
+        await _db.SaveChangesAsync();
+
+        cheep = _db.Cheeps.ToList()[0];
+        var cheepDto = new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            CheepId = cheep.CheepId,
+            Author = new()
+            {
+                AuthorId = cheep.Author!.Id,
+                Name = cheep.Author.UserName!,
+                Email = cheep.Author.Email!
+            }
+        };
+        Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
+        Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        await _cheepRepo.RemoveSavedCheep(testAuthorDto, cheepDto);
+        Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+    }
+
+    [Fact]
+    public async Task ReadSavedCheepsTest()
+    {
+        SetUpCheepRepositoryTests();
+        if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
+        if (_db == null) throw new NullReferenceException("_db is null");
+
+        //make user
+        var testAuthor = Utility.RandomTestUser(true);
+        var testAuthorDto = new AuthorDTO
+        {
+            AuthorId = testAuthor.Id,
+            Name = testAuthor.UserName!,
+            Email = testAuthor.Email!
+        };
+        // make follow user
+        var testFollow = Utility.RandomTestUser(true);
+        var testFollowAuthDto = new AuthorDTO
+        {
+            AuthorId = testFollow.Id,
+            Name = testFollow.UserName!,
+            Email = testFollow.Email!
+        };
+
+        _db.Users.AddRange(new List<Author> { testAuthor, testFollow });
+        await _db.SaveChangesAsync();
+
+        var cheep = RandomTestCheep(testFollow, 150, 1);
+
+        await _db.Cheeps.AddAsync(cheep);
+        await _db.SaveChangesAsync();
+
+        cheep = _db.Cheeps.ToList()[0];
+        var cheepDto = new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            CheepId = cheep.CheepId,
+            Author = new()
+            {
+                AuthorId = cheep.Author!.Id,
+                Name = cheep.Author.UserName!,
+                Email = cheep.Author.Email!
+            }
+        };
+        Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
+        Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        var readList = await _cheepRepo.ReadSavedCheeps(testAuthor.UserName, 0, 100);
+
+        bool check = false;
+        foreach (var savedCheep in readList)
+        {
+            if (savedCheep.CheepId == cheep.CheepId) { check = true; break; }
+        }
+        Assert.True(check);
+    }
+
+    [Fact]
+    public async Task GetCheepByIdTest()
+    {
+        SetUpCheepRepositoryTests();
+        if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
+        if (_db == null) throw new NullReferenceException("_db is null");
+
+        //make user
+        var testAuthor = Utility.RandomTestUser(true);
+        var testAuthorDto = new AuthorDTO
+        {
+            AuthorId = testAuthor.Id,
+            Name = testAuthor.UserName!,
+            Email = testAuthor.Email!
+        };
+
+        _db.Users.AddRange(new List<Author> { testAuthor });
+        await _db.SaveChangesAsync();
+
+        var cheep = RandomTestCheep(testAuthor, 150, 1);
+
+        await _db.Cheeps.AddAsync(cheep);
+        await _db.SaveChangesAsync();
+
+        cheep = _db.Cheeps.ToList()[0];
+        var cheepDto = new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            CheepId = cheep.CheepId,
+            Author = new()
+            {
+                AuthorId = cheep.Author!.Id,
+                Name = cheep.Author.UserName!,
+                Email = cheep.Author.Email!
+            }
+        };
+
+        var cheepeee = await _cheepRepo.GetCheepById(cheep.CheepId);
+        Assert.True(cheep.CheepId == cheepeee!.CheepId);
 
     }
 
-    /*[Fact]
+    [Fact]
     public async Task WriteCheepExceedingLimitTest()
     {
         SetUpCheepRepositoryTests();
         if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
-        if(_db == null) throw new NullReferenceException("_db is null");
-        
-        Author testAuthor = RandomTestUser();
-        Cheep cheepExceedingLimit = RandomTestCheep(testAuthor, 200, null);
+        if (_db == null) throw new NullReferenceException("_db is null");
 
-        testAuthor.Messages.Add(cheepExceedingLimit);
-
+        //make user
+        var testAuthor = Utility.RandomTestUser(true);
         _db.Users.AddRange(new List<Author> { testAuthor });
-        _db.Messages.AddRange(new List<Cheep> { cheepExceedingLimit });
         await _db.SaveChangesAsync();
-    }*/
+
+        var cheep = RandomTestCheep(testAuthor, 200, 1);
+
+        var cheepDto = new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            Author = new()
+            {
+                AuthorId = testAuthor.Id,
+                Name = testAuthor.UserName!,
+                Email = testAuthor.Email!
+            }
+        };
+
+        await _cheepRepo.CreateCheep(cheepDto);
+        Assert.Empty(_db.Cheeps.ToList());
+
+
+    }
 }
