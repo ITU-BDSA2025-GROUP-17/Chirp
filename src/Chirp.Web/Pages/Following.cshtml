@@ -1,0 +1,34 @@
+@page
+@model Chirp.Web.Pages.FollowingModel
+@{
+    ViewData["Title"] = "Following";
+    Layout = "Shared/_Layout";
+    int currentPage = 1;
+    var pageQuery = Model.HttpContext.Request.Query["page"];
+    if (!string.IsNullOrEmpty(pageQuery))
+    {
+        int.TryParse(pageQuery, out currentPage);
+        if (currentPage < 1) currentPage = 1;
+    }
+}
+
+<div>
+    <h2>People I Follow</h2>
+
+    @if (Model.Following == null || !Model.Following.Any())
+    {
+        <p>You are not following anyone yet.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var author in Model.Following)
+            {
+                <li>
+                    <a href="/@author.Name">@author.Name</a>
+                    <em>(@author.Email)</em>
+                </li>
+            }
+        </ul>
+    }
+</div>
