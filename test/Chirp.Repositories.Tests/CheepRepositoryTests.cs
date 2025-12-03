@@ -47,7 +47,6 @@ public class CheepRepositoryTests
         var message = Utility.RandomString(length);
         return new Cheep {
             Author = author,
-            AuthorId = author.AuthorId, 
             Text = message, 
             TimeStamp = DateTime.UnixEpoch.AddSeconds(actualTime),
         };
@@ -89,7 +88,7 @@ public class CheepRepositoryTests
         
         var testAuthor = Utility.RandomTestUser(true);
         var testAuthorDto = new AuthorDTO {
-            AuthorId = 1,
+            AuthorId = testAuthor.Id,
             Name = testAuthor.UserName!,
             Email = testAuthor.Email!
         };
@@ -117,6 +116,48 @@ public class CheepRepositoryTests
             Assert.True(success);
         }
     }
+
+    [Fact]
+    public async Task ReadCheepsFromFollowersTest()
+    {
+        SetUpCheepRepositoryTests();
+        if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
+        if(_db == null) throw new NullReferenceException("_db is null");
+        
+        var testAuthor = Utility.RandomTestUser(true);
+        var testAuthorDto = new AuthorDTO {
+            AuthorId = testAuthor.Id,
+            Name = testAuthor.UserName!,
+            Email = testAuthor.Email!
+        };
+        var testFollow = Utility.RandomTestUser(true);
+        var testFollowAuthDto = new AuthorDTO {
+            AuthorId = testFollow.Id,
+            Name = testFollow.UserName!,
+            Email = testFollow.Email!
+        };
+        _db.Users.AddRange(new List<Author> { testAuthor, testFollow });
+        await _db.SaveChangesAsync();
+
+        var list = await _cheepRepo.ReadCheepsFromFollowers(testAuthorDto.Name, 0, 100);
+        
+        Assert.True(list.Count == 0);
+        
+        var _authRepo = new AuthorRepository(_db);
+       
+        var cheep = RandomTestCheep(testAuthor, 150, 1);
+        await _db.Cheeps.AddAsync(cheep);
+        
+        
+        await _db.SaveChangesAsync();
+        await _authRepo.Follow(testAuthorDto, testFollowAuthDto);
+       
+        list = await _cheepRepo.ReadCheepsFromFollowers(testAuthorDto.Name, 0, 100);
+        var followCheeps = await _cheepRepo.ReadCheeps(testFollowAuthDto.Name, 0,100 );
+        Assert.Contains(followCheeps[0], list);
+    }
+    
+    
 
     /*[Fact]
     public async Task WriteCheepExceedingLimitTest()

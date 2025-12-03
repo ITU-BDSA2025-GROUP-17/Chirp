@@ -5,6 +5,7 @@ namespace Chirp.Repositories.Tests;
 public class Utility
 {
     static private HashSet<string> _usedAuthorNames = new HashSet<string>();
+    static private int _counter = 200;
 
     static public void resetUsernames()
     {
@@ -35,6 +36,7 @@ public class Utility
 
         return new Author()
         {
+            Id = _counter++,
             UserName = username,
             Email = username + "@hotmail.com",
             Cheeps = new List<Cheep>()
