@@ -392,13 +392,6 @@ public class CheepRepositoryTests
 
         //make user
         var testAuthor = Utility.RandomTestUser(true);
-        var testAuthorDto = new AuthorDTO
-        {
-            AuthorId = testAuthor.Id,
-            Name = testAuthor.UserName!,
-            Email = testAuthor.Email!
-        };
-
         _db.Users.AddRange(new List<Author> { testAuthor });
         await _db.SaveChangesAsync();
 
@@ -408,12 +401,11 @@ public class CheepRepositoryTests
         {
             Text = cheep.Text,
             TimeStamp = cheep.TimeStamp,
-            CheepId = cheep.CheepId,
             Author = new()
             {
-                AuthorId = cheep.Author!.Id,
-                Name = cheep.Author.UserName!,
-                Email = cheep.Author.Email!
+                AuthorId = testAuthor.Id,
+                Name = testAuthor.UserName!,
+                Email = testAuthor.Email!
             }
         };
 
