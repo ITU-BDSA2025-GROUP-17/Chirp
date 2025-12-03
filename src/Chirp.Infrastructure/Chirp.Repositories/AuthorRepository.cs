@@ -151,7 +151,7 @@ public class AuthorRepository : IAuthorRepository
     }
 
     // Is user following followAUt
-    public async Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor)
+    public async Task<bool> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor)
     {
         var userFollowings = await GetFollowing(userAuthor);
         foreach (var user in userFollowings)
@@ -215,6 +215,7 @@ public class AuthorRepository : IAuthorRepository
         
         //delete all cheeps from userAuthor
         ICheepRepository cheepRepository = new CheepRepository(_dbContext);
+        await cheepRepository.DeleteSavedCheeps(userAuthor.Name);
         await cheepRepository.DeleteCheeps(userAuthor.Name);
         
         // 2. Delete all follow relationships where userAuthor follows others (FollowerId = user.Id)                        

@@ -11,7 +11,7 @@ public interface IAuthorRepository
     Task CreateAuthor(string authorName, string authorEmail);
     Task Follow(AuthorDTO userAuthor, AuthorDTO followAuthor);
     Task UnFollow(AuthorDTO userAuthor, AuthorDTO unfollowAuthor);
-    Task<Boolean> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor);
+    Task<bool> IsFollowing(AuthorDTO userAuthor, AuthorDTO followAuthor);
     Task<List<AuthorDTO>> GetFollowing(AuthorDTO userAuthor);
     Task<IdentityResult> DeleteAuthor(AuthorDTO userAuthor);
 

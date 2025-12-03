@@ -28,6 +28,36 @@ public class CheepRepository : ICheepRepository
         await _dbContext.SaveChangesAsync(); // persist the changes in the database
     }
 
+    public async Task SaveCheep(AuthorDTO user, CheepDTO cheep)
+    {
+        if (cheep.CheepId == null) throw new NullReferenceException("Cheep ID is null!");
+        if (cheep.Author == null) throw new NullReferenceException("Cheep author is null!");
+        SavedCheep newCheep = new()
+        {
+            Saver = await _dbContext.Users.FindAsync(user.AuthorId),
+            CheepId = (long)cheep.CheepId,
+            TimeStamp = DateTime.Now
+        };
+        await _dbContext.SavedCheeps.AddAsync(newCheep); // does not write to the database!
+        await _dbContext.SaveChangesAsync(); // persist the changes in the database
+    }
+
+    public async Task RemoveSavedCheep(AuthorDTO user, CheepDTO cheep)
+{
+    if (cheep.CheepId == null) throw new NullReferenceException("Cheep ID is null!");
+
+    var savedCheep = await _dbContext.SavedCheeps
+        .FirstOrDefaultAsync(
+            s => s.Saver!.Id == user.AuthorId 
+            &&   s.CheepId == cheep.CheepId
+        );
+
+    if (savedCheep == null) return;
+
+    _dbContext.SavedCheeps.Remove(savedCheep);
+    await _dbContext.SaveChangesAsync();
+}
+
     public async Task<List<CheepDTO>> ReadCheeps(string? user, int offset, int count)
     {
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
@@ -48,6 +78,31 @@ public class CheepRepository : ICheepRepository
                     };
 
         // Execute the query and store the results
+        return await query.Skip(offset).Take(count).ToListAsync();
+    }
+
+    public async Task<List<CheepDTO>> ReadSavedCheeps(string? user, int offset, int count)
+    {
+        var currentUser = await _authorRepository.GetAuthorByName(user!);
+        // Define the query - with our setup, EF Core translates this to an SQLite query in the background
+        var query = from save in _dbContext.SavedCheeps
+                    join cheep in _dbContext.Cheeps on save.CheepId equals cheep.CheepId
+                    where save.Saver!.Id == currentUser!.AuthorId
+                    orderby save.TimeStamp descending
+                    select new CheepDTO
+                    {
+                        Text = cheep.Text,
+                        TimeStamp = cheep.TimeStamp,
+                        CheepId = cheep.CheepId,
+                        Author = new()
+                        {
+                            AuthorId = cheep.Author!.Id,
+                            Name = cheep.Author.UserName!,
+                            Email = cheep.Author.Email!
+                        }
+                    };
+
+        // Execute the query and return the results
         return await query.Skip(offset).Take(count).ToListAsync();
     }
 
@@ -196,6 +251,41 @@ public class CheepRepository : ICheepRepository
         return result;
     }
 
+    public async Task<CheepDTO?> GetCheepById(long cheepId)
+    {
+        var cheep = await _dbContext.Cheeps.Include(c => c.Author)
+            .FirstOrDefaultAsync(c => c.CheepId == cheepId);
+
+        if (cheep == null) return null;
+
+        return new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            CheepId = cheep.CheepId,
+            Author = new()
+            {
+                AuthorId = cheep.Author!.Id,
+                Name = cheep.Author.UserName!,
+                Email = cheep.Author.Email!
+            }
+        };
+    }
+
+    public async Task DeleteSavedCheeps(string userName)
+    {
+        var query = from author in _dbContext.Users
+            .Include(a => a.SavedCheeps)
+            where author.UserName == userName
+            select author;
+        
+        var user = await query.FirstOrDefaultAsync();
+        if (user == null) throw new NullReferenceException("resulting author is null");
+        _dbContext.SavedCheeps.RemoveRange(user.SavedCheeps!);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteCheeps(string userName)
     {
         var query = from author in _dbContext.Users
@@ -205,9 +295,28 @@ public class CheepRepository : ICheepRepository
         
         var user = await query.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
+
+        if (user.Cheeps == null) return;
+
+        var cheepIds = user.Cheeps.Select(c => c.CheepId).ToHashSet();
+
+        // Delete all saved entries for these cheeps first
+        var savedCheeps = await _dbContext.SavedCheeps
+            .Where(s => cheepIds.Contains(s.CheepId))
+            .ToListAsync();
+
+        _dbContext.SavedCheeps.RemoveRange(savedCheeps);
+
         _dbContext.Cheeps.RemoveRange(user.Cheeps!);
 
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task<bool> IsSaved(AuthorDTO user, CheepDTO cheep)
+    {
+        return await _dbContext.SavedCheeps.AnyAsync(
+            save => save.Saver!.Id == user.AuthorId 
+            &&      save.CheepId == cheep.CheepId
+        );
+    }
 }

@@ -1,5 +1,5 @@
-﻿@page "/"
-@model Chirp.Web.Pages.PublicModel
+﻿@page "/Saved"
+@model Chirp.Web.Pages.SavedModel
 @{
     ViewData["Title"] = "Chirp!";
     Layout = "Shared/_Layout";
@@ -13,23 +13,9 @@
 }
 
 <div>
-    <form method="post" asp-page-handler="Search">
-        <input style="float: left" type="text" asp-for="SearchText">
-        <input type="submit" value="Search">
-    </form>
-</div>
-
-<div>
     @if (User.Identity!.IsAuthenticated)
     {
-        <h2> Public Timeline </h2>
-        <div class="cheepbox">
-            <h3>What's on your mind @(User.Identity.Name)?</h3>
-            <form method="post" asp-page-handler="Cheep">
-                <input style="float: left" type="text" asp-for="Text">
-                <input type="submit" value="Share">
-            </form>
-        </div>
+        <h2> Saved Cheeps </h2>
     }
 
     @if (Model.Cheeps.Any())
@@ -59,19 +45,10 @@
                                     </form>
                                 }
 
-                                var isSaved = await Model.IsSavedAsync(cheep);
-                                if (isSaved) {
-                                    <form method="post" asp-page-handler="RemoveSave" style="display:inline;">
-                                        <button type="submit" class="btn btn-link p-0" name="unsave"
-                                            value="@cheep.CheepId">unsave</button>
-                                    </form>
-                                } else {
-                                    <form method="post" asp-page-handler="Save" style="display:inline;">
-                                        <button type="submit" class="btn btn-link p-0" name="save"
-                                            value="@cheep.CheepId">save</button>
-                                    </form>
-                                }
-                                
+                                <form method="post" asp-page-handler="RemoveSave" style="display:inline;">
+                                    <button type="submit" class="btn btn-link p-0" name="unsave"
+                                        value="@cheep.CheepId">unsave</button>
+                                </form>
                             }
                         </strong>
                         @cheep.Text
@@ -87,12 +64,12 @@
             }
             <span>Page @currentPage</span>
 
-            <a id="next" href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
+            <a href="/?page=@(currentPage + 1)&search=@Request.Query["search"]">Next</a>
         </div>
     }
     else
     {
-        <em>There are no cheeps so far.</em>
+        <em>There are no saved cheeps so far.</em>
         <br/>
         @if (currentPage > 1)
         {

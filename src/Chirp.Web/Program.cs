@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Load database connection via configuration
 
 
-if (builder.Environment.IsEnvironment("Testing"))
+if (builder.Environment.IsEnvironment("testing"))
 {
     var connection = new SqliteConnection("Data Source=:memory:");
     connection.Open();
@@ -22,6 +22,7 @@ if (builder.Environment.IsEnvironment("Testing"))
         var conn = sp.GetRequiredService<SqliteConnection>();
         options.UseSqlite(conn);
     });
+    
 } else
 {
     string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -30,7 +31,10 @@ if (builder.Environment.IsEnvironment("Testing"))
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity type for site
-builder.Services.AddDefaultIdentity<Author>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<Author>(options => {
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.AllowedUserNameCharacters += " ";
+})
     .AddEntityFrameworkStores<CheepDBContext>();
 
 // Add services to the container.
@@ -88,7 +92,7 @@ using (var scope = app.Services.CreateScope())
     // Optional: for Identity users if you want to seed roles/users
     var userManager = services.GetRequiredService<UserManager<Author>>();
 
-    if (builder.Environment.IsEnvironment("Testing"))
+    if (builder.Environment.IsEnvironment("testing"))
         dbContext.Database.EnsureCreated();      
     else
         dbContext.Database.Migrate();
@@ -103,6 +107,18 @@ if (app.Environment.IsProduction())
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+// Setup database reset if in testing enviroment
+if (app.Environment.IsEnvironment("testing"))
+{
+    app.MapGet("/reset-test-db", async (CheepDBContext db) =>
+    {
+        await db.Database.EnsureDeletedAsync();
+        await db.Database.EnsureCreatedAsync();
+        DbInitializer.SeedDatabase(db);
+        return Results.Ok("reset");
+    });
+}
+
 
 //middleware
 app.UseStaticFiles();
