@@ -225,14 +225,61 @@ public class CheepRepositoryTests
                 Email = cheep.Author.Email!
             }
         };
-
         Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
-
-
-
         await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
         Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+    }
 
+    [Fact]
+    public async Task DeleteSavedCheepsTest()
+    {
+        SetUpCheepRepositoryTests();
+        if (_cheepRepo == null) throw new NullReferenceException("_cheepRepo is null");
+        if (_db == null) throw new NullReferenceException("_db is null");
+
+        //make user
+        var testAuthor = Utility.RandomTestUser(true);
+        var testAuthorDto = new AuthorDTO
+        {
+            AuthorId = testAuthor.Id,
+            Name = testAuthor.UserName!,
+            Email = testAuthor.Email!
+        };
+        // make follow user
+        var testFollow = Utility.RandomTestUser(true);
+        var testFollowAuthDto = new AuthorDTO
+        {
+            AuthorId = testFollow.Id,
+            Name = testFollow.UserName!,
+            Email = testFollow.Email!
+        };
+
+        _db.Users.AddRange(new List<Author> { testAuthor, testFollow });
+        await _db.SaveChangesAsync();
+
+        var cheep = RandomTestCheep(testFollow, 150, 1);
+
+        await _db.Cheeps.AddAsync(cheep);
+        await _db.SaveChangesAsync();
+
+        cheep = _db.Cheeps.ToList()[0];
+        var cheepDto = new CheepDTO
+        {
+            Text = cheep.Text,
+            TimeStamp = cheep.TimeStamp,
+            CheepId = cheep.CheepId,
+            Author = new()
+            {
+                AuthorId = cheep.Author!.Id,
+                Name = cheep.Author.UserName!,
+                Email = cheep.Author.Email!
+            }
+        };
+        Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
+        Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
+        await _cheepRepo.RemoveSavedCheep(testAuthorDto, cheepDto);
+        Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
     }
 
     /*[Fact]
