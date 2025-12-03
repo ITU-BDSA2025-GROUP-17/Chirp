@@ -18,6 +18,7 @@ public class CheepRepository : ICheepRepository
     public async Task CreateCheep(CheepDTO cheep)
     {
         if (cheep.Author == null) throw new NullReferenceException("Author is null");
+        if (cheep.Text.Length > 160) return; //if cheep length is more than 160 chars, nothing happens
         Cheep newCheep = new()
         {
             Author = await _dbContext.Users.FindAsync(cheep.Author.AuthorId),
@@ -43,20 +44,20 @@ public class CheepRepository : ICheepRepository
     }
 
     public async Task RemoveSavedCheep(AuthorDTO user, CheepDTO cheep)
-{
-    if (cheep.CheepId == null) throw new NullReferenceException("Cheep ID is null!");
+    {
+        if (cheep.CheepId == null) throw new NullReferenceException("Cheep ID is null!");
 
-    var savedCheep = await _dbContext.SavedCheeps
-        .FirstOrDefaultAsync(
-            s => s.Saver!.Id == user.AuthorId 
-            &&   s.CheepId == cheep.CheepId
-        );
+        var savedCheep = await _dbContext.SavedCheeps
+            .FirstOrDefaultAsync(
+                s => s.Saver!.Id == user.AuthorId
+                && s.CheepId == cheep.CheepId
+            );
 
-    if (savedCheep == null) return;
+        if (savedCheep == null) return;
 
-    _dbContext.SavedCheeps.Remove(savedCheep);
-    await _dbContext.SaveChangesAsync();
-}
+        _dbContext.SavedCheeps.Remove(savedCheep);
+        await _dbContext.SaveChangesAsync();
+    }
 
     public async Task<List<CheepDTO>> ReadCheeps(string? user, int offset, int count)
     {
@@ -276,9 +277,9 @@ public class CheepRepository : ICheepRepository
     {
         var query = from author in _dbContext.Users
             .Include(a => a.SavedCheeps)
-            where author.UserName == userName
-            select author;
-        
+                    where author.UserName == userName
+                    select author;
+
         var user = await query.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
         _dbContext.SavedCheeps.RemoveRange(user.SavedCheeps!);
@@ -290,9 +291,9 @@ public class CheepRepository : ICheepRepository
     {
         var query = from author in _dbContext.Users
             .Include(a => a.Cheeps)
-            where author.UserName == userName
-            select author;
-        
+                    where author.UserName == userName
+                    select author;
+
         var user = await query.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
 
@@ -315,8 +316,8 @@ public class CheepRepository : ICheepRepository
     public async Task<bool> IsSaved(AuthorDTO user, CheepDTO cheep)
     {
         return await _dbContext.SavedCheeps.AnyAsync(
-            save => save.Saver!.Id == user.AuthorId 
-            &&      save.CheepId == cheep.CheepId
+            save => save.Saver!.Id == user.AuthorId
+            && save.CheepId == cheep.CheepId
         );
     }
 }
