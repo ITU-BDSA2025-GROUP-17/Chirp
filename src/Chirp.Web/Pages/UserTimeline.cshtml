@@ -5,7 +5,7 @@
     Layout = "Shared/_Layout";
     var routeName = HttpContext.GetRouteValue("author");
     int currentPage = 1;
-    var pageQuery = Model.HttpContext.Request.Query["page"];
+    var pageQuery = Model.HttpContext.Request.Query["pageIndex"];
     if (!string.IsNullOrEmpty(pageQuery))
     {
         int.TryParse(pageQuery, out currentPage);
@@ -19,7 +19,7 @@
     {
         <div class="cheepbox">
             <h3>What's on your mind @(User.Identity!.Name)?</h3>
-            <form method="post" asp-page-handler="Cheep">
+            <form method="post" asp-page-handler="Cheep" asp-route-search="@Request.Query["search"]" asp-route-pageIndex="@Model.PageIndex">
                 <input style="float: left" type="text" asp-for="Text">
                 <input type="submit" value="Share">
             </form>
@@ -40,14 +40,14 @@
                                     var isFollowing = await Model.IsFollowingAsync(User.Identity.Name!, cheep.Author.Name);
                                     if (isFollowing && User.Identity.Name != cheep.Author.Name)
                                     {
-                                    <form method="post" asp-page-handler="Unfollow" style="display:inline;">
+                                    <form method="post" asp-page-handler="Unfollow" asp-route-search="@Request.Query["search"]" asp-route-pageIndex="@Model.PageIndex" style="display:inline;">
                                         <button type="submit" class="btn btn-link p-0" name="unfollow"
                                                 value="@cheep.Author.Name">unfollow</button>
                                     </form>
                                     }
                                     else if (User.Identity.Name != cheep.Author.Name)
                                     {
-                                    <form method="post" asp-page-handler="Follow" style="display:inline;">
+                                    <form method="post" asp-page-handler="Follow" asp-route-search="@Request.Query["search"]" asp-route-pageIndex="@Model.PageIndex" style="display:inline;">
                                         <button type="submit" class="btn btn-link p-0" name="follow"
                                                 value="@cheep.Author.Name">follow</button>
                                     </form>
@@ -56,12 +56,12 @@
                                 
                                 var isSaved = await Model.IsSavedAsync(cheep);
                                 if (isSaved) {
-                                    <form method="post" asp-page-handler="RemoveSave" style="display:inline;">
+                                    <form method="post" asp-page-handler="RemoveSave" asp-route-search="@Request.Query["search"]" asp-route-pageIndex="@Model.PageIndex" style="display:inline;">
                                         <button type="submit" class="btn btn-link p-0" name="unsave"
                                             value="@cheep.CheepId">unsave</button>
                                     </form>
                                 } else {
-                                    <form method="post" asp-page-handler="Save" style="display:inline;">
+                                    <form method="post" asp-page-handler="Save" asp-route-search="@Request.Query["search"]" asp-route-pageIndex="@Model.PageIndex" style="display:inline;">
                                         <button type="submit" class="btn btn-link p-0" name="save"
                                             value="@cheep.CheepId">save</button>
                                     </form>
@@ -77,15 +77,21 @@
         <div class="pagination">
             @if (currentPage > 1)
             {
-                <a href="/@routeName?page=@(currentPage - 1)">Prev</a>
+                <a href="/@routeName?pageIndex=@(currentPage - 1)">Prev</a>
             }
             <span>Page @currentPage</span>
             
-            <a href="/@routeName?page=@(currentPage + 1)">Next</a>
+            <a href="/@routeName?pageIndex=@(currentPage + 1)">Next</a>
         </div>
     }
     else
     {
         <em>There are no cheeps so far.</em>
+        <br/>
+        @if (currentPage > 1)
+        {
+            <a href="/?pageIndex=@(currentPage - 1)&search=@Request.Query["search"]">Prev</a>
+        }
+        <span>Page @currentPage</span>
     }
 </div>
