@@ -15,7 +15,7 @@ numbersections: true
 
 ## Domain model
 
-Here comes a description of our domain model.
+The Chirp domain model consists of four entities: Author(users, extending ASP.NET Identity), Cheep (160-character messages with timestamps), Follow (author-to-author relationship), and SavedCheep (messages saved by user). The model implement a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
 ![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
 
@@ -24,6 +24,41 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 ## Architecture — In the small
 
 Illustrate the organization of your code base. That is, illustrate which layers exist in your (onion) architecture. Make sure to illustrate which part of your code is residing in which layer.
+
+GREEN
+chirp.Web
+
+- ASP.NET Core Razor Pages
+- Controllers, views, HTTP concerns
+- User interface and API endpoints
+- Depends on all inner layers
+  Chirp.Infrastructure.Tests
+- tests all layers
+- UI tests
+- unit tests
+
+BLUE
+Chirp.Infrastructure.Services + Chirp.Infrastructure.DataTransferObjects = Application Services Layer
+
+- Business logic orchestration
+- DTOs for data transfer between layers
+- Use cases and workflows
+- Depends on Repositories and Domain
+
+ORANGE
+Chirp.Infrastructure.Repositories (Orange) = Repository Layer / Data Access
+
+- Contains CheepRepository, AuthorRepository implementations
+- Database context (CheepDBContext)
+- Data persistence logic
+- Depends inward on Domain Layer
+
+PINK
+Chirp.Core.DataModel (Pink/Center) = Domain Layer (Core)
+
+- Contains domain entities: Author, Cheep, Follow, SavedCheep
+- Pure domain logic, no dependencies
+- The innermost layer with business rules
 
 ## Architecture of deployed application
 
