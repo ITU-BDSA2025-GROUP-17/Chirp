@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Repositories;
+using Services;
 
 public class CheepPageModel : PageModel
 {
-    protected readonly IAuthorRepository _authorRepository;
-    protected readonly ICheepRepository _cheepRepository;
+    protected readonly ICheepService _cheepService;
+    protected readonly IAuthorService _authorService;
     public required List<CheepDTO> Cheeps { get; set; }
 
     [BindProperty]
@@ -30,10 +31,10 @@ public class CheepPageModel : PageModel
     [BindProperty(SupportsGet = true)]
     public int? PageIndex { get; set; }
 
-    public CheepPageModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository)
+    public CheepPageModel(ICheepService cheepService, IAuthorService authorService)
     {
-        _cheepRepository = cheepRepository;
-        _authorRepository = authorRepository;
+        _cheepService = cheepService;
+        _authorService = authorService;
     }
 
     public async Task<ActionResult> OnPostCheepAsync()
@@ -43,16 +44,8 @@ public class CheepPageModel : PageModel
             return Page();
         }
 
-        var user = User.Identity?.Name;
-        var author = await _authorRepository.GetAuthorByName(user!);
-
-        var cheep = new CheepDTO
-        {
-            Author = author!,
-            Text = Text!,
-            TimeStamp = DateTime.Now
-        };
-        await _cheepRepository.CreateCheep(cheep);
+        string userName = User.Identity!.Name!;
+        await _cheepService.CreateCheepForUser(userName, Text!);
 
         return RedirectToPage(null, new {search = Search, pageIndex = PageIndex});
     }
@@ -63,15 +56,11 @@ public class CheepPageModel : PageModel
         {
             return Page();
         }
-        var user = User.Identity?.Name;
-        var author = await _authorRepository.GetAuthorByName(user!);
 
-
-        var followAuthor = await _authorRepository.GetAuthorByName(Follow!);
-        await _authorRepository.Follow(author!, followAuthor!);
+        string userName = User.Identity!.Name!;
+        await _authorService.FollowUser(userName, Follow!);
 
         return RedirectToPage(null, new {search = Search, pageIndex = PageIndex});
-
     }
 
     public async Task<ActionResult> OnPostUnfollowAsync()
@@ -81,10 +70,8 @@ public class CheepPageModel : PageModel
             return Page();
         }
 
-        var user = User.Identity?.Name;
-        var author = await _authorRepository.GetAuthorByName(user!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
-        await _authorRepository.UnFollow(author!, followAuthor!);
+        string userName = User.Identity!.Name!;
+        await _authorService.UnfollowUser(userName, Unfollow!);
 
         return RedirectToPage(null, new {search = Search, pageIndex = PageIndex});
     }
@@ -95,11 +82,9 @@ public class CheepPageModel : PageModel
         {
             return Page();
         }
-        
-        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
-        var cheep = await _cheepRepository.GetCheepById((long)Save!);
 
-        await _cheepRepository.SaveCheep(author!, cheep!);
+        string userName = User.Identity!.Name!;
+        await _cheepService.SaveCheepForUser(userName, Save!.Value);
 
         return RedirectToPage(null, new {search = Search, pageIndex = PageIndex});
     }
@@ -110,36 +95,22 @@ public class CheepPageModel : PageModel
         {
             return Page();
         }
-        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
-        var cheep = await _cheepRepository.GetCheepById((long)Unsave!);
 
-        await _cheepRepository.RemoveSavedCheep(author!, cheep!);
+        string userName = User.Identity!.Name!;
+        await _cheepService.RemoveSavedCheepForUser(userName, Unsave!.Value);
 
         return RedirectToPage(null, new {search = Search, pageIndex = PageIndex});
     }
 
-    // Curr follows target....
     public async Task<bool> IsFollowingAsync(string currentUserName, string targetUserName)
     {
-        // get curr DTO
-        var currentUser = await _authorRepository.GetAuthorByName(currentUserName);
-
-        // get auth DTO
-        var targetUser = await _authorRepository.GetAuthorByName(targetUserName);
-        if (targetUser == currentUser) throw new Exception("You cannot follow this yourself!");
-        if (targetUser == null || currentUser == null) throw new Exception("null :(");
-        var result = await _authorRepository.IsFollowing(currentUser, targetUser);
-
-        return result;
-
+        return await _authorService.IsFollowing(currentUserName, targetUserName);
     }
 
     public async Task<bool> IsSavedAsync(CheepDTO cheep)
     {
-        var author = await _authorRepository.GetAuthorByName(User.Identity!.Name!);
-        
-        return await _cheepRepository.IsSaved(author!, cheep);
-
+        string userName = User.Identity!.Name!;
+        return await _cheepService.IsCheepSavedByUser(userName, cheep.CheepId!.Value);
     }
 
     public ActionResult OnPostSearch()
