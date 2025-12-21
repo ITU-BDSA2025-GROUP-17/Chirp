@@ -1,6 +1,7 @@
 namespace Chirp.Services;
 
-public class CheepService : ICheepServices
+using Repositories;
+public class CheepService : ICheepService
 {
     private readonly ICheepRepository _cheepRepository;
 
@@ -49,7 +50,7 @@ public class CheepService : ICheepServices
     }
     public async Task CreateCheepForUser(string userName, string text)
     {
-        AuthorDTO? author = _authorService.GetAuthorByName(userName);
+        AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
             throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
@@ -96,7 +97,7 @@ public class CheepService : ICheepServices
             throw new InvalidOperationException($"Cheep with id '{cheepId}' doesn't exist");
         }
 
-        await _cheepRepository.RemoveSavedCheepForUser(author, cheep);
+        await _cheepRepository.RemoveSavedCheep(author, cheep);
     }
     public async Task<bool> IsCheepSavedByUser(string userName, long cheepId)
     {
@@ -111,9 +112,8 @@ public class CheepService : ICheepServices
             throw new InvalidOperationException($"Cheep with id '{cheepId}' doesn't exist");
         }
 
-        bool isSaved = await _authorService.isSaved(author, cheep);
+        bool isSaved = await _cheepRepository.IsSaved(author, cheep);
         return isSaved;
-
     }
     public async Task DeleteAllSavedCheepsForUser(string userName)
     {
@@ -122,7 +122,7 @@ public class CheepService : ICheepServices
         {
             throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
         }
-        await _cheepRepository.DeleteSavedCheeps(author);
+        await _cheepRepository.DeleteSavedCheeps(userName);
     }
     public async Task DeleteAllCheepsForUser(string userName)
     {
@@ -131,7 +131,7 @@ public class CheepService : ICheepServices
         {
             throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
         }
-        await _cheepRepository.DeleteAllCheepsForUser(author);
+        await _cheepRepository.DeleteCheeps(userName);
     }
 
 

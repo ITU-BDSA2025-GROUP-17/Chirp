@@ -1,4 +1,4 @@
-namespace Chirp.Service;
+namespace Chirp.Services;
 
 using Microsoft.AspNetCore.Identity;
 using Repositories;
@@ -13,14 +13,15 @@ public class AuthorService : IAuthorService
     }
 
 
-    public async Task<AuthorDTO?> getAuthorByName(string userName)
+    public async Task<AuthorDTO?> GetAuthorByName(string userName)
     {
-        AuthorDTO? author = _authorRepository.GetAuthorByName(userName);
+        AuthorDTO? author = await _authorRepository.GetAuthorByName(userName);
         return author;
     }
-    public async Task<AuthorDTO?> getAuthorByEmail(string email)
+
+    public async Task<AuthorDTO?> GetAuthorByEmail(string email)
     {
-        AuthorDTO? author = _authorRepository.GetAuthorByEmail(email);
+        AuthorDTO? author = await _authorRepository.GetAuthorByEmail(email);
         return author;
     }
     public async Task CreateAuthor(string userName, string email)
@@ -93,7 +94,7 @@ public class AuthorService : IAuthorService
     }
     public async Task<List<AuthorDTO>> GetFollowing(string userName)
     {
-        AuthorDTO? author = await _authorRepository.GetAuthorByName(username);
+        AuthorDTO? author = await _authorRepository.GetAuthorByName(userName);
         if (author == null)
         {
             throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
@@ -101,7 +102,6 @@ public class AuthorService : IAuthorService
 
         List<AuthorDTO> following = await _authorRepository.GetFollowing(author);
         return following;
-
     }
     public async Task<IdentityResult> DeleteAuthor(string userName)
     {

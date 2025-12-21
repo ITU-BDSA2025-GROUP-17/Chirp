@@ -1,5 +1,6 @@
 namespace Chirp.Services;
 
+using Repositories;
 public interface ICheepService
 {
     Task<List<CheepDTO>> GetPublicCheeps(int pageNumber, string? searchQuery);
