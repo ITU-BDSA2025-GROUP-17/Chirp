@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Chirp.Repositories;
+using Chirp.Services;
 using Chirp.Core;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
@@ -22,8 +23,9 @@ if (builder.Environment.IsEnvironment("testing"))
         var conn = sp.GetRequiredService<SqliteConnection>();
         options.UseSqlite(conn);
     });
-    
-} else
+
+}
+else
 {
     string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     builder.Services.AddDbContext<CheepDBContext>(options => options.UseSqlite(connectionString, b => b.MigrationsAssembly("Chirp.Web")));
@@ -31,7 +33,8 @@ if (builder.Environment.IsEnvironment("testing"))
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Identity type for site
-builder.Services.AddDefaultIdentity<Author>(options => {
+builder.Services.AddDefaultIdentity<Author>(options =>
+{
     options.SignIn.RequireConfirmedAccount = true;
     options.User.AllowedUserNameCharacters += " ";
 })
@@ -41,6 +44,9 @@ builder.Services.AddDefaultIdentity<Author>(options => {
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<ICheepRepository, CheepRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+// Registrer services (business logic layer)
+builder.Services.AddScoped<ICheepService, CheepService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 
 // CORS polic y
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!;
@@ -68,7 +74,8 @@ builder.Services.AddSession();
 if (builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddAuthentication().AddCookie();
-} else
+}
+else
 {
     builder.Services.AddAuthentication()
     .AddGitHub(o =>
@@ -93,7 +100,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<Author>>();
 
     if (builder.Environment.IsEnvironment("testing"))
-        dbContext.Database.EnsureCreated();      
+        dbContext.Database.EnsureCreated();
     else
         dbContext.Database.Migrate();
 

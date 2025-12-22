@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Repositories;
+using Services;
 
 public class PublicModel : CheepPageModel
 {
 
-    public PublicModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository) 
-        : base(cheepRepository, authorRepository)
+    public PublicModel(ICheepService cheepService, IAuthorService authorService)
+        : base(cheepService, authorService)
     { }
 
     public async Task<ActionResult> OnGet()
@@ -23,13 +23,8 @@ public class PublicModel : CheepPageModel
         }
 
         string? search = HttpContext.Request.Query["search"];
-        if (search != null)
-        {
-            Cheeps = await _cheepRepository.ReadCheepsWithSearch(null, search, (pageNum - 1) * 32, 32);
-        } else
-        {
-            Cheeps = await _cheepRepository.ReadCheeps(null, (pageNum - 1) * 32, 32);
-        }
+        Cheeps = await _cheepService.GetPublicCheeps(pageNum, search);
+
         return Page();
     }
 }
