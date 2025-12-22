@@ -17,11 +17,9 @@ public class CheepService : ICheepService
 
     public async Task<List<CheepDTO>> GetPublicCheeps(int pageNumber, string? searchQuery)
     {
-        // Beregner offset baseret på sidenummer
         int offset = (pageNumber - 1) * CheepsPerPage;
         List<CheepDTO> cheeps;
 
-        // Hvis der er en søgequery, brug søgefunktionen
         if (searchQuery != null)
         {
             cheeps = await _cheepRepository.ReadCheepsWithSearch(null, searchQuery, offset, CheepsPerPage);
@@ -42,9 +40,12 @@ public class CheepService : ICheepService
     }
     public async Task<List<CheepDTO>> GetSavedCheeps(string userName, int pageNumber)
     {
+        AuthorDTO? author = await _authorService.GetAuthorByName(userName);
+        if (author == null) throw new InvalidOperationException("User: " + userName + " doesn't exist");
+
         int offset = (pageNumber - 1) * CheepsPerPage;
 
-        List<CheepDTO> savedCheeps = await _cheepRepository.ReadSavedCheeps(userName, offset, CheepsPerPage);
+        List<CheepDTO> savedCheeps = await _cheepRepository.ReadSavedCheeps(author.AuthorId, offset, CheepsPerPage);
 
         return savedCheeps;
     }
@@ -53,7 +54,7 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
 
         CheepDTO newCheep = new CheepDTO
@@ -70,14 +71,13 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
 
-        // Henter cheep
         CheepDTO? cheep = await _cheepRepository.GetCheepById(cheepId);
         if (cheep == null)
         {
-            throw new InvalidOperationException($"Cheep with id '{cheepId}' doesn't exist");
+            throw new InvalidOperationException($"Cheep with id " + cheepId + " doesn't exist");
         }
 
         await _cheepRepository.SaveCheep(author, cheep);
@@ -87,14 +87,13 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
 
-        // Henter cheep
         CheepDTO? cheep = await _cheepRepository.GetCheepById(cheepId);
         if (cheep == null)
         {
-            throw new InvalidOperationException($"Cheep with id '{cheepId}' doesn't exist");
+            throw new InvalidOperationException($"Cheep with id " + cheepId + " doesn't exist");
         }
 
         await _cheepRepository.RemoveSavedCheep(author, cheep);
@@ -104,12 +103,12 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
         CheepDTO? cheep = await _cheepRepository.GetCheepById(cheepId);
         if (cheep == null)
         {
-            throw new InvalidOperationException($"Cheep with id '{cheepId}' doesn't exist");
+            throw new InvalidOperationException("Cheep with id " + cheepId + " doesn't exist");
         }
 
         bool isSaved = await _cheepRepository.IsSaved(author, cheep);
@@ -120,7 +119,7 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
         await _cheepRepository.DeleteSavedCheeps(userName);
     }
@@ -129,7 +128,7 @@ public class CheepService : ICheepService
         AuthorDTO? author = await _authorService.GetAuthorByName(userName);
         if (author == null)
         {
-            throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
+            throw new InvalidOperationException("user with username: " + userName + " doesn't exist");
         }
         await _cheepRepository.DeleteCheeps(userName);
     }

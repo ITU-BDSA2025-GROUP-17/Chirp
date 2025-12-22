@@ -330,7 +330,7 @@ public class CheepRepositoryTests
         Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
         await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
         Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
-        var readList = await _cheepRepo.ReadSavedCheeps(testAuthor.UserName, 0, 100);
+        var readList = await _cheepRepo.ReadSavedCheeps(testAuthor.Id, 0, 100);
 
         bool check = false;
         foreach (var savedCheep in readList)
