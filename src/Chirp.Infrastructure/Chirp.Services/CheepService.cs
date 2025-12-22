@@ -35,7 +35,17 @@ public class CheepService : ICheepService
     {
         int offset = (pageNumber - 1) * CheepsPerPage;
 
-        List<CheepDTO> cheeps = await _cheepRepository.ReadCheepsFromFollowers(userName, offset, CheepsPerPage);
+        //list of string, userNames
+        List<AuthorDTO> following = await _authorService.GetFollowing(userName);
+
+        List<string> userNames = new List<string> { userName };
+        foreach (var author in following)
+        {
+            userNames.Add(author.Name);
+        }
+
+
+        List<CheepDTO> cheeps = await _cheepRepository.ReadCheepsFromFollowers(userNames, offset, CheepsPerPage);
         return cheeps;
     }
     public async Task<List<CheepDTO>> GetSavedCheeps(string userName, int pageNumber)

@@ -8,11 +8,9 @@ public class CheepRepository : ICheepRepository
 {
     //access the database
     private readonly CheepDBContext _dbContext;
-    private readonly IAuthorRepository _authorRepository;
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
-        _authorRepository = new AuthorRepository(_dbContext);
     }
 
     public async Task CreateCheep(CheepDTO cheep)
@@ -216,21 +214,12 @@ public class CheepRepository : ICheepRepository
     }
 
 
-    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(string user, int offset, int count)
+    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(List<string> userNames, int offset, int count)
     {
-        var author = await _authorRepository.GetAuthorByName(user!); // -------------------------------------------------------ch
-        if (author == null) { throw new Exception("Author " + user + " not found!"); }
-        var following = await _authorRepository.GetFollowing(author);
-
-        var users = new List<string> { user };
-        foreach (var follow in following)
-        {
-            users.Add(follow.Name);
-        }
 
         var query = from message in _dbContext.Cheeps
 
-                    where users.Contains(message.Author!.UserName!)
+                    where userNames.Contains(message.Author!.UserName!)
                     orderby message.TimeStamp descending
                     select new CheepDTO
                     {

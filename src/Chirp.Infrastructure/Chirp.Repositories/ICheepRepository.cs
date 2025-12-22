@@ -9,10 +9,10 @@ public interface ICheepRepository
     Task RemoveSavedCheep(AuthorDTO user, CheepDTO cheep);
     Task<List<CheepDTO>> ReadCheeps(string? user, int offset, int count);
     Task<List<CheepDTO>> ReadSavedCheeps(int authorId, int offset, int count);
-    
+
     Task<List<CheepDTO>> ReadCheepsWithSearch(string? user, string? search, int offset, int count);
     Task UpdateCheep(CheepDTO cheep);
-    Task<List<CheepDTO>> ReadCheepsFromFollowers(string user, int offset, int count);
+    Task<List<CheepDTO>> ReadCheepsFromFollowers(List<string> userNames, int offset, int count);
 
     Task<bool> IsSaved(AuthorDTO user, CheepDTO cheep);
     Task<CheepDTO?> GetCheepById(long cheepId);
