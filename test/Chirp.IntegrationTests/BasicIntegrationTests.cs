@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Chirp.IntegrationTests;
 
-public class BasicIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+public class BasicIntegrationTests : IClassFixture<ChirpWebApplicationFactory>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly ChirpWebApplicationFactory _factory;
     private readonly HttpClient _client;
 
-    public BasicIntegrationTests(WebApplicationFactory<Program> factory)
+    public BasicIntegrationTests(ChirpWebApplicationFactory factory)
     {
         _factory = factory;
         _client = factory.CreateClient();
@@ -16,12 +16,11 @@ public class BasicIntegrationTests : IClassFixture<WebApplicationFactory<Program
     [Fact]
     public async Task PublicPage_ReturnsSuccessStatusCode()
     {
-        // Arrange - ingen setup nødvendig
+        // Arrange - no setup needed
 
-        // Act - lav HTTP request til public page
+        // Act - make HTTP request to public page
         var response = await _client.GetAsync("/");
 
-        // Assert - tjek at det lykkedes
         response.EnsureSuccessStatusCode();
         Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType?.ToString());
     }
@@ -29,13 +28,12 @@ public class BasicIntegrationTests : IClassFixture<WebApplicationFactory<Program
     [Fact]
     public async Task PublicPage_ContainsCheepWord()
     {
-        // Arrange
+        // Arrange - no setup needed
 
         // Act
         var response = await _client.GetAsync("/");
         var content = await response.Content.ReadAsStringAsync();
 
-        // Assert
         Assert.Contains("Chirp", content);
     }
 }
