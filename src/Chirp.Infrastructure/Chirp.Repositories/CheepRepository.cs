@@ -8,11 +8,9 @@ public class CheepRepository : ICheepRepository
 {
     //access the database
     private readonly CheepDBContext _dbContext;
-    private readonly IAuthorRepository _authorRepository;
     public CheepRepository(CheepDBContext context)
     {
         _dbContext = context;
-        _authorRepository = new AuthorRepository(_dbContext);
     }
 
     public async Task CreateCheep(CheepDTO cheep)
@@ -82,13 +80,12 @@ public class CheepRepository : ICheepRepository
         return await query.Skip(offset).Take(count).ToListAsync();
     }
 
-    public async Task<List<CheepDTO>> ReadSavedCheeps(string? user, int offset, int count)
+    public async Task<List<CheepDTO>> ReadSavedCheeps(int authorId, int offset, int count)
     {
-        var currentUser = await _authorRepository.GetAuthorByName(user!);
         // Define the query - with our setup, EF Core translates this to an SQLite query in the background
         var query = from save in _dbContext.SavedCheeps
                     join cheep in _dbContext.Cheeps on save.CheepId equals cheep.CheepId
-                    where save.Saver!.Id == currentUser!.AuthorId
+                    where save.Saver!.Id == authorId
                     orderby save.TimeStamp descending
                     select new CheepDTO
                     {
@@ -217,21 +214,12 @@ public class CheepRepository : ICheepRepository
     }
 
 
-    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(string user, int offset, int count)
+    public async Task<List<CheepDTO>> ReadCheepsFromFollowers(List<string> userNames, int offset, int count)
     {
-        var author = await _authorRepository.GetAuthorByName(user!);
-        if (author == null) { throw new Exception("Author " + user + " not found!"); }
-        var following = await _authorRepository.GetFollowing(author);
-
-        var users = new List<string> { user };
-        foreach (var follow in following)
-        {
-            users.Add(follow.Name);
-        }
 
         var query = from message in _dbContext.Cheeps
 
-                    where users.Contains(message.Author!.UserName!)
+                    where userNames.Contains(message.Author!.UserName!)
                     orderby message.TimeStamp descending
                     select new CheepDTO
                     {

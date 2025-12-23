@@ -149,7 +149,7 @@ public class CheepRepositoryTests
         _db.Users.AddRange(new List<Author> { testAuthor, testFollow });
         await _db.SaveChangesAsync();
 
-        var followCheeps = await _cheepRepo.ReadCheepsFromFollowers(testAuthorDto.Name, 0, 100);
+        var followCheeps = await _cheepRepo.ReadCheepsFromFollowers(new List<string> { testAuthorDto.Name }, 0, 100);
 
         Assert.True(followCheeps.Count == 0);
 
@@ -161,7 +161,11 @@ public class CheepRepositoryTests
 
         await _db.SaveChangesAsync();
         // await _authRepo.Follow(testAuthorDto, testFollowAuthDto);
-        testAuthor.Following!.Add(
+        if (testAuthor.Following == null)
+        {
+            testAuthor.Following = new List<Follow>();
+        }
+        testAuthor.Following.Add(
              new Follow()
              {
                  Follower = testAuthor,
@@ -170,7 +174,7 @@ public class CheepRepositoryTests
          );
         await _db.SaveChangesAsync();
 
-        followCheeps = await _cheepRepo.ReadCheepsFromFollowers(testAuthorDto.Name, 0, 100);
+        followCheeps = await _cheepRepo.ReadCheepsFromFollowers(new List<string> { testAuthorDto.Name, testFollowAuthDto.Name }, 0, 100);
 
         bool check = false;
         foreach (var followCheep in followCheeps)
@@ -330,7 +334,7 @@ public class CheepRepositoryTests
         Assert.False(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
         await _cheepRepo.SaveCheep(testAuthorDto, cheepDto);
         Assert.True(await _cheepRepo.IsSaved(testAuthorDto, cheepDto));
-        var readList = await _cheepRepo.ReadSavedCheeps(testAuthor.UserName, 0, 100);
+        var readList = await _cheepRepo.ReadSavedCheeps(testAuthor.Id, 0, 100);
 
         bool check = false;
         foreach (var savedCheep in readList)
