@@ -202,16 +202,6 @@ public class CheepRepository : ICheepRepository
         };
     }
 
-    public async Task CreateAuthor(string authorName, string authorEmail)
-    {
-        var newAuthor = new Author()
-        {
-            UserName = authorName,
-            Email = authorEmail,
-        };
-        await _dbContext.Users.AddAsync(newAuthor); // does not write to the database!
-        await _dbContext.SaveChangesAsync(); // persist the changes in the database
-    }
 
 
     public async Task<List<CheepDTO>> ReadCheepsFromFollowers(List<string> userNames, int offset, int count)
