@@ -29,36 +29,60 @@ GREEN
 chirp.Web
 
 - ASP.NET Core Razor Pages
-- Controllers, views, HTTP concerns
-- User interface and API endpoints
+- Controllers and page models
+- HTTP concerns and routing
+- User interface (HTML/CSS)
 - Depends on all inner layers
-  Chirp.Infrastructure.Tests
-- tests all layers
-- UI tests
-- unit tests
 
 BLUE
-Chirp.Infrastructure.Services + Chirp.Infrastructure.DataTransferObjects = Application Services Layer
+Chirp.Infrastructure.Services
+DataTransferObjects = Application Services Layer
 
-- Business logic orchestration
-- DTOs for data transfer between layers
+- Service implementations: CheepService, AuthorService
+- business logic orchestration
 - Use cases and workflows
-- Depends on Repositories and Domain
+- Depends on Chirp.Core, Chirp.Infrastructure.Repositories
 
 ORANGE
-Chirp.Infrastructure.Repositories (Orange) = Repository Layer / Data Access
+Chirp.Infrastructure.Repositories
+(Orange) = Repository Layer / Data Access
 
 - Contains CheepRepository, AuthorRepository implementations
 - Database context (CheepDBContext)
-- Data persistence logic
-- Depends inward on Domain Layer
+- DTO: CheepDTO, AuthorDTO
+- Data persistence and database operations
+- Depends: Chirp.Core
 
 PINK
-Chirp.Core.DataModel (Pink/Center) = Domain Layer (Core)
+Chirp.Core.
+DataModel (Pink/Center) = Domain Layer (Core)
 
 - Contains domain entities: Author, Cheep, Follow, SavedCheep
 - Pure domain logic, no dependencies
 - The innermost layer with business rules
+
+TESTING
+
+Unit Tests
+
+- Chirp.Repositories.Tests
+  - Tests repository layer in isolation
+  - Uses in-memory SQLite database
+  - Tests: CheepRepositoryTests, AuthorRepositoryTests
+
+Integration Tests
+
+- Chirp.IntegrationTests
+  - Tests service + repository + database integration
+  - Uses in-memory database with seeded data
+  - Tests: DatabaseIntegrationTests (18 tests covering all service methods)
+
+End-to-End Tests
+
+- ChirpEndToEndTests
+  - Tests entire system through browser
+  - Uses Playwright for browser automation
+  - Tests: User registration, login, posting cheeps, following users, etc.
 
 ## Architecture of deployed application
 
