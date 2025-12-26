@@ -24,7 +24,7 @@ public class AuthorRepository : IAuthorRepository
                     select author;
 
         var result = await query.FirstOrDefaultAsync();
-        if (result == null) throw new NullReferenceException("resulting author is null");
+        if (result == null) return null;
 
         return new AuthorDTO
         {
@@ -54,11 +54,12 @@ public class AuthorRepository : IAuthorRepository
         ;
 
         var result = await query.FirstOrDefaultAsync();
-        if (result == null) throw new NullReferenceException("resulting author is null");
+        if (result == null) return null;
 
         return new AuthorDTO
         {
             Name = result.UserName!,
+            AuthorId = result.Id,
             Email = result.Email!,
             Messages = result.Cheeps!.Select(m => new CheepDTO
             {
@@ -68,6 +69,7 @@ public class AuthorRepository : IAuthorRepository
                 Author = new AuthorDTO
                 {
                     Name = result.UserName!,
+                    AuthorId = result.Id,
                     Email = result.Email!
                 }
             }).ToList()
