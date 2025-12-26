@@ -23,10 +23,11 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 
 ## Architecture — In the small
 
-Illustrate the organization of your code base. That is, illustrate which layers exist in your (onion) architecture. Make sure to illustrate which part of your code is residing in which layer.
+The diagram above illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Core .NET project is the core onion layer and the Infrastructure .NET project is split across both the repository layer and the service layer. The DTO's exist in the repository layer (Chirp.Infrastructure.Repositories) as they define the data contracts used across the repository, services and representation layers. The outermost layer contains the frontend Razor Pages and the end-to-end tests.
 
-GREEN
-chirp.Web
+![Onion Architecture](/images/onion_arc.png)
+
+### Chirp.Web
 
 - ASP.NET Core Razor Pages
 - Controllers and page models
@@ -34,8 +35,8 @@ chirp.Web
 - User interface (HTML/CSS)
 - Depends on all inner layers
 
-BLUE
-Chirp.Infrastructure.Services
+### Chirp.Infrastructure.Services
+
 DataTransferObjects = Application Services Layer
 
 - Service implementations: CheepService, AuthorService
@@ -43,9 +44,9 @@ DataTransferObjects = Application Services Layer
 - Use cases and workflows
 - Depends on Chirp.Core, Chirp.Infrastructure.Repositories
 
-ORANGE
-Chirp.Infrastructure.Repositories
-(Orange) = Repository Layer / Data Access
+### Chirp.Infrastructure.Repositories
+
+Repository Layer / Data Access
 
 - Contains CheepRepository, AuthorRepository implementations
 - Database context (CheepDBContext)
@@ -53,60 +54,68 @@ Chirp.Infrastructure.Repositories
 - Data persistence and database operations
 - Depends: Chirp.Core
 
-PINK
-Chirp.Core.
+### Chirp.Core
+
 DataModel (Pink/Center) = Domain Layer (Core)
 
 - Contains domain entities: Author, Cheep, Follow, SavedCheep
 - Pure domain logic, no dependencies
 - The innermost layer with business rules
 
-TESTING
-
-Unit Tests
-
-- Chirp.Repositories.Tests
-  - Tests repository layer in isolation
-  - Uses in-memory SQLite database
-  - Tests: CheepRepositoryTests, AuthorRepositoryTests
-
-Integration Tests
-
-- Chirp.IntegrationTests
-  - Tests service + repository + database integration
-  - Uses in-memory database with seeded data
-  - Tests: DatabaseIntegrationTests (18 tests covering all service methods)
-
-End-to-End Tests
-
-- ChirpEndToEndTests
-  - Tests entire system through browser
-  - Uses Playwright for browser automation
-  - Tests: User registration, login, posting cheeps, following users, etc.
-
 ## Architecture of deployed application
 
-Illustrate the architecture of your deployed application. Remember, you developed a client-server application. Illustrate the server component and to where it is deployed, illustrate a client component, and show how these communicate with each other.
+The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services where the business logis is implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext.
+
+Autentication is handled in two ways: users can either register and log in locally using ASP.NET Core Identity with a username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
 
 ## User activities
 
-Illustrate typical scenarios of a user journey through your Chirp! application. That is, start illustrating the first page that is presented to a non-authorized user, illustrate what a non-authorized user can do with your Chirp! application, and finally illustrate what a user can do after authentication.
+When a user visits the application, they start on the public timeline, where they can browse cheeps, navigate between pages, search for content and view other user's timelines by clicking on the author name. From the public timeline, the user can choose to register or log-in. Registration and login can be performed either locally or via GitHub, where OAuth handles autentication and account creation externally.
 
-Make sure that the illustrations are in line with the actual behavior of your application.
+If the user encounters an issue during registration or login, they are redirected back to the relevant page to retry. Once authentication succeeds, the user becomes logged in and gains access to additional features. Logged-in users can post new cheeps, follow other users and interact more actively with content. They can also access their personal information through the "About Me" section, where they have the option to delete their account and all associated data using the "Forget Me" functionality.
+
+### non-authorized user
+
+photo
+
+### authenticated user
+
+photo
 
 ## Sequence of functionality/calls trough _Chirp!_
 
-With a UML sequence diagram, illustrate the flow of messages and data through your Chirp! application. Start with an HTTP request that is send by an unauthorized user to the root endpoint of your application and end with the completely rendered web-page that is returned to the user.
+### non-authorized user
 
-Make sure that your illustration is complete. That is, likely for many of you there will be different kinds of "calls" and responses. Some HTTP calls and responses, some calls and responses in C# and likely some more. (Note the previous sentence is vague on purpose. I want that you create a complete illustration.)
+An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
+
+photo
+
+### authenticated user
+
+An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
+
+photo
 
 # Process
 
 ## Build, test, release, and deployment
 
-Illustrate with a UML activity diagram how your Chirp! applications are build, tested, released, and deployed. That is, illustrate the flow of activities in your respective GitHub Actions workflows.
+### build
 
-Describe the illustration briefly, i.e., how your application is built, tested, released, and deployed.
+When the code is pushed to the main branch, the CI pipeline checks out the repository, sets up the correct .NET SDK, restores dependencies and build the application. This ensures the code compiles correctly in a clean environment.
+
+### test
+
+After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released.
+
+### release
+
+Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, versioned with a tag and uploaded as a GitHub Release artifact.
+
+### deployment
+
+In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch.
+--- UML activity diagram
 
 ## Team work
 
@@ -116,19 +125,57 @@ Briefly describe and illustrate the flow of activities that happen from the new 
 
 ## How to make _Chirp!_ work locally
 
-There has to be some documentation on how to come from cloning your project to a running system. That is, Adrian or Helge have to know precisely what to do in which order. Likely, it is best to describe how we clone your project, which commands we have to execute, and what we are supposed to see then.
+1. Prerequirements:
+
+- .NET 9 SDK installed
+- Git
+
+2. Run the following commands in the terminal:
+
+`git clone https://github.com/ITU-BDSA2024-GROUP17/Chirp.git`
+
+3. After the cloning the project, go to the project:
+
+   `cd Chirp`
+
+4. Restore dependencies:
+
+`dotnet restore src/Chirp.Web/Chirp.Web.csproj`
+
+5. Run the application
+
+`dotnet run --project src/Chirp.Web/Chirp.Web.csproj`
+
+6. Access the application
+
+   - Open browser and navigate to: http://localhost:5273 or https://localhost:7273
+   - You should see the Chirp public timeline with seeded cheeps
+
+   **\*** USER SECRETS !???
 
 ## How to run test suite locally
 
-List all necessary steps that Adrian or Helge have to perform to execute your test suites. Here, you can assume that we already cloned your repository in the step above.
+Unit tests:
 
-Briefly describe what kinds of tests you have in your test suites and what they are testing.
+`dotnet test test/Chirp.Repositories.Tests`
+
+Integration tests:
+
+`dotnet test test/Chirp.IntegrationTests`
+
+End-to-end tests (requires Playwright):
+
+```cd test/ChirpEndToEndTests
+dotnet build
+pwsh bin/Debug/net9.0/playwright.ps1 install
+dotnet test
+```
 
 # Ethics
 
 ## License
 
-State which software license you chose for your application.
+The Chirp! Project is released under the MIT license. This is a permissive open-source license that allows others to use, modify, distribute and build upon the software with very few restrictions. The only requirement is that the original copyright notice and license text are included in any copies or substantial portions of the software. The software is provided "as is", with any warranty, which means the developers are not liable for potential issues arising from its use.
 
 ## LLMs, ChatGPT, CoPilot, and others
 
