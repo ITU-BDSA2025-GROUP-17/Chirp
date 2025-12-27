@@ -2,13 +2,14 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Services;
 using Repositories;
 
 public class SavedModel : CheepPageModel
 {
 
-    public SavedModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository) 
-        : base(cheepRepository, authorRepository)
+    public SavedModel(ICheepService cheepService, IAuthorService authorService)
+        : base(cheepService, authorService)
     { }
 
     public async Task<ActionResult> OnGet()
@@ -19,9 +20,9 @@ public class SavedModel : CheepPageModel
         {
             pageNum = int.Parse(page);
         }
-        
+
         if(User.Identity != null) {
-            Cheeps = await _cheepRepository.ReadSavedCheeps(User.Identity!.Name, (pageNum - 1) * 32, 32);
+            Cheeps = await _cheepService.GetSavedCheeps(User.Identity!.Name, pageNum);
         } else
         {
             Cheeps = new List<CheepDTO>();

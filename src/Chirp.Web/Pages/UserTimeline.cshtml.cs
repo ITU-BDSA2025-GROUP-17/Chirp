@@ -1,14 +1,14 @@
 ﻿namespace Chirp.Web.Pages;
 
-using Repositories;
+using Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 public class UserTimelineModel : CheepPageModel
 {
 
-    public UserTimelineModel(ICheepRepository cheepRepository, IAuthorRepository authorRepository) 
-        : base(cheepRepository, authorRepository)
+    public UserTimelineModel(ICheepService cheepService, IAuthorService authorService)
+        : base(cheepService, authorService)
     { }
 
     public async Task<ActionResult> OnGet(string author)
@@ -20,8 +20,8 @@ public class UserTimelineModel : CheepPageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _cheepRepository.ReadCheepsFromFollowers(author, (pageNum - 1) * 32, 32);
-        
+        Cheeps = await _cheepService.GetUserTimelineCheeps(author, pageNum);
+
         return Page();
     }
 }

@@ -15,7 +15,7 @@ numbersections: true
 
 ## Domain model
 
-Here comes a description of our domain model.
+The Chirp domain model consists of four entities: Author(users, extending ASP.NET Identity), Cheep (160-character messages with timestamps), Follow (author-to-author relationship), and SavedCheep (messages saved by user). The model implement a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
 ![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
 
@@ -24,6 +24,65 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 ## Architecture — In the small
 
 Illustrate the organization of your code base. That is, illustrate which layers exist in your (onion) architecture. Make sure to illustrate which part of your code is residing in which layer.
+
+GREEN
+chirp.Web
+
+- ASP.NET Core Razor Pages
+- Controllers and page models
+- HTTP concerns and routing
+- User interface (HTML/CSS)
+- Depends on all inner layers
+
+BLUE
+Chirp.Infrastructure.Services
+DataTransferObjects = Application Services Layer
+
+- Service implementations: CheepService, AuthorService
+- business logic orchestration
+- Use cases and workflows
+- Depends on Chirp.Core, Chirp.Infrastructure.Repositories
+
+ORANGE
+Chirp.Infrastructure.Repositories
+(Orange) = Repository Layer / Data Access
+
+- Contains CheepRepository, AuthorRepository implementations
+- Database context (CheepDBContext)
+- DTO: CheepDTO, AuthorDTO
+- Data persistence and database operations
+- Depends: Chirp.Core
+
+PINK
+Chirp.Core.
+DataModel (Pink/Center) = Domain Layer (Core)
+
+- Contains domain entities: Author, Cheep, Follow, SavedCheep
+- Pure domain logic, no dependencies
+- The innermost layer with business rules
+
+TESTING
+
+Unit Tests
+
+- Chirp.Repositories.Tests
+  - Tests repository layer in isolation
+  - Uses in-memory SQLite database
+  - Tests: CheepRepositoryTests, AuthorRepositoryTests
+
+Integration Tests
+
+- Chirp.IntegrationTests
+  - Tests service + repository + database integration
+  - Uses in-memory database with seeded data
+  - Tests: DatabaseIntegrationTests (18 tests covering all service methods)
+
+End-to-End Tests
+
+- ChirpEndToEndTests
+  - Tests entire system through browser
+  - Uses Playwright for browser automation
+  - Tests: User registration, login, posting cheeps, following users, etc.
 
 ## Architecture of deployed application
 
