@@ -77,17 +77,23 @@ if (builder.Environment.IsEnvironment("Testing"))
 }
 else
 {
-    builder.Services.AddAuthentication()
-    .AddGitHub(o =>
+    var githubClientId = builder.Configuration["authentication:github:clientId"];
+    var githubClientSecret = builder.Configuration["authentication:github:clientSecret"];
+    if(""+githubClientId != "" && ""+githubClientSecret != "")
     {
-        o.ClientId = builder.Configuration["authentication:github:clientId"]!;
-        o.ClientSecret = builder.Configuration["authentication:github:clientSecret"]!;
-        o.CallbackPath = "/signin-github";
-        o.Scope.Add("user:email");
-        o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-        o.ClaimActions.MapJsonKey("urn:github:login", "login");
+        builder.Services.AddAuthentication()
+        .AddGitHub(o =>
+        {
+            o.ClientId = githubClientId!;
+            o.ClientSecret = githubClientSecret!;
+            o.CallbackPath = "/signin-github";
+            o.Scope.Add("user:email");
+            o.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+            o.ClaimActions.MapJsonKey("urn:github:login", "login");
 
-    });
+        });
+    }
+    
 }
 
 var app = builder.Build();
