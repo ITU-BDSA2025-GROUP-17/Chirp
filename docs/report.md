@@ -30,7 +30,7 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 
 The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages and the end-to-end tests called Chirp.Web.
 
-![Onion Architecture](diagrams/onion_arc.png)
+![Onion Architecture](images/onion_arc.png)
 
 ### Chirp.Web
 
@@ -83,46 +83,66 @@ If the user encounters an issue during registration or login, they are redirecte
 
 ### non-authorized user
 
-photo
+![User that is not logged in workflow](diagrams/LoggetOutFlow.png)
 
 ### authenticated user
 
-photo
+![Logged in user workflow](diagrams/LoggetInFlow.png)
+
+
 
 ## Sequence of functionality/calls trough _Chirp!_
 
-### non-authorized user
+### Login sequence
+
+![Login sequence](diagrams/LoginSequence.png)
+
+### Register sequence
+
+![Register sequence](diagrams/RegisterSequence.png)
+
+### Authentication with Git-Hub
+
+![Authorizing with Git-Hub](diagrams/GithubAuthSequence.png)
+
+### non-authorized user reading the public timeline
 
 An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
 
-photo
+![](diagrams/.png)
 
-### authenticated user
+### authorized user posting a cheep
 
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
 
-photo
+![Posting a cheep sequence](diagrams/PostCheepSequence.png)
 
 # Process
 
 ## Build, test, release and deployment
 
-### build
+### Build
 
 When the code is pushed to the main branch, the CI pipeline checks out the repository, sets up the correct .NET SDK, restores dependencies and build the application. This ensures the code compiles correctly in a clean environment.
 
-### test
+### Test
 
 After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released.
 
-### release
+![Build and Test workflow](diagrams/WorkflowTests.png)
+
+### Release
 
 Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, versioned with a tag and uploaded as a GitHub Release artifact.
 
-### deployment
+![Release workflow](diagrams/WorkflowRelease.png)
+
+### Deployment
 
 In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch.
 --- UML activity diagram
+
+![Deploy workflow](diagrams/WorkflowDeploy.png)
 
 ## Team work
 ![Screenshot of the GitHub Project board before hand-in.](images/Project_board.png)
