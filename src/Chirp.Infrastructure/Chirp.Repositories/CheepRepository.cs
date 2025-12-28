@@ -260,7 +260,11 @@ public class CheepRepository : ICheepRepository
 
         var user = await query.FirstOrDefaultAsync();
         if (user == null) throw new NullReferenceException("resulting author is null");
-        _dbContext.SavedCheeps.RemoveRange(user.SavedCheeps!);
+
+        if (user.SavedCheeps != null && user.SavedCheeps.Any())
+        {
+            _dbContext.SavedCheeps.RemoveRange(user.SavedCheeps);
+        }
 
         await _dbContext.SaveChangesAsync();
     }
