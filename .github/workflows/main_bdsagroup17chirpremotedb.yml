@@ -23,8 +23,14 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Restore
+        run: dotnet restore src/Chirp.Web/Chirp.Web.csproj
+
       - name: Build with dotnet
-        run: dotnet build src/Chirp.Web/Chirp.Web.csproj --configuration Release
+        run: dotnet build src/Chirp.Web/Chirp.Web.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test -c Release --no-build --verbosity normal
 
       - name: dotnet publish
         run: dotnet publish src/Chirp.Web/Chirp.Web.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp

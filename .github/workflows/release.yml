@@ -27,6 +27,9 @@ jobs:
       - name: Build
         run: dotnet build src/Chirp.Web/Chirp.Web.csproj -c Release --no-restore
 
+      - name: Run tests
+        run: dotnet test -c Release --no-build --verbosity normal
+
       - name: Publish single-file
         run: |
           dotnet publish src/Chirp.Web/Chirp.Web.csproj \
