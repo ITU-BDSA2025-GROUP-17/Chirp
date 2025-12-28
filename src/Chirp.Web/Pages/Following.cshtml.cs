@@ -1,5 +1,6 @@
-using Chirp.Core;
+
 using Chirp.Repositories;
+using Chirp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,16 +8,16 @@ namespace Chirp.Web.Pages;
 
 public class FollowingModel : PageModel
 {
-    private readonly IAuthorRepository _authorRepository;
+    private readonly IAuthorService _authorService;
 
     public ICollection<AuthorDTO>? Following { get; set; }
 
     [BindProperty]
     public string? Unfollow { get; set; }
 
-    public FollowingModel(IAuthorRepository authorRepository)
+    public FollowingModel(IAuthorService authorService)
     {
-        _authorRepository = authorRepository;
+        _authorService = authorService;
     }
 
     public async Task<IActionResult> OnGetAsync()
@@ -29,12 +30,13 @@ public class FollowingModel : PageModel
         var authorName = User.Identity.Name;
 
 
-        var currentUser = await _authorRepository.GetAuthorByName(authorName!);
+        var currentUser = await _authorService.GetAuthorByName(authorName!);
+
 
 
         if (currentUser != null)
         {
-            Following = await _authorRepository.GetFollowing(currentUser);
+            Following = await _authorService.GetFollowing(currentUser.Name);
         }
 
         return Page();
@@ -48,9 +50,9 @@ public class FollowingModel : PageModel
         }
 
         var user = User.Identity?.Name;
-        var author = await _authorRepository.GetAuthorByName(user!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
-        await _authorRepository.UnFollow(author!, followAuthor!);
+        var author = await _authorService.GetAuthorByName(user!);
+        var followAuthor = await _authorService.GetAuthorByName(Unfollow!);
+        await _authorService.UnfollowUser(author!.Name!, followAuthor!.Name!);
 
 
         return RedirectToPage("/Following");
