@@ -228,7 +228,8 @@ Integration tests:
 
 End-to-end tests (requires Playwright):
 
-```cd test/ChirpEndToEndTests
+```bash
+cd test/ChirpEndToEndTests
 dotnet build
 pwsh bin/Debug/net9.0/playwright.ps1 install
 dotnet test
