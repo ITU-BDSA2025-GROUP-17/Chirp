@@ -81,13 +81,13 @@ When a user visits the application, they start on the public timeline, where the
 
 If the user encounters an issue during registration or login, they are redirected back to the relevant page to retry. Once authentication succeeds, the user becomes logged in and gains access to additional features. Logged-in users can post new cheeps, follow other users and interact more actively with content. They can also access their personal information through the "About Me" section, where they have the option to delete their account and all associated data using the "Forget Me" functionality.
 
-### non-authorized user
+### Non-authorized user
 
-![User that is not logged in workflow](diagrams/LoggetOutFlow.png)
+![User that is not logged in workflow](diagrams/LoggedOutFlow.png)
 
-### authenticated user
+### Authenticated user
 
-![Logged in user workflow](diagrams/LoggetInFlow.png)
+![Logged in user workflow](diagrams/LoggedInFlow.png)
 
 
 
@@ -99,19 +99,19 @@ If the user encounters an issue during registration or login, they are redirecte
 
 ### Register sequence
 
-![Register sequence](diagrams/RegisterSequence.png)
+![Register sequence](diagrams/RegistrationSequence.png)
 
 ### Authentication with Git-Hub
 
 ![Authorizing with Git-Hub](diagrams/GithubAuthSequence.png)
 
-### non-authorized user reading the public timeline
+### Non-authorized user reading the public timeline
 
 An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
 
 ![](diagrams/.png)
 
-### authorized user posting a cheep
+### Authorized user posting a cheep
 
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
 
