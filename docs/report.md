@@ -30,7 +30,7 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 
 The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages and the end-to-end tests called Chirp.Web.
 
-![Onion Architecture](/images/onion_arc.png)
+![Onion Architecture](diagrams/onion_arc.png)
 
 ### Chirp.Web
 
@@ -72,6 +72,8 @@ DataModel (Pink/Center) = Domain Layer (Core)
 The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services where the business logic is implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext.
 
 Autentication is handled in two ways: users can either register and log in locally using ASP.NET Core Identity with a username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
+
+![Deployed Components](diagrams/Componentdiagram.png)
 
 ## User activities
 
