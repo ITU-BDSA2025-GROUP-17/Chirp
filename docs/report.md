@@ -15,7 +15,12 @@ numbersections: true
 
 ## Domain model
 
-The Chirp domain model consists of four entities: Author(users, extending ASP.NET Identity), Cheep (160-character messages with timestamps), Follow (author-to-author relationship), and SavedCheep (messages saved by user). The model implement a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
+The Chirp domain model consists of four entities:<br>
+1. Author (user extending ASP.NET Identity), this represents an user of the application.
+2. Cheep a 160-character messages with timestamps which an author can create and post on the Chirp social platform.
+3. Follow enables authors to follow eachother and see their cheeps on their timeline.
+4. SavedCheep are messages saved by the user. 
+The model implements a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
 ![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
 
@@ -23,7 +28,7 @@ Provide an illustration of your domain model. Make sure that it is correct and c
 
 ## Architecture — In the small
 
-The diagram above illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Core .NET project is the core onion layer and the Infrastructure .NET project is split across both the repository layer and the service layer. The DTO's exist in the repository layer (Chirp.Infrastructure.Repositories) as they define the data contracts used across the repository, services and representation layers. The outermost layer contains the frontend Razor Pages and the end-to-end tests.
+The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages and the end-to-end tests called Chirp.Web.
 
 ![Onion Architecture](/images/onion_arc.png)
 
@@ -64,7 +69,7 @@ DataModel (Pink/Center) = Domain Layer (Core)
 
 ## Architecture of deployed application
 
-The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services where the business logis is implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext.
+The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services where the business logic is implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext.
 
 Autentication is handled in two ways: users can either register and log in locally using ASP.NET Core Identity with a username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
 
@@ -228,8 +233,7 @@ Integration tests:
 
 End-to-end tests (requires Playwright):
 
-```bash
-cd test/ChirpEndToEndTests
+```cd test/ChirpEndToEndTests
 dotnet build
 pwsh bin/Debug/net9.0/playwright.ps1 install
 dotnet test
