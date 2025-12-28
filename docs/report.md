@@ -22,7 +22,7 @@ The Chirp domain model consists of four entities:<br>
 4. SavedCheep are messages saved by the user. 
 The model implements a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
-![Illustration of the _Chirp!_ data model as UML class diagram.](docs/images/domain_model.png)
+![Illustration of the _Chirp!_ data model as UML class diagram.](diagrams/Chirp.Core.png)
 
 Provide an illustration of your domain model. Make sure that it is correct and complete. In case you are using ASP.NET Identity, make sure to illustrate that accordingly.
 
