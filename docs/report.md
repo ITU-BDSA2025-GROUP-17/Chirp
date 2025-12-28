@@ -125,33 +125,41 @@ Briefly describe and illustrate the flow of activities that happen from the new 
 
 ## How to make _Chirp!_ work locally
 
-1. Prerequirements:
+### Prerequirements:
 
 - .NET 9 SDK installed
 - Git
+### Steps
 
-2. Run the following commands in the terminal:
-
-`git clone https://github.com/ITU-BDSA2024-GROUP17/Chirp.git`
-
-3. After the cloning the project, go to the project:
-
+1. Clone the repository: `git clone https://github.com/ITU-BDSA2024-GROUP17/Chirp.git`
+2. After the cloning the project, go to the project:
    `cd Chirp`
-
-4. Restore dependencies:
-
+3. Restore dependencies:
 `dotnet restore src/Chirp.Web/Chirp.Web.csproj`
 
-5. Run the application
-
+4. Run the application
 `dotnet run --project src/Chirp.Web/Chirp.Web.csproj`
-
-6. Access the application
+5. Access the application
 
    - Open browser and navigate to: http://localhost:5273 or https://localhost:7273
    - You should see the Chirp public timeline with seeded cheeps
 
-   **\*** USER SECRETS !???
+Notes:
+- The application can be run locally without configuring GitHub authentication.
+- GitHub login will not work locally unless user secrets are configured.
+- This does not affect core functionality such as browsing cheeps or local authentication.
+
+#### GitHub authentication
+
+GitHub authentication relies on OAuth secrets which are not stored in the repository.
+To enable GitHub login locally, user secrets must be configured manually:
+
+```bash
+dotnet user-secrets set "Authentication:GitHub:ClientId" "<your-client-id>" --project src/Chirp.Web
+dotnet user-secrets set "Authentication:GitHub:ClientSecret" "<your-client-secret>" --project src/Chirp.Web
+```
+These secrets are provided via GitHub OAuth and are intentionally not included in the repository.
+In the deployed Azure environment, the secrets are configured securely using Azure App Service settings.
 
 ## How to run test suite locally
 
