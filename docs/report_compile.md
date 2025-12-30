@@ -193,7 +193,7 @@ When the code is pushed to the main branch, the CI pipeline checks out the repos
 \newpage
 ### Test
 
-After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released.
+After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released. This is done by the workflow called main.yml.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{diagrams/WorkflowTests.png}
@@ -203,7 +203,7 @@ After a successful build, automated tests are executed. This includes unit tests
 \newpage
 ### Release
 
-Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, versioned with a tag and uploaded as a GitHub Release artifact.
+Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, versioned with a tag and uploaded as a GitHub Release artifact. This is handled by the workflow release.yml.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.49\textwidth]{diagrams/WorkflowRelease.png}
@@ -213,8 +213,8 @@ Once the build and test succeed, a release workflow packages the application in 
 \newpage
 ### Deployment
 
-In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch.
---- UML activity diagram
+In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow main_bdsagroup17chirpremotedb.yml.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.44\textwidth]{diagrams/WorkflowDeploy.png}
@@ -224,6 +224,9 @@ In the final stage, the deployment workflow publishes the application to Azure A
 \newpage
 
 ## Team work
+Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
+
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/Project\_board.png}
