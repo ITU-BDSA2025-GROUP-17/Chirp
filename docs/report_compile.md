@@ -14,19 +14,22 @@ author:
 
 numbersections: true
 ---
+
 \newpage
+
 # Design and Architecture of _Chirp!_
 
 ## Domain model
 
 The Chirp domain model consists of four entities:
 
-1. Author (user extending ASP.NET Identity), this represents a user of the application.
+1. Author (user extending Microsoft.AspNetCore.Identity.IdentityUser), this represents a user of the application.
 2. Cheep a 160-character message with a timestamp, which an author can create and post on the Chirp social platform.
-3. Follow enables authors to follow eachother and see followed users cheeps on their own timeline.
+3. Follow enables authors to follow each other and see followed users cheeps on their own timeline.
 4. SavedCheep are Cheeps saved by the user.
 
-The model implements a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
+The model implements a blogging platform with social features including following and timeline feeds.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{diagrams/Chirp.Core.png}
@@ -35,7 +38,13 @@ The model implements a blogging platform with social features including followin
 
 ## Architecture — In the small
 
-The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages, called Chirp.Web, and the application tests.
+The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers.
+The Repositories layer providing an abstraction layer on top of the database, making actions like adding or removing users be done through single method calls.
+
+Ontop of the repositories layer is the Chirp.Services .Net project layer, which provides an additional layer of abstraction on top of the Chirp.Repositories layer, where sometimes multiple actions are taken through one method call, like deleting all cheeps by a user before deleting the user itself.
+
+The service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages, called Chirp.Web, and the application tests.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/onion_arc.png}
@@ -102,7 +111,7 @@ To get authorized a user must register an account if they haven't already and th
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{diagrams/LoggedOutFlow.png}
-\caption{User that is not logged in workflow}
+\caption{Non-authorized user activities}
 \end{figure}
 
 ### Authenticated user
@@ -118,10 +127,11 @@ The user can view who they are following under the 'following' page. Here they c
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{diagrams/LoggedInFlow.png}
-\caption{Logged in user workflow}
+\caption{Authorized user activities}
 \end{figure}
 
 \newpage
+
 ## Sequence of functionality/calls trough _Chirp!_
 
 ### Register sequence
@@ -134,6 +144,7 @@ To register a user must give an email, username and password. The email and user
 \end{figure}
 
 \newpage
+
 ### Authentication with Git-Hub
 
 If the user does not wish to create an account using an email address, then they can choose to register/login with Github through OAuth. When choosing this option the user does not have to provide email, username or password, as all needed information is given by Github.
@@ -144,6 +155,7 @@ If the user does not wish to create an account using an email address, then they
 \end{figure}
 
 \newpage
+
 ### Login sequence
 
 Once an account is created the user must log in. This is done using the selected username and password. If using Github then this step is replaced by Github authentication through OAuth.
@@ -154,6 +166,7 @@ Once an account is created the user must log in. This is done using the selected
 \end{figure}
 
 \newpage
+
 ### Non-authorized user reading the public timeline
 
 An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
@@ -164,6 +177,7 @@ An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The re
 \end{figure}
 
 \newpage
+
 ### Authorized user posting a cheep
 
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
@@ -192,7 +206,7 @@ When the code is pushed to the main branch, the CI pipeline checks out the repos
 
 ### Test
 
-After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released. This is done by the workflow called main.yml.
+After a successful build, automated tests are executed. This includes unit tests, integration tests and end-to-end tests which verify that the repositories and application logic behave as excepted. The goal is to catch errors before code is merged or released. This is done by the workflow called `main.yml`.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{diagrams/WorkflowTests.png}
@@ -203,7 +217,7 @@ After a successful build, automated tests are executed. This includes unit tests
 
 ### Release
 
-Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, versioned with a tag and uploaded as a GitHub Release artifact. This is handled by the workflow release.yml.
+Once the build and test succeed, a release workflow packages the application in Release mode. The app is published as a self-contained, single-file executable, with a version-tag and uploaded as a GitHub Release artifact. This is handled by the workflow `release.yml`.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.49\textwidth]{diagrams/WorkflowRelease.png}
@@ -214,7 +228,7 @@ Once the build and test succeed, a release workflow packages the application in 
 
 ### Deployment
 
-In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow main_bdsagroup17chirpremotedb.yml. Deploys to \url{https://bdsagroup17chirpremotedb-dhg0b9fpaya0afa0.swedencentral-01.azurewebsites.net/}
+In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow `main_bdsagroup17chirpremotedb.yml`. Deploys to \url{https://bdsagroup17chirpremotedb-dhg0b9fpaya0afa0.swedencentral-01.azurewebsites.net/}
 
 \begin{figure}[H]
 \centering
@@ -227,6 +241,7 @@ In the final stage, the deployment workflow publishes the application to Azure A
 ## Team work
 
 ### Project board
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/Project_board.png}
@@ -261,12 +276,14 @@ Most tasks are marked as **Done** at the time of hand-in. The remaining unresolv
 ### Development flow
 
 Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
-As a consequence of this way of working, most code reviews on the pull requests are sparse, as we all watched the code being written and pitched in, meaning there wasn't much need for further communication in regards to the code. 
+As a consequence of this way of working, most code reviews on the pull requests are sparse, as we all watched the code being written and pitched in, meaning there wasn't much need for further communication in regards to the code.
 
-When starting work on a new set of weekly tasks we began by making issues on Github for each of the tasks, which we would then work through during the week. On account of our way of doing teamwork, where everyone was involved most of the time, pull requests would rarely not be approved, but this option is still illustrated in the diagram below. 
+#### Issues
+
+When starting work on a new set of weekly tasks we began by making issues on Github for each of the tasks, which we would then work through during the week. On account of our way of doing teamwork, where everyone was involved most of the time, pull requests would rarely not be approved, but this option is still illustrated in the diagram below.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/IssueFlow.png}
+\includegraphics[width=1\textwidth]{diagrams/IssueFlow.png}
 \caption{Flow diagram from issue creation to resolution}
 \end{figure}
 
@@ -323,15 +340,38 @@ In the deployed Azure environment, the secrets are configured securely using Azu
 
 ## How to run test suite locally
 
+To succeed in running the test suite locally it is required to have PlayWright installed.
+
 #### Unit tests:
+
+##### AuthorRepositoryTests.cs
+
+This test suite contains author-related repository tests that verify database operations using an in-memory SQLite database.
+The tests cover creating authors, retrieving authors by name and email, following/unfollowing users, checking follow relationships, retrieving followed authors and deleting authors, including verification that related follow data is also removed.
+
+##### CheepRepositoryTests.cs
+
+This test suite focuses on Cheep-related repository operations.
+It includes tests for creating and reading cheeps, retrieving cheeps from followed users, pagination, searching, saving and removing saved cheeps, retrieving cheeps by ID and validating enforcement of the 160-character limit.
+
 \
 `dotnet test test/Chirp.Repositories.Tests`
 
 #### Integration tests:
+
+This test suite focuses on integration tests which focus on verifying how multiple components work together including the web-, service-, repository layers as wll as the database.
+
+The tests are implemented using the `WebApplicationFactory` pattern to run the application in an in-memory test environment.  
+`BasicIntegrationTests.cs` contains HTTP-level tests that verify the public pages return successful responses and include the expected content.  
+`DatabaseIntegrationTests.cs` focuses on the behavior of the program on a service-layer, covering retrieval of authors, following and unfollowing, Cheep creation and retrieval with pagination, search functionality, saved Cheeps, and user timeline features using seeded test data.  
+`ManualSetupIntegrationTests.cs` was a manual `TestServer` setup for learning and validation purposes, and was used to better understand the requirements before implementing the primary integration tests.
+
 \
 `dotnet test test/Chirp.IntegrationTests`
 
 #### End-to-end tests (requires Playwright):
+
+This suite contains UI-based end-to-end tests using Playwright that works on the web application and simulate real user interactions in a browser. Within tests.cs there is created an automated browser test, that covers reading cheeps from the UI, search functionality, pagination navigation, viewing user timelines, complete user registration/login/logout flows, follow/unfollow interactions and posting new cheeps.
 
 \
 Windows (using powershell)
@@ -339,16 +379,16 @@ Windows (using powershell)
 ```
 cd test/ChirpEndToEndTests
 dotnet build
-pwsh bin/Debug/net9.0/playwright.ps1 install
+bin/Debug/net9.0/playwright.ps1 install
 dotnet test
 ```
 
-Mac/Linux
+Mac/Linux (install powershell)
 
 ```
 cd test/ChirpEndToEndTests
 dotnet build
-./bin/Debug/net9.0/playwright.sh install
+pwsh ./bin/Debug/net9.0/playwright.sh install
 dotnet test
 ```
 
