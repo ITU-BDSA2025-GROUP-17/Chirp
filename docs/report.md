@@ -164,27 +164,12 @@ In the final stage, the deployment workflow publishes the application to Azure A
 
 ## Team work
 
-Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
-As a consequence of this way of working, most code reviews on the pull requests are sparse, as we all watched the code being written and pitched in, meaning there wasn't much need for further communication in regards to the code. 
+### Project board
 
 ![Screenshot of the GitHub Project board before hand-in.](images/Project_board.png)
 
 We used a GitHub Project board to track and manage all development tasks throughout the project.
 Each task was created as a GitHub Issue was moved across the board as work progressed.
-
-Most tasks are marked as **Done** at the time of hand-in. The remaining unresolved tasks are the following:
-
-- **AuthorRepository behavior**:  
-  The repository currently returns `null` when an author is not found instead of throwing an exception.  
-  It is not yet decided whether this represents the expected control flow or an exceptional case.  
-  Additional tests are required to validate the chosen behavior and ensure all callers handle it safely.
-
-- **OAuth login refresh issue**:  
-  After authenticating via GitHub OAuth the user currently needs to reload the page before the login state takes effect.  
-  The expected behavior is that authentication is reflected immediately without a manual reload.
-
-### Development workflow
-
 The typical workflow for implementing a feature was:
 
 1. A new Issue is created describing the task and acceptance criteria.
@@ -201,24 +186,20 @@ Most tasks are marked as **Done** at the time of hand-in. The remaining unresolv
 
 - **AuthorRepository behavior**:  
   The repository currently returns `null` when an author is not found instead of throwing an exception.  
-  It is not yet decided whether this represents expected control flow or an exceptional case.  
+  It is not yet decided whether this represents the expected control flow or an exceptional case.  
   Additional tests are required to validate the chosen behavior and ensure all callers handle it safely.
 
 - **OAuth login refresh issue**:  
-  After authenticating via GitHub OAuth, the user currently needs to reload the page before the login state takes effect.  
+  After authenticating via GitHub OAuth the user currently needs to reload the page before the login state takes effect.  
   The expected behavior is that authentication is reflected immediately without a manual reload.
 
-### Development workflow
+### Development flow
 
-The typical workflow for implementing a feature was:
+Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
+As a consequence of this way of working, most code reviews on the pull requests are sparse, as we all watched the code being written and pitched in, meaning there wasn't much need for further communication in regards to the code. 
 
-1. A new Issue is created describing the task and acceptance criteria.
-2. The Issue is moved to **In progress** when development begins.
-3. The feature is implemented on a separate branch.
-4. A Pull Request is opened against the `main` branch.
-5. Automated CI workflows run build and test pipelines.
-6. After review and successful checks, the Pull Request is merged into `main`.
-7. The Issue is moved to **Done** on the project board.
+When starting work on a new set of weekly tasks we began by making issues on Github for each of the tasks, which we would then work through during the week. On account of our way of doing teamwork, where everyone was involved most of the time, pull requests would rarely not be approved, but this option is still illustrated in the diagram below. 
+![Flow diagram from issue creation to resolution](diagrams/IssueFlow.png)
 
 ## How to make _Chirp!_ work locally
 
