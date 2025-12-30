@@ -15,20 +15,23 @@ numbersections: true
 
 ## Domain model
 
-The Chirp domain model consists of four entities:<br>
-1. Author (user extending ASP.NET Identity), this represents an user of the application.
-2. Cheep a 160-character messages with timestamps which an author can create and post on the Chirp social platform.
-3. Follow enables authors to follow eachother and see their cheeps on their timeline.
-4. SavedCheep are messages saved by the user. 
+The Chirp domain model consists of four entities:
+
+
+1. Author (user extending ASP.NET Identity), this represents a user of the application.
+2. Cheep a 160-character message with a timestamp, which an author can create and post on the Chirp social platform.
+3. Follow enables authors to follow eachother and see followed users cheeps on their own timeline.
+4. SavedCheep are Cheeps saved by the user. 
+
+
 The model implements a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
 ![Illustration of the _Chirp!_ data model as UML class diagram.](diagrams/Chirp.Core.png)
 
-Provide an illustration of your domain model. Make sure that it is correct and complete. In case you are using ASP.NET Identity, make sure to illustrate that accordingly.
 
 ## Architecture — In the small
 
-The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages and the end-to-end tests called Chirp.Web.
+The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages, called Chirp.Web, and the application tests.
 
 ![Onion Architecture](images/onion_arc.png)
 
@@ -42,12 +45,10 @@ The diagram shown below illustrates the program's onion architecture. The applic
 
 ### Chirp.Infrastructure.Services
 
-DataTransferObjects = Application Services Layer
-
 - Service implementations: CheepService, AuthorService
-- business logic orchestration
-- Use cases and workflows
-- Depends on Chirp.Core, Chirp.Infrastructure.Repositories
+- Defines use-cases for the database operations from repositories
+- Workflows for database operations
+- Depends on Chirp.Infrastructure.Repositories
 
 ### Chirp.Infrastructure.Repositories
 
@@ -56,8 +57,8 @@ Repository Layer / Data Access
 - Contains CheepRepository, AuthorRepository implementations
 - Database context (CheepDBContext)
 - DTO: CheepDTO, AuthorDTO
-- Data persistence and database operations
-- Depends: Chirp.Core
+- Defines small individual operations on the database
+- Depends on Chirp.Core
 
 ### Chirp.Core
 
@@ -69,9 +70,9 @@ DataModel (Pink/Center) = Domain Layer (Core)
 
 ## Architecture of deployed application
 
-The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services where the business logic is implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext.
+The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services, where the possible database operations are implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext, handled by ASP.NET Core Identity.
 
-Autentication is handled in two ways: users can either register and log in locally using ASP.NET Core Identity with a username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
+Autentication is handled in two ways: users can either register with ASP.NET Core Identity using an email, username and password and log in locally using  with username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
 
 ![Deployed Components](diagrams/Componentdiagram.png)
 
@@ -79,7 +80,7 @@ Autentication is handled in two ways: users can either register and log in local
 
 When a user visits the application, they start on the public timeline, where they can browse cheeps, navigate between pages, search for content and view other user's timelines by clicking on the author name. From the public timeline, the user can choose to register or log-in. Registration and login can be performed either locally or via GitHub, where OAuth handles autentication and account creation externally.
 
-If the user encounters an issue during registration or login, they are redirected back to the relevant page to retry. Once authentication succeeds, the user becomes logged in and gains access to additional features. Logged-in users can post new cheeps, follow other users and interact more actively with content. They can also access their personal information through the "About Me" section, where they have the option to delete their account and all associated data using the "Forget Me" functionality.
+If the user encounters an issue during registration or login, they are redirected back to the relevant page to retry. Once authentication succeeds, the user becomes logged in and gains access to additional features. Logged-in users can post new cheeps, follow other users and save cheeps. They can also access their personal information through the "About Me" section, where they have the option to delete their account and all associated data using the "Forget Me" functionality.
 
 ### Non-authorized user
 
