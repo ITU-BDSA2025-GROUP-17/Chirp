@@ -172,6 +172,8 @@ In the final stage, the deployment workflow publishes the application to Azure A
 ![Deploy workflow](diagrams/WorkflowDeploy.png)
 
 ## Team work
+Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
+
 ![Screenshot of the GitHub Project board before hand-in.](images/Project_board.png)
 
 We used a GitHub Project board to track and manage all development tasks throughout the project.
