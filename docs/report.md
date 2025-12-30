@@ -11,29 +11,24 @@ author:
 numbersections: true
 ---
 
-
-
 # Design and Architecture of _Chirp!_
 
 ## Domain model
 
 The Chirp domain model consists of four entities:
 
-
 1. Author (user extending ASP.NET Identity), this represents a user of the application.
 2. Cheep a 160-character message with a timestamp, which an author can create and post on the Chirp social platform.
 3. Follow enables authors to follow eachother and see followed users cheeps on their own timeline.
-4. SavedCheep are Cheeps saved by the user. 
-
+4. SavedCheep are Cheeps saved by the user.
 
 The model implements a blogging platform with social features including following and timeline feeds. Reposititory interfaces (ICheepRepository, IAuthorRepository) provide data access abstraction with support for pagination, search and deletion.
 
 ![Illustration of the _Chirp!_ data model as UML class diagram.](diagrams/Chirp.Core.png)
 
-
 ## Architecture — In the small
 
-The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the  Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages, called Chirp.Web, and the application tests.
+The diagram shown below illustrates the program's onion architecture. The application generally follows the onion structure even though some layers are represented by more than one .NET project. The Chirp.Core .NET project is the core onion layer, on top of that is the Chirp.Repositories .NET project layer. Here the DTO's exist as they define the data contracts used across the repository, services and representation layers. Ontop of the repositories layer is the Chirp.Services .Net project layer, the service and repository layers are located withing a shared folder called Chirp.Infrastructures. The outermost layer contains the frontend Razor Pages, called Chirp.Web, and the application tests.
 
 ![Onion Architecture](images/onion_arc.png)
 
@@ -44,6 +39,8 @@ The diagram shown below illustrates the program's onion architecture. The applic
 - HTTP concerns and routing
 - User interface (HTML/CSS)
 - Depends on all inner layers
+
+The reason for Chirp.Web depending on Chirp.Core is that ASP.NET Core Identity Pages require access to Author to function.
 
 ### Chirp.Infrastructure.Services
 
@@ -64,17 +61,17 @@ Repository Layer / Data Access
 
 ### Chirp.Core
 
-DataModel (Pink/Center) = Domain Layer (Core)
+DataModel / Domain Layer (Core)
 
 - Contains domain entities: Author, Cheep, Follow, SavedCheep
-- Pure domain logic, no dependencies
+- Pure domain logic, no dependencies in Chirp
 - The innermost layer with business rules
 
 ## Architecture of deployed application
 
 The Chirp application is hosted on Azure App Service. Users interact with the system through the Chirp.Web project, which provides the user interface using ASP.NET Core Razor Pages. All client interaction happens over HTTPS. When a user performs an action in the UI, Chirp.Web delegates the requests to the service layer in Chirp.Infrastructure.Services, where the possible database operations are implemented. The Service layer then calls the repository layer in Chirp.Infrastructure.Repositories to retrieve or modify data. Data persistence are handled via Entity Framework Core, which communicates with an SQLite database through the CheepDbContext, handled by ASP.NET Core Identity.
 
-Autentication is handled in two ways: users can either register with ASP.NET Core Identity using an email, username and password and log in locally using  with username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
+Autentication is handled in two ways: users can either register with ASP.NET Core Identity using an email, username and password and log in locally using with username and password after they have confirmed their account, or authenticate via GitHub OAuth - here GitHub manages the OAuth flow and returns authentication tokens to Chirp.Web.
 
 ![Deployed Components](diagrams/Componentdiagram.png)
 
@@ -86,49 +83,44 @@ If the user encounters an issue during registration or login, they are redirecte
 
 ### Non-authorized user
 
-An unauthortized user has limited access to Chirp!'s functionality. They can view all cheeps under the public timeline, and can search for cheeps containing a specefic substring. They can also click on a users name and view that persons cheeps. 
+An unauthortized user has limited access to Chirp!'s functionality. They can view all cheeps under the public timeline, and can search for cheeps containing a specefic substring. They can also click on a users name and view that persons cheeps.
 
-To get authorized a user must register an account if they haven't already and then log in. 
+To get authorized a user must register an account if they haven't already and then log in.
 
 ![User that is not logged in workflow](diagrams/LoggedOutFlow.png)
 
-
 ### Authenticated user
 
-Authenticated users have access to the same pages as unauthorized users, with some additional pages only for the authenticated. 
-'My timeline' is one of these pages. On here users can view their own cheeps, as well as the cheeps from users that they follow. 
+Authenticated users have access to the same pages as unauthorized users, with some additional pages only for the authenticated.
+'My timeline' is one of these pages. On here users can view their own cheeps, as well as the cheeps from users that they follow.
 
-Cheeps can be saved and then viewed under the 'saved' page. The cheeps are ordered by time of saving. 
+Cheeps can be saved and then viewed under the 'saved' page. The cheeps are ordered by time of saving.
 
-The user can view who they are following under the 'following' page. Here they can also choose to unfollow users. 
+The user can view who they are following under the 'following' page. Here they can also choose to unfollow users.
 
-'About me' can be accessed to view information about the users account, such as email or username. It is also here that the user can delete their account. 
+'About me' can be accessed to view information about the users account, such as email or username. It is also here that the user can delete their account.
 
 ![Logged in user workflow](diagrams/LoggedInFlow.png)
-
 
 ## Sequence of functionality/calls trough _Chirp!_
 
 ### Register sequence
 
-To register a user must give an email, username and password. the email and username must be unique from other users. Accounts are handled by ASP.NET Core Identity. 
+To register a user must give an email, username and password. The email and username must be unique from other users. Accounts are handled by ASP.NET Core Identity.
 
 ![Register sequence](diagrams/RegistrationSequence.png)
 
-
 ### Authentication with Git-Hub
 
-If the user does not wish to create an account using an email address, then they can choose to register/login with Github through OAuth. When choosing this option the user does not have to provide email. username or password, as all needed information is given by  Github. 
+If the user does not wish to create an account using an email address, then they can choose to register/login with Github through OAuth. When choosing this option the user does not have to provide email, username or password, as all needed information is given by Github.
 
 ![Authorizing with Github](diagrams/GithubAuthSequence.png)
 
-
 ### Login sequence
 
-Once an account is created the user must log in. This is done using the selected username and password. If using Github then this step is replaced by Github authentication through OAuth. 
+Once an account is created the user must log in. This is done using the selected username and password. If using Github then this step is replaced by Github authentication through OAuth.
 
 ![Login sequence](diagrams/LoginSequence.png)
-
 
 ### Non-authorized user reading the public timeline
 
@@ -136,13 +128,11 @@ An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The re
 
 ![Getting public timeline sequence](diagrams/ViewPublicTimelineSequence.png)
 
-
 ### Authorized user posting a cheep
 
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
 
 ![Posting a cheep sequence](diagrams/PostCheepSequence.png)
-
 
 # Process
 
@@ -170,10 +160,10 @@ Once the build and test succeed, a release workflow packages the application in 
 
 In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow main_bdsagroup17chirpremotedb.yml.
 
-
 ![Deploy workflow](diagrams/WorkflowDeploy.png)
 
 ## Team work
+
 Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
 
 ![Screenshot of the GitHub Project board before hand-in.](images/Project_board.png)
@@ -203,8 +193,8 @@ The typical workflow for implementing a feature was:
 5. Automated CI workflows run build and test pipelines.
 6. After review and successful checks, the Pull Request is merged into `main`.
 7. The Issue is moved to **Done** on the project board.
-We used a GitHub Project board to track and manage all development tasks throughout the project.
-Each task was created as a GitHub Issue and moved across the board as work progressed.
+   We used a GitHub Project board to track and manage all development tasks throughout the project.
+   Each task was created as a GitHub Issue and moved across the board as work progressed.
 
 Most tasks are marked as **Done** at the time of hand-in. The remaining unresolved tasks are the following:
 
@@ -212,10 +202,6 @@ Most tasks are marked as **Done** at the time of hand-in. The remaining unresolv
   The repository currently returns `null` when an author is not found instead of throwing an exception.  
   It is not yet decided whether this represents expected control flow or an exceptional case.  
   Additional tests are required to validate the chosen behavior and ensure all callers handle it safely.
-
-- **Delete logic separation**:  
-  Delete functionality has been implemented, but it has not yet been fully verified that all delete-related logic is strictly confined to the Service layer.  
-  This is necessary to maintain proper separation of concerns and avoid business logic leakage.
 
 - **OAuth login refresh issue**:  
   After authenticating via GitHub OAuth, the user currently needs to reload the page before the login state takes effect.  
@@ -232,23 +218,25 @@ The typical workflow for implementing a feature was:
 5. Automated CI workflows run build and test pipelines.
 6. After review and successful checks, the Pull Request is merged into `main`.
 7. The Issue is moved to **Done** on the project board.
+
 ## How to make _Chirp!_ work locally
 
 ### Prerequirements:
 
 - .NET 9 SDK installed
 - Git
+
 ### Steps
 
 1. Clone the repository: `git clone https://github.com/ITU-BDSA2025-GROUP-17/Chirp`
 2. After the cloning the project, go to the project:
    `cd Chirp`
 3. Restore dependencies:
-`dotnet restore src/Chirp.Web/Chirp.Web.csproj`
+   `dotnet restore src/Chirp.Web/Chirp.Web.csproj`
 
 4. Run the application
 
-If you wish to access the application with Github OAuth(This also requires secrets to be set up):
+If you wish to access the application with Github OAuth (This also requires secrets to be set up):
 
 `dotnet run --project src/Chirp.Web/Chirp.Web.csproj --launch-profile https`
 
@@ -262,6 +250,7 @@ else:
    - You should see the Chirp public timeline with seeded cheeps
 
 Notes:
+
 - The application can be run locally without configuring GitHub authentication.
 - GitHub login will not work locally unless user secrets are configured.
 - This does not affect core functionality such as browsing cheeps or local authentication.
@@ -275,24 +264,37 @@ To enable GitHub login locally, user secrets must be configured manually:
 dotnet user-secrets set "Authentication:GitHub:ClientId" "<your-client-id>" --project src/Chirp.Web
 dotnet user-secrets set "Authentication:GitHub:ClientSecret" "<your-client-secret>" --project src/Chirp.Web
 ```
+
 These secrets are provided via GitHub OAuth and are intentionally not included in the repository.
 In the deployed Azure environment, the secrets are configured securely using Azure App Service settings.
 
 ## How to run test suite locally
 
-Unit tests:
+#### Unit tests:
 
 `dotnet test test/Chirp.Repositories.Tests`
 
-Integration tests:
+#### Integration tests:
 
 `dotnet test test/Chirp.IntegrationTests`
 
-End-to-end tests (requires Playwright, which requires the use of powershell on Windows):
+#### End-to-end tests (requires Playwright):
 
-```cd test/ChirpEndToEndTests
+Windows (using powershell)
+
+```
+cd test/ChirpEndToEndTests
 dotnet build
 pwsh bin/Debug/net9.0/playwright.ps1 install
+dotnet test
+```
+
+Mac/Linux
+
+```
+cd test/ChirpEndToEndTests
+dotnet build
+./bin/Debug/net9.0/playwright.sh install
 dotnet test
 ```
 
@@ -303,12 +305,13 @@ dotnet test
 The Chirp! Project is released under the MIT license. This is a permissive open-source license that allows others to use, modify, distribute and build upon the software with very few restrictions. The only requirement is that the original copyright notice and license text are included in any copies or substantial portions of the software. The software is provided "as is", with any warranty, which means the developers are not liable for potential issues arising from its use.
 
 ## LLMs, ChatGPT, CoPilot, and others
+
 During development of the project, we used several Large Language Models (LLMs), including ChatGPT, GitHub Copilot and Claude.
 
-ChatGPT was used as a support tool for understanding code and concepts. Use cases included clarifying the meaning of specific lines of code, helping with how to write smaller code lines and explaining why certain methods or implementations caused issues, replacing the need to searching through documentation or Stack Overflow in most cases.This helped save time and allowed us to focus more on understanding and writing the code ourselves. ChatGPT was also used in a theoretical manner to discuss architectural and conceptual decisions before implementation, ensuring that we had a solid understanding before writing code. Additionally, it was used to help rephrase or improve issue descriptions and parts of the written report.
+ChatGPT was used as a support tool for understanding code and concepts. Use cases included clarifying the meaning of specific lines of code, helping with how to write smaller code lines and explaining why certain methods or implementations caused issues, replacing the need to searching through documentation or Stack Overflow in most cases. This helped save time and allowed us to focus more on understanding and writing the code ourselves. ChatGPT was also used in a theoretical manner to discuss architectural and conceptual decisions before implementation, ensuring that we had a solid understanding before writing code. Additionally, it was used to help rephrase or improve issue descriptions and parts of the written report.
 
 Claude was used as a kind of teaching assistant after the code had already been reviewed within the group and there was still uncertainty about the solution. We intentionally used it for guidance rather than complete answers. It was also helpful when working with tests, especially for interpreting and applying the guidelines from the course literature when implementing integration tests. In a few cases, small code snippets were used as inspiration rather than finished solutions.
 
 GitHub Copilot was used passively during development, mainly by automatically generating commit or pull request messages, some of which were accepted.
 
-Overall LLMs were used as supportive tools rather than sources of complete solutions. They helped speed up development, reduce time spent on searching for information and improve understanding, while the main implementation and problem solving were still done out by the group.
+Overall LLMs were used as supportive tools rather than sources of complete solutions. They helped speed up development, reduce time spent on searching for information and improve understanding, while the main implementation and problem solving were still thought out by the group.
