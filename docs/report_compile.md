@@ -224,6 +224,9 @@ In the final stage, the deployment workflow publishes the application to Azure A
 \newpage
 
 ## Team work
+Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
+
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{images/Project\_board.png}
