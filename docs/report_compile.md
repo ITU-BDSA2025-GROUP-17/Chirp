@@ -14,7 +14,7 @@ author:
 
 numbersections: true
 ---
-
+\newpage
 # Design and Architecture of _Chirp!_
 
 ## Domain model
@@ -121,6 +121,7 @@ The user can view who they are following under the 'following' page. Here they c
 \caption{Logged in user workflow}
 \end{figure}
 
+\newpage
 ## Sequence of functionality/calls trough _Chirp!_
 
 ### Register sequence
@@ -132,6 +133,7 @@ To register a user must give an email, username and password. The email and user
 \caption{Register sequence}
 \end{figure}
 
+\newpage
 ### Authentication with Git-Hub
 
 If the user does not wish to create an account using an email address, then they can choose to register/login with Github through OAuth. When choosing this option the user does not have to provide email, username or password, as all needed information is given by Github.
@@ -141,6 +143,7 @@ If the user does not wish to create an account using an email address, then they
 \caption{Authorizing with Github}
 \end{figure}
 
+\newpage
 ### Login sequence
 
 Once an account is created the user must log in. This is done using the selected username and password. If using Github then this step is replaced by Github authentication through OAuth.
@@ -150,6 +153,7 @@ Once an account is created the user must log in. This is done using the selected
 \caption{Login sequence}
 \end{figure}
 
+\newpage
 ### Non-authorized user reading the public timeline
 
 An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
@@ -159,6 +163,7 @@ An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The re
 \caption{Getting public timeline sequence}
 \end{figure}
 
+\newpage
 ### Authorized user posting a cheep
 
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
@@ -209,7 +214,7 @@ Once the build and test succeed, a release workflow packages the application in 
 
 ### Deployment
 
-In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow main_bdsagroup17chirpremotedb.yml.
+In the final stage, the deployment workflow publishes the application to Azure App Service. It authenticates securely with Azure, uploads the built artifact and deploys it to the production environment. This keeps the live application automatically synchronized with the main branch. Deployment is handled automatically by the workflow main_bdsagroup17chirpremotedb.yml. Deploys to \url{https://bdsagroup17chirpremotedb-dhg0b9fpaya0afa0.swedencentral-01.azurewebsites.net/}
 
 \begin{figure}[H]
 \centering
@@ -222,6 +227,7 @@ In the final stage, the deployment workflow publishes the application to Azure A
 ## Team work
 
 Early in the development of Chirp it was decided that the whole group would work collectively on all the tasks. We felt that many of the tasks depended on each other, and since we had enough time to complete most tasks every week it was best for everyone if we as a group did everything together. This is shown when commiting new code to the project by all present team members being co-authored.
+As a consequence of this way of working, most code reviews on the pull requests are sparse, as we all watched the code being written and pitched in, meaning there wasn't much need for further communication in regards to the code. 
 
 \begin{figure}[H]
 \centering
@@ -334,15 +340,16 @@ In the deployed Azure environment, the secrets are configured securely using Azu
 ## How to run test suite locally
 
 #### Unit tests:
-
+\
 `dotnet test test/Chirp.Repositories.Tests`
 
 #### Integration tests:
-
+\
 `dotnet test test/Chirp.IntegrationTests`
 
 #### End-to-end tests (requires Playwright):
 
+\
 Windows (using powershell)
 
 ```
