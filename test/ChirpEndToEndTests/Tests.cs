@@ -85,7 +85,7 @@ public class Tests : PageTest
     {   
         await Page.GotoAsync(_url);
 
-        await Page.FillAsync("#SearchText", "Starbuck");
+        await Page.FillAsync("#Search", "Starbuck");
         await Page.ClickAsync("input[type=submit]");
 
         Assert.That(Page.Url, Does.Contain("search=Starbuck"));
@@ -193,11 +193,9 @@ public class Tests : PageTest
 
         // Check feed changed
         await Page.ClickAsync("text=my timeline");
-        await Page.WaitForLoadStateAsync();
         Assert.That(!await Page.IsVisibleAsync("text=There are no cheeps so far."));
 
         await Page.ClickAsync("text=public timeline");
-        await Page.WaitForLoadStateAsync();
         
         // Unfollow
         await Page.ClickAsync("button[name='unfollow'][value='Jacqualine Gilcoine']");
@@ -205,7 +203,6 @@ public class Tests : PageTest
         
         // Check feed empty again
         await Page.ClickAsync("text=my timeline");
-        await Page.WaitForLoadStateAsync();
         Assert.That(await Page.IsVisibleAsync("text=There are no cheeps so far."));
     }
 
