@@ -92,11 +92,12 @@ public class CheepPageModel : PageModel
     /// <returns>A redirect to the same page preserving search and pagination state.</returns>
     public async Task<ActionResult> OnPostCheepAsync()
     {
-        if (!ModelState.IsValid)
+        if (Text == null || string.IsNullOrWhiteSpace(Text)|| !ModelState.IsValid)
         {
+            ModelState.AddModelError("Text", "Your message is empty");
             return Page();
-        }
-
+        } 
+        
         string userName = User.Identity!.Name!;
         await _cheepService.CreateCheepForUser(userName, Text!);
 

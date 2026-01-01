@@ -4,7 +4,7 @@ using Repositories;
 public interface ICheepService
 {
     Task<List<CheepDTO>> GetPublicCheeps(int pageNumber, string? searchQuery);
-    Task<List<CheepDTO>> GetUserTimelineCheeps(string userName, int pageNumber);
+    Task<List<CheepDTO>> GetUserTimelineCheeps(string user ,string author, int pageNumber);
     Task<List<CheepDTO>> GetSavedCheeps(string userName, int pageNumber);
     Task CreateCheepForUser(string userName, string text);
     Task SaveCheepForUser(string userName, long cheepId);

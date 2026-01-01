@@ -31,19 +31,22 @@ public class CheepService : ICheepService
 
         return cheeps;
     }
-    public async Task<List<CheepDTO>> GetUserTimelineCheeps(string userName, int pageNumber)
+    public async Task<List<CheepDTO>> GetUserTimelineCheeps(string user ,string authPage, int pageNumber)
     {
+        List<string> userNames = new List<string>();
         int offset = (pageNumber - 1) * CheepsPerPage;
-
-        //list of string, userNames
-        List<AuthorDTO> following = await _authorService.GetFollowing(userName);
-
-        List<string> userNames = new List<string> { userName };
-        foreach (var author in following)
+        if (!authPage.Equals(user)) // /andenPersonsTimeline
         {
-            userNames.Add(author.Name);
+            userNames.Add(authPage);
+        } else if (authPage.Equals(user)) // hvis vi er inde på egen timeline
+        {
+            userNames.Add(user);
+            List<AuthorDTO> following = await _authorService.GetFollowing(user);
+            foreach (var author in following)
+            {
+                userNames.Add(author.Name);
+            }
         }
-
 
         List<CheepDTO> cheeps = await _cheepRepository.ReadCheepsFromFollowers(userNames, offset, CheepsPerPage);
         return cheeps;
