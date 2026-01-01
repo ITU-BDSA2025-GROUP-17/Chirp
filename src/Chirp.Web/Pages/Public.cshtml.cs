@@ -8,6 +8,16 @@ using Services;
 
 public class PublicModel : CheepPageModel
 {
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PublicModel"/> class.
+    /// </summary>
+    /// <param name="cheepService">
+    /// Service responsible for retrieving cheeps.
+    /// </param>
+    /// <param name="authorService">
+    /// Service responsible for author-related operations.
+    /// </param>
     public PublicModel(ICheepService cheepService, IAuthorService authorService)
         : base(cheepService, authorService)
     { }

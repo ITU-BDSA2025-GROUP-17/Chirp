@@ -55,7 +55,7 @@ public class SavedModel : CheepPageModel
         // Load saved cheeps for the authenticated user, if available
         if (User.Identity != null)
         {
-            Cheeps = await _cheepService.GetSavedCheeps(User.Identity!.Name, pageNum);
+            Cheeps = await _cheepService.GetSavedCheeps(User.Identity!.Name!, pageNum);
         }
         else
         {
