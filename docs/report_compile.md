@@ -139,7 +139,7 @@ The user can view who they are following under the 'following' page. Here they c
 To register a user must give an email, username and password. The email and username must be unique from other users. Accounts are handled by ASP.NET Core Identity.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/RegistrationSequence.png}
+\includegraphics[width=1\textwidth]{diagrams/RegistrationSequence.png}
 \caption{Register sequence}
 \end{figure}
 
@@ -150,7 +150,7 @@ To register a user must give an email, username and password. The email and user
 If the user does not wish to create an account using an email address, then they can choose to register/login with Github through OAuth. When choosing this option the user does not have to provide email, username or password, as all needed information is given by Github.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/GithubAuthSequence.png}
+\includegraphics[width=1\textwidth]{diagrams/GithubAuthSequence.png}
 \caption{Authorizing with Github}
 \end{figure}
 
@@ -161,7 +161,7 @@ If the user does not wish to create an account using an email address, then they
 Once an account is created the user must log in. This is done using the selected username and password. If using Github then this step is replaced by Github authentication through OAuth.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/LoginSequence.png}
+\includegraphics[width=1\textwidth]{diagrams/LoginSequence.png}
 \caption{Login sequence}
 \end{figure}
 
@@ -172,7 +172,7 @@ Once an account is created the user must log in. This is done using the selected
 An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The request invokes the public page handler. The Web layer delegates the request to the service layer, which retrieves public cheeps through the repository layer. The repository queries the SQLite database via Entity Framework Core and returns the most recent cheeps as DTO's (ordered by the timestamps). These are passed back through the service to the web layer, where Razor Pages renders the HTML response. The fully rendered public timeline pages is then returned to the user.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/ViewPublicTimelineSequence.png}
+\includegraphics[width=1\textwidth]{diagrams/ViewPublicTimelineSequence.png}
 \caption{Getting public timeline sequence}
 \end{figure}
 
@@ -183,8 +183,19 @@ An unauthorized user starts by sending an HTTP GET/ request to Chirp.Web. The re
 An authorized user submits a new cheep by sending an HTTP POST request. The request is handled by Chirp.Web which extracts the authenticated username from the user's identity. The Web layer calls the service layer to create a new cheep for the user. The service resolves the author via the repository and then persists the new cheep through the cheeps repository using Entity Framework Core. After the database transaction succeeds, the user is redirected back to the public timeline, where the newly created cheep is now visible.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{diagrams/PostCheepSequence.png}
+\includegraphics[width=1\textwidth]{diagrams/PostCheepSequence.png}
 \caption{Posting a cheep sequence}
+\end{figure}
+
+\newpage
+
+### Authorized user following another user
+
+An authorized user follows a user by sending an HTTP POST request, much the same as cheeping. Chirp.Web uses the current users name and the name of the user to be followed to tell the Service layer to create a follow connection between the two users, which is sent to the Repository layer, where a new row is inserted in the Follows table in the database. This row consists of the id's of the two users. 
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{diagrams/FollowSequence.png}
+\caption{Following a user sequence}
 \end{figure}
 
 \newpage

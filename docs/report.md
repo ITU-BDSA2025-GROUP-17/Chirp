@@ -139,6 +139,13 @@ An authorized user submits a new cheep by sending an HTTP POST request. The requ
 
 ![Posting a cheep sequence](diagrams/PostCheepSequence.png)
 
+
+### Authorized user following another user
+
+An authorized user follows a user by sending an HTTP POST request, much the same as cheeping. Chirp.Web uses the current users name and the name of the user to be followed to tell the Service layer to create a follow connection between the two users, which is sent to the Repository layer, where a new row is inserted in the Follows table in the database. This row consists of the id's of the two users. 
+
+![Following a user sequence](diagrams/FollowSequence.png)
+
 # Process
 
 ## Build, test, release and deployment
