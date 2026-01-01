@@ -2,12 +2,25 @@ using System;
 using Chirp.Core;
 using Chirp.Repositories;
 
+/// <summary>
+/// Provides methods for seeding the database with initial test data.
+/// Used during development to populate the database with authors and cheeps.
+/// </summary>
 public static class DbInitializer
 {
+    /// <summary>
+    /// Seeds the database with predefined authors and cheeps
+    /// if the database is currently empty.
+    /// </summary>
+    /// <param name="chirpContext">
+    /// The database context used to insert seed data.
+    /// </param>
     public static void SeedDatabase(CheepDBContext chirpContext)
     {
+        // Only seed the database if it does not already contain users and cheeps
         if (!(chirpContext.Users.Any() && chirpContext.Cheeps.Any()))
         {
+            // Create author entities with predefined IDs, usernames, and emails
             var a1 = new Author() { Id = 1, UserName = "Roger Histand", Email = "Roger+Histand@hotmail.com", Cheeps = new List<Cheep>() };
             var a2 = new Author() { Id = 2, UserName = "Luanna Muro", Email = "Luanna-Muro@ku.dk", Cheeps = new List<Cheep>() };
             var a3 = new Author() { Id = 3, UserName = "Wendell Ballan", Email = "Wendell-Ballan@gmail.com", Cheeps = new List<Cheep>() };
@@ -22,7 +35,7 @@ public static class DbInitializer
             var a12 = new Author() { Id = 12, UserName = "Adrian", Email = "adho@itu.dk", Cheeps = new List<Cheep>() };
 
             var authors = new List<Author>() { a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12 };
-
+            // Create cheep entities with predefined authors, content, and timestamps
             var c1 = new Cheep() { CheepId = 1, Author = a10, Text = "They were married in Chicago, with old Smith, and was expected aboard every day; meantime, the two went past me.", TimeStamp = DateTime.Parse("2023-08-01 13:14:37") };
             var c2 = new Cheep() { CheepId = 2, Author = a10, Text = "And then, as he listened to all that''s left o'' twenty-one people.", TimeStamp = DateTime.Parse("2023-08-01 13:15:21") };
             var c3 = new Cheep() { CheepId = 3, Author = a10, Text = "In various enchanted attitudes, like the Sperm Whale.", TimeStamp = DateTime.Parse("2023-08-01 13:14:58") };
@@ -694,7 +707,8 @@ public static class DbInitializer
             a8.Cheeps = new List<Cheep>() { c55, c124, c139, c151, c164, c263, c310, c328, c360, c375, c430, c470, c564, c576, c605 };
             a11.Cheeps = new List<Cheep>() { c656 };
             a12.Cheeps = new List<Cheep>() { c657 };
-
+            
+            //Seed the database
             chirpContext.Users.AddRange(authors);
             chirpContext.Cheeps.AddRange(cheeps);
             chirpContext.SaveChanges();
