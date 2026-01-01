@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Chirp.Repositories;
+using Chirp.Services;
+
 
 namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
 {
@@ -18,17 +19,16 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<Author> _userManager;
         private readonly SignInManager<Author> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
-        private readonly IAuthorRepository _authorRepository;
-        private readonly ICheepRepository _cheepRepository;
+        private readonly IAuthorService _authorService;
+
 
         public DeletePersonalDataModel(UserManager<Author> userManager, SignInManager<Author> signInManager,
-            ILogger<DeletePersonalDataModel> logger, IAuthorRepository authorRepository, ICheepRepository cheepRepository)
+            ILogger<DeletePersonalDataModel> logger, IAuthorService authorService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _authorRepository = authorRepository;
-            _cheepRepository = cheepRepository;
+            _authorService = authorService;
         }
 
         /// <summary>
@@ -89,13 +89,8 @@ namespace Chirp.Web.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            AuthorDTO author = new AuthorDTO { 
-                Name = user.UserName!,
-                Email = user.Email!,
-                AuthorId = user.Id,
-            };
-            
-            var result = await _authorRepository.DeleteAuthor(author);
+
+            var result = await _authorService.DeleteAuthor(user.UserName);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Unexpected error occurred deleting user.");

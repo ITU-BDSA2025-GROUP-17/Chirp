@@ -1,56 +1,25 @@
-using Chirp.Core;
+
 using Chirp.Repositories;
+using Chirp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Chirp.Web.Pages;
 
-/// <summary>
-/// PageModel responsible for displaying and managing the list of authors
-/// that the currently authenticated user is following.
-/// </summary>
-/// <remarks>
-/// This page allows the user to view all followed authors and unfollow them.
-/// Data access is performed through the <see cref="IAuthorRepository"/>.
-/// </remarks>
 public class FollowingModel : PageModel
 {
-    /// <summary>
-    /// Repository used to retrieve and modify author follow relationships.
-    /// </summary>
-    private readonly IAuthorRepository _authorRepository;
+    private readonly IAuthorService _authorService;
 
-    /// <summary>
-    /// Collection of authors that the current user is following.
-    /// </summary>
     public ICollection<AuthorDTO>? Following { get; set; }
 
-    /// <summary>
-    /// Username of the author to unfollow.
-    /// Bound from the unfollow form submission.
-    /// </summary>
     [BindProperty]
     public string? Unfollow { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FollowingModel"/> class.
-    /// </summary>
-    /// <param name="authorRepository">
-    /// Repository responsible for author persistence and relationships.
-    /// </param>
-    public FollowingModel(IAuthorRepository authorRepository)
+    public FollowingModel(IAuthorService authorService)
     {
-        _authorRepository = authorRepository;
+        _authorService = authorService;
     }
 
-    /// <summary>
-    /// Handles HTTP GET requests for the Following page.
-    /// Retrieves all authors that the current user is following.
-    /// </summary>
-    /// <returns>
-    /// The Following page if the user is authenticated; otherwise,
-    /// a redirect to the Index page.
-    /// </returns>
     public async Task<IActionResult> OnGetAsync()
     {
         if (!User.Identity!.IsAuthenticated)
@@ -60,24 +29,19 @@ public class FollowingModel : PageModel
 
         var authorName = User.Identity.Name;
 
-        // Retrieve the current user as an author entity
-        var currentUser = await _authorRepository.GetAuthorByName(authorName!);
+
+        var currentUser = await _authorService.GetAuthorByName(authorName!);
+
+
 
         if (currentUser != null)
         {
-            // Load the list of followed authors
-            Following = await _authorRepository.GetFollowing(currentUser);
+            Following = await _authorService.GetFollowing(currentUser.Name);
         }
 
         return Page();
     }
 
-    /// <summary>
-    /// Handles unfollow requests submitted from the Following page.
-    /// </summary>
-    /// <returns>
-    /// A redirect to the Following page after the unfollow operation completes.
-    /// </returns>
     public async Task<ActionResult> OnPostUnfollowAsync()
     {
         if (!ModelState.IsValid)
@@ -85,15 +49,13 @@ public class FollowingModel : PageModel
             return Page();
         }
 
-        var userName = User.Identity!.Name;
+        var user = User.Identity?.Name;
+        var author = await _authorService.GetAuthorByName(user!);
+        var followAuthor = await _authorService.GetAuthorByName(Unfollow!);
+        await _authorService.UnfollowUser(author!.Name!, followAuthor!.Name!);
 
-        // Retrieve both the current user and the author to unfollow
-        var currentAuthor = await _authorRepository.GetAuthorByName(userName!);
-        var followAuthor = await _authorRepository.GetAuthorByName(Unfollow!);
-
-        // Remove the follow relationship
-        await _authorRepository.UnFollow(currentAuthor!, followAuthor!);
 
         return RedirectToPage("/Following");
     }
+
 }
