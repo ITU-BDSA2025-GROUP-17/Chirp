@@ -20,7 +20,8 @@ public class UserTimelineModel : CheepPageModel
             pageNum = int.Parse(page);
         }
 
-        Cheeps = await _cheepService.GetUserTimelineCheeps(author, pageNum);
+        var username = User.Identity!.Name;
+        Cheeps = await _cheepService.GetUserTimelineCheeps(username! ,author, pageNum);
 
         return Page();
     }
