@@ -8,7 +8,6 @@ using Services;
 
 public class PublicModel : CheepPageModel
 {
-
     public PublicModel(ICheepService cheepService, IAuthorService authorService)
         : base(cheepService, authorService)
     { }
