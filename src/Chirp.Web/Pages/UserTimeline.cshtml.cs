@@ -53,8 +53,9 @@ public class UserTimelineModel : CheepPageModel
             pageNum = int.Parse(page);
         }
 
+        // Load cheeps for the specified user's timeline
         var username = User.Identity!.Name;
-        Cheeps = await _cheepService.GetUserTimelineCheeps(username! ,author, pageNum);
+        Cheeps = await _cheepService.GetUserTimelineCheeps(username!, author, pageNum);
 
         return Page();
     }
