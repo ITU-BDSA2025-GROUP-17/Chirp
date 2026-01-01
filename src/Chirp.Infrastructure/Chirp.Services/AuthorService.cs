@@ -6,10 +6,12 @@ using Repositories;
 public class AuthorService : IAuthorService
 {
     private readonly IAuthorRepository _authorRepository;
+    private readonly ICheepRepository _cheepRepository;
 
-    public AuthorService(IAuthorRepository authorRepository)
+    public AuthorService(IAuthorRepository authorRepository, ICheepRepository cheepRepository)
     {
         _authorRepository = authorRepository;
+        _cheepRepository = cheepRepository;
     }
 
 
@@ -110,8 +112,11 @@ public class AuthorService : IAuthorService
         {
             throw new InvalidOperationException($"user with username: '{userName}' doesn't exist");
         }
-        IdentityResult result = await _authorRepository.DeleteAuthor(user);
-        //identityResult returns if its succeded, and if not, a list with the errors. 
-        return result;
+        //handle everything in cheep Repository prior deleting the author
+        await _cheepRepository.DeleteSavedCheeps(userName);
+        await _cheepRepository.DeleteCheeps(userName);
+
+        return await _authorRepository.DeleteAuthor(user);
+
     }
 }

@@ -27,8 +27,10 @@ jobs:
       - name: Build
         run: dotnet build src/Chirp.Web/Chirp.Web.csproj -c Release --no-restore
 
-      - name: Run tests
-        run: dotnet test -c Release --no-build --verbosity normal
+      - name: Run unit and integration tests
+        run: |
+          dotnet test test/Chirp.Repositories.Tests -c Release --no-build --verbosity normal
+          dotnet test test/Chirp.IntegrationTests -c Release --no-build --verbosity normal
 
       - name: Publish single-file
         run: |
